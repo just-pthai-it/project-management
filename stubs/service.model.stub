@@ -1,0 +1,40 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Repositories\Contracts\{{ model }}RepositoryContract;
+
+class {{ class }} implements Contracts\{{ class }}Contract
+{
+    private {{ model }}RepositoryContract ${{ lc_model }}Repository;
+
+    public function __construct ({{ model }}RepositoryContract ${{ lc_model }}Repository)
+    {
+        $this->{{ lc_model }}Repository = ${{ lc_model }}Repository;
+    }
+
+    public function list (array $inputs = [])
+    {
+
+    }
+
+    public function get (int|string $id, array $inputs = [])
+    {
+
+    }
+
+    public function store (array $inputs)
+    {
+
+    }
+
+    public function update (int|string $id, array $inputs)
+    {
+
+    }
+
+    public function delete (int|string $id)
+    {
+
+    }
+}

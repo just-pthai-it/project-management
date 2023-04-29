@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Models\{{ model }};
+
+class {{ class }} extends Abstracts\ABaseRepository implements Contracts\{{ class }}Contract
+{
+    /**
+     * @inheritDoc
+     */
+    function model () : string
+    {
+        return {{ model }}::class;
+    }
+}
