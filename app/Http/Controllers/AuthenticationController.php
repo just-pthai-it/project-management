@@ -22,4 +22,9 @@ class AuthenticationController extends Controller
     {
         return $this->authenticationService->login($request->email, $request->password, $request->remember_me);
     }
+
+    public function refreshToken ()
+    {
+        return $this->authenticationService->refreshToken();
+    }
 }

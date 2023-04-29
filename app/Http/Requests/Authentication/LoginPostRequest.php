@@ -24,10 +24,11 @@ class LoginPostRequest extends FormRequest
     public function rules () : array
     {
         return [
-            'email'    => ['required', 'string',
-//                           'email:dns,rfc'
+            'email'       => ['required', 'string',
+                              //                           'email:dns,rfc'
             ],
-            'password' => ['required', 'string'],
+            'password'    => ['required', 'string'],
+            'remember_me' => ['boolean'],
         ];
     }
 }

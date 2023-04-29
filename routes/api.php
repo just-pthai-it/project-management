@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,9 +25,14 @@ Route::post('login', [AuthenticationController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function ()
 {
+    Route::post('refresh-token', [AuthenticationController::class, 'refreshToken']);
+
     Route::get('me', [UserController::class, 'me']);
 
     Route::apiResource('users', UserController::class);
+    Route::apiResource('projects', ProjectController::class);
+    Route::apiResource('projects.tasks', ProjectTaskController::class);
+
 });
 
 Route::get('test', function ()

@@ -6,6 +6,7 @@ use App\Helpers\Constants;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\UserCollection;
 use App\Repositories\Contracts\UserRepositoryContract;
+use Illuminate\Http\JsonResponse;
 
 class UserService implements Contracts\UserServiceContract
 {
@@ -42,7 +43,7 @@ class UserService implements Contracts\UserServiceContract
 
     }
 
-    public function me ()
+    public function me () : JsonResponse
     {
         return (new UserResource(auth()->user()))->response();
     }

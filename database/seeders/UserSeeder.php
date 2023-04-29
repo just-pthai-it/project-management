@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use JetBrains\PhpStorm\NoReturn;
 
 class UserSeeder extends Seeder
 {
@@ -13,8 +15,13 @@ class UserSeeder extends Seeder
      *
      * @return void
      */
-    public function run() : void
+    #[NoReturn] public function run () : void
     {
-        User::factory()->count(5)->create();
+        $users = User::factory()->count(5)->create();
+
+        $user = $users->first();
+        $user->update(['email' => 'user@gmail.com']);
+        $rootRoleId = Role::query()->where('name', '=', 'root')->first()->id;
+        $user->roles()->attach($rootRoleId);
     }
 }

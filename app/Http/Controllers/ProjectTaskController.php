@@ -2,21 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Contracts\ProjectServiceContract;
 use Illuminate\Http\Request;
 
-class ProjectController extends Controller
+class ProjectTaskController extends Controller
 {
-    private ProjectServiceContract $projectService;
-
-    /**
-     * @param ProjectServiceContract $projectService
-     */
-    public function __construct (ProjectServiceContract $projectService)
-    {
-        $this->projectService = $projectService;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +13,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return $this->projectService->list();
+        //
     }
 
     /**
