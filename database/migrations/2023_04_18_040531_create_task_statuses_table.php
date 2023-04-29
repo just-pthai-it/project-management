@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('id')->autoIncrement();
             $table->string('name');
             $table->string('color');
+            $table->boolean('is_permanent');
         });
     }
 

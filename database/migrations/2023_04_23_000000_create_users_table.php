@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('job_title')->nullable();
+            $table->boolean('status');
             $table->string('avatar')->nullable();
             $table->rememberToken();
             $table->timestamp('last_login_at')->nullable();
