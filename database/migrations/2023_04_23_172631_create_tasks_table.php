@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedMediumInteger('project_id');
             $table->unsignedMediumInteger('user_id');
             $table->string('name');
-            $table->date('start_at');
-            $table->date('end_at');
+            $table->date('starts_at');
+            $table->date('ends_at');
             $table->unsignedSmallInteger('duration');
             $table->unsignedTinyInteger('status_id');
             $table->string('pending_reason')->nullable();

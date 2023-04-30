@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('customer_name')->nullable();
             $table->string('code');
-            $table->date('start_at');
-            $table->date('end_at');
+            $table->date('starts_at');
+            $table->date('ends_at');
             $table->unsignedSmallInteger('duration');
             $table->unsignedTinyInteger('progress');
             $table->unsignedTinyInteger('status_id');
