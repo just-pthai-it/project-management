@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedMediumInteger('project_id');
             $table->unsignedMediumInteger('user_id');
             $table->string('name');
+            $table->text('description')->nullable();
             $table->date('starts_at');
             $table->date('ends_at');
             $table->unsignedSmallInteger('duration');

@@ -18,7 +18,9 @@ return new class extends Migration
             $table->unsignedMediumInteger('id')->autoIncrement();
             $table->string('name');
             $table->string('customer_name')->nullable();
+            $table->text('summary')->nullable();
             $table->string('code');
+            $table->unsignedMediumInteger('user_id');
             $table->date('starts_at');
             $table->date('ends_at');
             $table->unsignedSmallInteger('duration');
@@ -28,6 +30,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('status_id')->references('id')->on('project_statuses');
         });
     }
