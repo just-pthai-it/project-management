@@ -2,6 +2,7 @@
 
 namespace {{ namespace }};
 
+use App\Models\{{ model }};
 use App\Repositories\Contracts\{{ model }}RepositoryContract;
 
 class {{ class }} implements Contracts\{{ class }}Contract
@@ -18,7 +19,7 @@ class {{ class }} implements Contracts\{{ class }}Contract
 
     }
 
-    public function get (int|string $id)
+    public function get ({{ model }} ${{ lc_model }})
     {
 
     }
@@ -28,12 +29,12 @@ class {{ class }} implements Contracts\{{ class }}Contract
 
     }
 
-    public function update (int|string $id, array $inputs)
+    public function update ({{ model }} ${{ lc_model }}, array $inputs)
     {
 
     }
 
-    public function delete (int|string $id)
+    public function delete ({{ model }} ${{ lc_model }})
     {
 
     }

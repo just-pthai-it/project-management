@@ -41,7 +41,7 @@ class MakeServiceContractCommand extends GeneratorCommand
     {
         $stub                 = parent::replaceClass($stub, $name);
         $NameSpaceExplodedArr = explode('/', $this->argument('name'));
-        $model                = str_replace('Service', '', end($NameSpaceExplodedArr));
+        $model                = str_replace('ServiceContract', '', end($NameSpaceExplodedArr));
         $stub                 = str_replace('{{ model }}', $model, $stub);
         return str_replace('{{ lc_model }}', lcfirst($model), $stub);
     }

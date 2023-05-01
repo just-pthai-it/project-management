@@ -2,15 +2,17 @@
 
 namespace {{ namespace }};
 
+use App\Models\{{ model }};
+
 interface {{ class }}
 {
     public function list (array $inputs = []);
 
-    public function get (int|string $id);
+    public function get ({{ model }} ${{ lc_model }});
 
     public function store (array $inputs);
 
-    public function update (int|string $id, array $inputs);
+    public function update ({{ model }} ${{ lc_model }}, array $inputs);
 
-    public function delete (int|string $id);
+    public function delete ({{ model }} ${{ lc_model }});
 }
