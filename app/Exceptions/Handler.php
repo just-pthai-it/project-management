@@ -3,10 +3,13 @@
 namespace App\Exceptions;
 
 use App\Helpers\CusResponse;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Throwable;
+use function App\Helpers\failedResponse;
 
 class Handler extends ExceptionHandler
 {
@@ -46,12 +49,28 @@ class Handler extends ExceptionHandler
      */
     public function register () : void
     {
+        $this->renderable(function (AuthenticationException $e)
+        {
+            return CusResponse::failed([], $e->getMessage(), Response::HTTP_UNAUTHORIZED);
+        });
+
         $this->renderable(function (ValidationException $exception)
         {
             return CusResponse::failed($exception->validator->errors()->messages(),
                                        $exception->getMessage(), Response::HTTP_BAD_REQUEST);
 
         });
+
+        $this->renderable(function (AccessDeniedHttpException $e)
+        {
+            return CusResponse::failed([], $e->getMessage(), Response::HTTP_FORBIDDEN);
+        });
+
+        $this->renderable(function (Throwable $e)
+        {
+            return CusResponse::failed([], $e->getMessage());
+        });
+
         $this->reportable(function (Throwable $e)
         {
             //

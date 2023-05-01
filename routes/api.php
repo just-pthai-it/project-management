@@ -35,7 +35,21 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
 });
 
+
 Route::get('test', function ()
 {
-    return 1111;
+  $a           = [];
+        $a['tasks as testtt'] = function ($query)
+        {
+
+            $query->where('status_id', '=', 1);
+        };
+
+        dump($a);
+        dump([
+                 'tasks as test' => function ($query)
+                 {
+                     $query->where('status_id', '=', 1);
+                 },
+             ]);
 });

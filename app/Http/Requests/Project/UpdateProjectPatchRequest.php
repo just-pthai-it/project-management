@@ -11,9 +11,9 @@ class UpdateProjectPatchRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize () : bool
     {
-        return true;
+        return $this->user()->tokenCan('project:update');
     }
 
     /**
@@ -21,10 +21,18 @@ class UpdateProjectPatchRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules () : array
     {
         return [
-            //
+            'name'           => ['sometimes', 'required', 'string'],
+            'customer_name'  => ['sometimes', 'required', 'string'],
+            'code'           => ['sometimes', 'required', 'string'],
+            'starts_at'      => ['sometimes', 'required', 'date'],
+            'ends_at'        => ['sometimes', 'required', 'date', 'after_or_equal:starts_at'],
+            'duration'       => ['sometimes', 'required', 'integer'],
+            'status_id'      => ['sometimes', 'required', 'integer'],
+            'pending_reason' => ['sometimes', 'required', 'string'],
+            'user_ids'       => ['sometimes', 'required', 'array'],
         ];
     }
 }

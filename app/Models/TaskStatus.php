@@ -9,11 +9,11 @@ class TaskStatus extends Model
 {
     use HasFactory;
 
-    const STATUS_NOT_START = 0;
-    const STATUS_PENDING = 1;
-    const STATUS_PROGRESS = 2;
-    const STATUS_BEHIND_SCHEDULE = 3;
-    const STATUS_COMPLETE = 4;
+    const STATUS_NOT_START = 1;
+    const STATUS_PENDING = 2;
+    const STATUS_PROGRESS = 3;
+    const STATUS_BEHIND_SCHEDULE = 4;
+    const STATUS_COMPLETE = 5;
 
 
     const STATUSES = [

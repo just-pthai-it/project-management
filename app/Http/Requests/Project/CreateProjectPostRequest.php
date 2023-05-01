@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Project;
 
+use App\Models\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateProjectPostRequest extends FormRequest
@@ -11,9 +12,9 @@ class CreateProjectPostRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize () : bool
     {
-        return true;
+        return $this->user()->tokenCan('project:create');
     }
 
     /**
@@ -21,10 +22,18 @@ class CreateProjectPostRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules () : array
     {
         return [
-            //
+            'name'           => ['required', 'string'],
+            'customer_name'  => ['required', 'string'],
+            'code'           => ['required', 'string'],
+            'starts_at'      => ['required', 'date'],
+            'ends_at'        => ['required', 'date', 'after_or_equal:starts_at'],
+            'duration'       => ['required', 'integer'],
+            'status_id'      => ['required', 'integer'],
+            'pending_reason' => ['required_if:status_id,' . ProjectStatus::STATUS_PENDING, 'string'],
+            'user_ids'       => ['array'],
         ];
     }
 }
