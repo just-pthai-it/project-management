@@ -27,6 +27,7 @@ class RoleSeeder extends Seeder
             ['name' => 'Leader'],
             ['name' => 'Co-manager'],
             ['name' => 'Manager'],
+            ['name' => 'Human resource management']
         ];
 
         Role::query()->insert($roles);
