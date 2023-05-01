@@ -64,10 +64,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function store (array $inputs) : JsonResponse
     {
         $project = auth()->user()->projects()->create($inputs);
-        if (isset($inputs['user_ids']))
-        {
-            $project->users()->attach($inputs['user_ids']);
-        }
+        $project->users()->attach(array_unique([...($inputs['user_ids'] ?? []), auth()->id()]));
 
         return CusResponse::successful($project);
     }
