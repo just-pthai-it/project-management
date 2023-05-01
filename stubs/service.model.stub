@@ -18,7 +18,7 @@ class {{ class }} implements Contracts\{{ class }}Contract
 
     }
 
-    public function get (int|string $id, array $inputs = [])
+    public function get (int|string $id)
     {
 
     }
