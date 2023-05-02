@@ -14,7 +14,7 @@ class CreateProjectPostRequest extends FormRequest
      */
     public function authorize () : bool
     {
-        return $this->user()->tokenCan('project:create');
+        return true;
     }
 
     /**

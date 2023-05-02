@@ -13,7 +13,7 @@ class UpdateProjectPatchRequest extends FormRequest
      */
     public function authorize () : bool
     {
-        return $this->user()->tokenCan('project:update');
+        return true;
     }
 
     /**

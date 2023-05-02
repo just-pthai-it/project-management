@@ -18,14 +18,14 @@ class PermissionSeeder extends Seeder
         $permissionGroups = [
             'role'    => [
                 'role:view',
-                'role:list',
+                'role:view-any',
                 'role:create',
                 'role:update',
                 'role:delete',
             ],
             'user'    => [
                 'user_view',
-                'user:list',
+                'user:view-any',
                 'user:create',
                 'user:update',
                 'user:delete',
@@ -34,14 +34,14 @@ class PermissionSeeder extends Seeder
             ],
             'project' => [
                 'project:view',
-                'project:list',
+                'project:view-any',
                 'project:create',
                 'project:update',
                 'project:delete',
             ],
             'Task'    => [
                 'task:view',
-                'task:list',
+                'task:view-any',
                 'task:create',
                 'task:update',
                 'task:delete',

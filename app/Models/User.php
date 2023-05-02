@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -62,6 +63,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function isRoot () : bool
+    {
+       return $this->roles()->where('name', '=', Role::ROLE_ROOT_NAME)->exists();
+    }
+
     protected function permissions () : Attribute
     {
         $this->load(['roles:id', 'roles.permissions:id,name']);
@@ -75,6 +81,16 @@ class User extends Authenticatable
 
             return $permissions->unique()->all();
         });
+    }
+
+    public function projects () : HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function assignedProjects () : BelongsToMany
+    {
+        return $this->belongsToMany(Project::class)->withTimestamps();
     }
 
     public function roles () : BelongsToMany

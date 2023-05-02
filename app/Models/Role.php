@@ -10,6 +10,8 @@ class Role extends Model
 {
     use HasFactory;
 
+    const ROLE_ROOT_NAME = 'root';
+
     protected $fillable = [
         'name',
         'created_at',

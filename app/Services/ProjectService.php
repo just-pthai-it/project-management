@@ -5,11 +5,14 @@ namespace App\Services;
 use App\Helpers\CusResponse;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
+use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Repositories\Contracts\ProjectRepositoryContract;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProjectService implements Contracts\ProjectServiceContract
 {
@@ -24,17 +27,58 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         if (isset($inputs['page']))
         {
-            $withCountTasksQuery = $this->__generateQueryWithCountTasksByStatus();;
-            $projects = $this->projectRepository->paginate($inputs['per_page'] ?? 10, ['*'], [], [],
-                                                           [['with', ['status']], ['filter', $inputs],
-                                                            ['withCount', $withCountTasksQuery]]);
+            $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
+
+            if (auth()->user()->isRoot())
+            {
+                $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
+            }
+            else
+            {
+                $projects = $this->__paginateProjectByNonRootUser($inputs, $withCountTaskByStatusQuery);
+            }
+
             return (new ProjectCollection($projects))->response();
         }
         else
         {
-            $projects = $this->projectRepository->find(['id', 'name'], [], [], [], [['filter', $inputs]]);
+            if (auth()->user()->isRoot())
+            {
+                $projects = $this->__listByRootUser($inputs);
+            }
+            else
+            {
+                $projects = $this->__listByNonRootUser($inputs);
+            }
+
             return CusResponse::successful($projects);
         }
+    }
+
+    private function __paginateProjectByNonRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
+    {
+        return auth()->user()->assignedProjects()
+                     ->filter($inputs)
+                     ->with('status')->withCount($withCountTaskByStatusQuery)
+                     ->paginate($inputs['per_page'] ?? 10);
+
+    }
+
+    private function __paginateProjectByRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
+    {
+        return $this->projectRepository->paginate($inputs['per_page'] ?? 10, ['*'], [], [],
+                                                  [['with', ['status']], ['filter', $inputs],
+                                                   ['withCount', $withCountTaskByStatusQuery]]);
+    }
+
+    private function __listByRootUser (array $inputs) : Collection
+    {
+        return $this->projectRepository->find(['id', 'name'], [], [], [], [['filter', $inputs]]);
+    }
+
+    private function __listByNonRootUser (array $inputs) : Collection
+    {
+        return auth()->user()->assignedProjects()->filter($inputs)->get(['id', 'name']);
     }
 
     private function __generateQueryWithCountTasksByStatus () : array
@@ -51,10 +95,10 @@ class ProjectService implements Contracts\ProjectServiceContract
         return $withCountArr;
     }
 
-    public function get (int $id, array $inputs = []) : JsonResponse
+    public function get (Project $project, array $inputs = []) : JsonResponse
     {
-        $withCountTasksQuery = $this->__generateQueryWithCountTasksByStatus();;
-        $project = $this->projectRepository->findById($id, ['*'], [['withCount', $withCountTasksQuery]]);
+        $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
+        $project->loadCount($withCountTaskByStatusQuery);
         return (new ProjectResource($project))->response();
     }
 
@@ -69,18 +113,20 @@ class ProjectService implements Contracts\ProjectServiceContract
         return CusResponse::successful($project);
     }
 
-    public function update (int $id, array $inputs) : void
+    public function update (Project $project, array $inputs) : JsonResponse
     {
-        $this->projectRepository->updateById($id, $inputs);
+        $project->update($inputs);
         if (isset($inputs['user_ids']))
         {
-            $this->projectRepository->syncPivots($id, 'users', $inputs['user_ids']);
+            $project->users()->sync($inputs['user_ids']);
         }
+
+        return CusResponse::successfulWithNoData();
     }
 
-    public function delete (int $id) : JsonResponse
+    public function delete (Project $project) : JsonResponse
     {
-        $this->projectRepository->deleteById($id);
+        $project->delete();
         return CusResponse::successful();
     }
 }

@@ -4,10 +4,12 @@ namespace App\Exceptions;
 
 use App\Helpers\CusResponse;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use function App\Helpers\failedResponse;
 
@@ -64,6 +66,16 @@ class Handler extends ExceptionHandler
         $this->renderable(function (AccessDeniedHttpException $e)
         {
             return CusResponse::failed([], $e->getMessage(), Response::HTTP_FORBIDDEN);
+        });
+
+        $this->renderable(function (NotFoundHttpException $e)
+        {
+            if ($e->getPrevious() instanceof ModelNotFoundException)
+            {
+                return CusResponse::failed([], 'Resource not found', Response::HTTP_NOT_FOUND);
+            }
+
+            return CusResponse::failed([], 'API not found', Response::HTTP_NOT_FOUND);
         });
 
         $this->renderable(function (Throwable $e)
