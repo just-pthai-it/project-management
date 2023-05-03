@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Helpers\Constants;
+use App\Http\Resources\User\UserCollection;
 use App\Http\Resources\User\UserResource;
-use App\Http\Resources\UserCollection;
 use App\Repositories\Contracts\UserRepositoryContract;
 use Illuminate\Http\JsonResponse;
 

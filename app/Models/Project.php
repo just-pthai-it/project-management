@@ -37,6 +37,11 @@ class Project extends Model
         'progress'  => 0,
     ];
 
+    protected $casts = [
+        'starts_at' => 'datetime:Y-m-d',
+        'ends_at'   => 'datetime:Y-m-d',
+    ];
+
     private array $filterable = [
         'id',
         'name',

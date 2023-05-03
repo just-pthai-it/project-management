@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,23 +34,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::apiResource('projects', ProjectController::class);
     Route::apiResource('projects.tasks', ProjectTaskController::class);
 
-});
-
-
-Route::get('test', function ()
-{
-  $a           = [];
-        $a['tasks as testtt'] = function ($query)
-        {
-
-            $query->where('status_id', '=', 1);
-        };
-
-        dump($a);
-        dump([
-                 'tasks as test' => function ($query)
-                 {
-                     $query->where('status_id', '=', 1);
-                 },
-             ]);
+    Route::post('tasks/{task}/attach-files', [TaskController::class, 'attachFiles']);
+    Route::delete('tasks/{task}/detach-file/{file}', [TaskController::class, 'detachFile']);
+    Route::apiResource('tasks', TaskController::class, ['only' => ['index']]);
 });

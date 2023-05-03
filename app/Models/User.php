@@ -50,6 +50,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        'pivot',
         'password',
         'remember_token',
     ];
@@ -91,6 +92,16 @@ class User extends Authenticatable
     public function assignedProjects () : BelongsToMany
     {
         return $this->belongsToMany(Project::class)->withTimestamps();
+    }
+
+    public function tasks () : HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function assignedTasks () : BelongsToMany
+    {
+        return $this->belongsToMany(Task::class)->withTimestamps();
     }
 
     public function roles () : BelongsToMany

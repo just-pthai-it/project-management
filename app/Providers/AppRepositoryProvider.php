@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\FileRepositoryContract;
 use App\Repositories\Contracts\ProjectRepositoryContract;
+use App\Repositories\Contracts\TaskRepositoryContract;
 use App\Repositories\Contracts\UserRepositoryContract;
+use App\Repositories\FileRepository;
 use App\Repositories\ProjectRepository;
+use App\Repositories\TaskRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,6 +17,8 @@ class AppRepositoryProvider extends ServiceProvider
     public array $bindings = [
         UserRepositoryContract::class    => UserRepository::class,
         ProjectRepositoryContract::class => ProjectRepository::class,
+        FileRepositoryContract::class    => FileRepository::class,
+        TaskRepositoryContract::class    => TaskRepository::class,
     ];
 
     /**

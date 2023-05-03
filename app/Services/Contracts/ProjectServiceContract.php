@@ -3,6 +3,7 @@
 namespace App\Services\Contracts;
 
 use App\Models\Project;
+use App\Models\Task;
 
 interface ProjectServiceContract
 {
@@ -15,4 +16,12 @@ interface ProjectServiceContract
     public function update (Project $project, array $inputs);
 
     public function delete (Project $project);
+
+    public function listTasks (Project $project, array $inputs = []);
+
+    public function getTask (Project $project, Task $task);
+
+    public function storeTask (Project $project, array $inputs);
+
+    public function updateTask (Project $project, Task $task, array $inputs);
 }

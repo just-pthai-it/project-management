@@ -15,6 +15,13 @@ class CusResponse
                                 $httpStatusCode);
     }
 
+    public static function createSuccessful ($data = [], string $message = '', int $httpStatusCode = Response::HTTP_CREATED) : JsonResponse
+    {
+        return response()->json(['data'    => $data,
+                                 'message' => empty($message) ? 'Successful' : $message,],
+                                $httpStatusCode);
+    }
+
     public static function successfulWithNoData ($data = [], string $message = '', int $httpStatusCode = Response::HTTP_NO_CONTENT) : JsonResponse
     {
         return response()->json(['data'    => $data,

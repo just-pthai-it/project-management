@@ -2,27 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Task\AttachFilesPostRequest;
+use App\Models\File;
+use App\Models\Task;
+use App\Services\Contracts\TaskServiceContract;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    private TaskServiceContract $taskService;
+
+    /**
+     * @param TaskServiceContract $taskService
+     */
+    public function __construct (TaskServiceContract $taskService)
+    {
+        $this->authorizeResource(Task::class, 'task');
+        $this->taskService = $taskService;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index()
+    public function index (Request $request) : JsonResponse
     {
-        //
+        return $this->taskService->list($request->all());
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store (Request $request)
     {
         //
     }
@@ -30,10 +48,10 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show ($id)
     {
         //
     }
@@ -41,11 +59,11 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update (Request $request, $id)
     {
         //
     }
@@ -53,11 +71,29 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy ($id)
     {
         //
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function attachFiles (AttachFilesPostRequest $request, Task $task)
+    {
+        $this->authorize('attach-files', $task);
+        return $this->taskService->attachFiles($task, $request->validated());
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function detachFile (Task $task, File $file)
+    {
+        $this->authorize('detach-file', $task);
+        return $this->taskService->detachFile($task, $file);
     }
 }

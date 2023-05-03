@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Task;
 
+use App\Models\TaskStatus;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateTaskPostRequest extends FormRequest
@@ -11,7 +12,7 @@ class CreateTaskPostRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize () : bool
     {
         return true;
     }
@@ -21,10 +22,35 @@ class CreateTaskPostRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules () : array
     {
         return [
-            'start_at' => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP']
+            'name'                       => ['required', 'string'],
+            'description'                => ['required', 'string'],
+            'starts_at'                  => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
+            'ends_at'                    => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
+            'duration'                   => ['required', 'integer'],
+            'status_id'                  => ['sometimes', 'required', 'integer'],
+            'pending_reason'             => ['required_if:status_id,' . TaskStatus::STATUS_PENDING, 'string'],
+            'user_ids'                   => ['sometimes', 'required', 'array'],
+            'parent_id'                  => ['sometimes', 'required', 'integer'],
         ];
+    }
+
+    public function validated ($key = null, $default = null)
+    {
+        $inputs            = parent::validated($key, $default);
+        $inputs['user_id'] = auth()->id();
+
+        if (isset($inputs['user_ids']))
+        {
+            $inputs['user_ids'] = array_unique(array_merge($inputs['user_ids'], [auth()->id()]));
+        }
+        else
+        {
+            $inputs['user_ids'] = [auth()->id()];
+        }
+
+        return $inputs;
     }
 }
