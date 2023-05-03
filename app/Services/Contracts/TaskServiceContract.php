@@ -4,6 +4,7 @@ namespace App\Services\Contracts;
 
 use App\Models\File;
 use App\Models\Task;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface TaskServiceContract
 {
@@ -17,7 +18,11 @@ interface TaskServiceContract
 
     public function delete (int|string $id);
 
-    public function attachFiles (Task $task, array $inputs);
+    public function attachFiles (Task $task, array $attachments);
 
     public function detachFile (Task $task, File $file);
+
+    public function submitReport (Task $task, UploadedFile $uploadedFile);
+
+    public function deleteReport (Task $task);
 }

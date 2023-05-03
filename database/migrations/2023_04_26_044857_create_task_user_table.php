@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedMediumInteger('id')->autoIncrement();
             $table->unsignedMediumInteger('task_id');
             $table->unsignedMediumInteger('user_id');
-            $table->string('report')->nullable();
             $table->timestamps();
 
             $table->unique(['task_id', 'user_id']);

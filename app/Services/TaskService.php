@@ -8,8 +8,8 @@ use App\Models\File;
 use App\Models\Task;
 use App\Repositories\Contracts\TaskRepositoryContract;
 use App\Services\Contracts\FileServiceContract;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class TaskService implements Contracts\TaskServiceContract
 {
@@ -41,17 +41,11 @@ class TaskService implements Contracts\TaskServiceContract
 
     public function delete (int|string $id) {}
 
-    public function attachFiles (Task $task, array $inputs) : JsonResponse
+    public function attachFiles (Task $task, array $attachments) : JsonResponse
     {
-        $filesInfo = $this->__uploadAttachFiles($inputs['attachments'] ?? [], "task_{$task->id}/attach_files");
+        $filesInfo = $this->fileService->putUploadedFilesAndKeepName($attachments, "task_{$task->id}/attach_files");
         $files     = $this->__storeFiles($task, $filesInfo);
         return CusResponse::createSuccessful($files);
-    }
-
-
-    private function __uploadAttachFiles (array $files, string $path = '') : array
-    {
-        return $this->fileService->putUploadedFilesAndKeepName($files, $path);
     }
 
     private function __storeFiles (Task $task, array $filesInfo) : array
@@ -67,18 +61,33 @@ class TaskService implements Contracts\TaskServiceContract
 
     public function detachFile (Task $task, File $file) : JsonResponse
     {
-        $this->__deleteUploadedFile($file->file_path, $file->disk);
-        $this->__deleteFile($file);
+        $this->fileService->deleteFile($file->file_path, $file->disk);
+        $file->delete();
         return CusResponse::successfulWithNoData();
     }
 
-    private function __deleteUploadedFile (string $filePath, string $disk) : void
+    public function submitReport (Task $task, UploadedFile $uploadedFile) : JsonResponse
     {
-        $this->fileService->deleteFile($filePath, $disk);
+        $taskUserPair = $task->taskUserPairs()->where('user_id', '=', auth()->id())->first();
+        $file         = $taskUserPair->file;
+        if (!is_null($file))
+        {
+            $this->fileService->deleteFile($file->file_path, $file->disk);
+            $file->delete();
+        }
+
+        $uploadFileInfo = $this->fileService->putUploadedFileAndKeepName($uploadedFile, "task_{$task->id}/reports");
+        $taskUserPair->file()->create($uploadFileInfo);
+
+        return CusResponse::successfulWithNoData();
     }
 
-    private function __deleteFile (File $file) : void
+    public function deleteReport (Task $task) : JsonResponse
     {
+        $taskUserPair = $task->taskUserPairs()->where('user_id', '=', auth()->id())->first();
+        $file = $taskUserPair->file;
+        $this->fileService->deleteFile($file->file_path, $file->disk);
         $file->delete();
+        return CusResponse::successfulWithNoData();
     }
 }

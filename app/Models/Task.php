@@ -78,6 +78,11 @@ class Task extends Model
         return $this->hasMany(Task::class, 'parent_id', 'id');
     }
 
+    public function taskUserPairs () : HasMany
+    {
+        return $this->hasMany(TaskUser::class);
+    }
+
 //    public function constraintTasks ()
 //    {
 //        return $this->belongsToMany(Task::class, 'task_constraints', '')

@@ -10,7 +10,6 @@ use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;
 use App\Repositories\Contracts\ProjectRepositoryContract;
-use App\Services\Contracts\FileServiceContract;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,13 +19,11 @@ use Illuminate\Support\Arr;
 
 class ProjectService implements Contracts\ProjectServiceContract
 {
-    private FileServiceContract $fileService;
     private ProjectRepositoryContract $projectRepository;
 
-    public function __construct (ProjectRepositoryContract $projectRepository, Contracts\FileServiceContract $fileService)
+    public function __construct (ProjectRepositoryContract $projectRepository)
     {
         $this->projectRepository = $projectRepository;
-        $this->fileService       = $fileService;
     }
 
     public function list (array $inputs = []) : JsonResponse
@@ -146,7 +143,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function getTask (Project $project, Task $task) : JsonResponse
     {
         $task->project = $project;
-        $task->load(['status', 'files:id,name,url,fileable_type,fileable_id']);
+        $task->load(['status', 'files:id,name,url,fileable_type,fileable_id', 'taskUserPairs:id,task_id', 'taskUserPairs.file']);
         return CusResponse::successful($task);
     }
 
@@ -155,23 +152,8 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task = $project->tasks()->create($inputs);
         $task->users()->attach($inputs['user_ids']);
         $task->project = $project;
-//        $filesInfo = $this->__uploadAttachFiles($inputs['attach_files'] ?? [], "task_{$task->id}/attach_files");
-//        $this->__storeFiles($task, $filesInfo);
         $this->__updateProjectStartEndAccordingToTask($project, $task);
         return CusResponse::createSuccessful(['id' => $task->id]);
-    }
-
-    private function __uploadAttachFiles (array $files, string $path = '') : array
-    {
-        return $this->fileService->putUploadedFiles($files, $path);
-    }
-
-    private function __storeFiles (Task $task, array $filesInfo) : void
-    {
-        foreach ($filesInfo as $fileInfo)
-        {
-            $task->files()->create($fileInfo);
-        }
     }
 
     private function __updateProjectStartEndAccordingToTask (Project $project, Task $task) : void

@@ -98,8 +98,13 @@ class TaskController extends Controller
         return $this->taskService->detachFile($task, $file);
     }
 
-    public function submitReport (SubmitReportPostRequest $request, Task $task)
+    public function submitReport (SubmitReportPostRequest $request, Task $task) : JsonResponse
     {
-        
+        return $this->taskService->submitReport($task, $request->file('report'));
+    }
+
+    public function destroyReport (Task $task) : JsonResponse
+    {
+        return $this->taskService->deleteReport($task);
     }
 }
