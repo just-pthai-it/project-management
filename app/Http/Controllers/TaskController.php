@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Task\AttachFilesPostRequest;
+use App\Http\Requests\Task\SubmitReportPostRequest;
 use App\Models\File;
 use App\Models\Task;
 use App\Services\Contracts\TaskServiceContract;
@@ -95,5 +96,10 @@ class TaskController extends Controller
     {
         $this->authorize('detach-file', $task);
         return $this->taskService->detachFile($task, $file);
+    }
+
+    public function submitReport (SubmitReportPostRequest $request, Task $task)
+    {
+        
     }
 }

@@ -66,22 +66,19 @@ class User extends Authenticatable
 
     public function isRoot () : bool
     {
-       return $this->roles()->where('name', '=', Role::ROLE_ROOT_NAME)->exists();
+        return $this->roles()->where('name', '=', Role::ROLE_ROOT_NAME)->exists();
     }
 
-    protected function permissions () : Attribute
+    public function permissions () : array
     {
         $this->load(['roles:id', 'roles.permissions:id,name']);
-        return Attribute::get(function ()
+        $permissions = collect();
+        foreach ($this->roles as $role)
         {
-            $permissions = collect();
-            foreach ($this->roles as $role)
-            {
-                $permissions->push(...$role->permissions->pluck('name')->all());
-            }
+            $permissions->push(...$role->permissions->pluck('name')->all());
+        }
 
-            return $permissions->unique()->all();
-        });
+        return $permissions->unique()->all();
     }
 
     public function projects () : HasMany
