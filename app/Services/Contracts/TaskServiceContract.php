@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface TaskServiceContract
 {
+    public function search (array $inputs = []);
+
     public function list (array $inputs = []);
 
     public function get (int|string $id, array $inputs = []);

@@ -7,6 +7,7 @@ use App\Http\Requests\Task\UpdateTaskPatchRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\Contracts\ProjectServiceContract;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -22,6 +23,15 @@ class ProjectTaskController extends Controller
     {
         $this->authorizeResource(Task::class, 'task');
         $this->projectService = $projectService;
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function search (Request $request, Project $project) : JsonResponse
+    {
+        $this->authorize('search', Task::class);
+        return $this->projectService->searchTasks($project, $request->all());
     }
 
     /**

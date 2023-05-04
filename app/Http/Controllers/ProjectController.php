@@ -24,6 +24,12 @@ class ProjectController extends Controller
         $this->projectService = $projectService;
     }
 
+    public function search (Request $request) : JsonResponse
+    {
+        $this->authorize('search', Project::class);
+        return $this->projectService->search($request->all());
+    }
+
     /**
      * Display a listing of the resource.
      *

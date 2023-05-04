@@ -16,6 +16,11 @@ class ProjectPolicy
         return $user->isRoot() ? true : null;
     }
 
+    public function search (User $user) : bool
+    {
+        return $user->tokenCan('project:view-any');
+    }
+
     /**
      * Determine whether the user can view any models.
      *

@@ -12,6 +12,7 @@ use App\Models\File;
 use App\Models\Task;
 use App\Repositories\Contracts\TaskRepositoryContract;
 use App\Services\Contracts\FileServiceContract;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -24,6 +25,12 @@ class TaskService implements Contracts\TaskServiceContract
     {
         $this->taskRepository = $taskRepository;
         $this->fileService    = $fileService;
+    }
+
+    public function search (array $inputs = []) : JsonResponse
+    {
+        $tasks = auth()->user()->assignedTasks()->filter($inputs)->get(['tasks.id', 'tasks.name', 'project_id']);
+        return CusResponse::successful($tasks);
     }
 
     public function list (array $inputs = []) : JsonResponse

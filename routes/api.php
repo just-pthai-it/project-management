@@ -34,14 +34,20 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
     Route::apiResource('users', UserController::class);
     Route::get('projects/{project}/history', [ProjectController::class, 'history']);
+    Route::get('projects/search', [ProjectController::class, 'search']);
     Route::apiResource('projects', ProjectController::class);
+
+
+    Route::get('projects/{project}/tasks/search', [ProjectTaskController::class, 'search']);
     Route::apiResource('projects.tasks', ProjectTaskController::class);
     Route::post('tasks/{task}/attach-files', [TaskController::class, 'attachFiles']);
     Route::delete('tasks/{task}/detach-file/{file}', [TaskController::class, 'detachFile']);
     Route::post('tasks/{task}/submit-report', [TaskController::class, 'submitReport']);
     Route::delete('tasks/{task}/delete-report', [TaskController::class, 'destroyReport']);
     Route::get('tasks/{task}/history', [TaskController::class, 'history']);
+    Route::get('tasks/search', [TaskController::class, 'search']);
     Route::apiResource('tasks', TaskController::class)->only(['index']);
+
     Route::apiResource('tasks.comments', TaskCommentController::class)->only(['store']);
     Route::get('comments/{comment}/replies', [CommentController::class, 'listReplies']);
     Route::apiResource('comments', CommentController::class)->only(['update', 'destroy']);

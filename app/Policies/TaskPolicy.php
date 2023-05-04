@@ -11,10 +11,15 @@ class TaskPolicy
 {
     use HandlesAuthorization;
 
-//    public function before (User $user, $ability) : ?bool
-//    {
-//        return $user->isRoot() ? true : null;
-//    }
+    public function before (User $user, $ability) : ?bool
+    {
+        return $user->isRoot() ? true : null;
+    }
+
+    public function search (User $user) : bool
+    {
+        return $user->tokenCan('task:view-any');
+    }
 
     /**
      * Determine whether the user can view any models.

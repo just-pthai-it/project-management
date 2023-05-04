@@ -25,6 +25,15 @@ class TaskController extends Controller
     }
 
     /**
+     * @throws AuthorizationException
+     */
+    public function search (Request $request) : JsonResponse
+    {
+        $this->authorize('search', Task::class);
+        return $this->taskService->search($request->all());
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request

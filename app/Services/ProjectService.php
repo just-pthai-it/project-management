@@ -29,36 +29,45 @@ class ProjectService implements Contracts\ProjectServiceContract
         $this->projectRepository = $projectRepository;
     }
 
-    public function list (array $inputs = []) : JsonResponse
+    public function search (array $inputs = []) : JsonResponse
     {
-        if (isset($inputs['page']))
+        if (auth()->user()->isRoot())
         {
-            $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
-
-            if (auth()->user()->isRoot())
-            {
-                $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
-            }
-            else
-            {
-                $projects = $this->__paginateProjectByNonRootUser($inputs, $withCountTaskByStatusQuery);
-            }
-
-            return (new ProjectCollection($projects))->response();
+            $projects = $this->__listByRootUser($inputs);
         }
         else
         {
-            if (auth()->user()->isRoot())
-            {
-                $projects = $this->__listByRootUser($inputs);
-            }
-            else
-            {
-                $projects = $this->__listByNonRootUser($inputs);
-            }
-
-            return CusResponse::successful($projects);
+            $projects = $this->__listByNonRootUser($inputs);
         }
+
+        return CusResponse::successful($projects);
+    }
+
+    private function __listByRootUser (array $inputs) : Collection
+    {
+        return $this->projectRepository->find(['id', 'name'], [], [], [], [['filter', $inputs]]);
+    }
+
+    private function __listByNonRootUser (array $inputs) : Collection
+    {
+        return auth()->user()->assignedProjects()->filter($inputs)->get(['projects.id', 'projects.name']);
+    }
+
+    public function list (array $inputs = []) : JsonResponse
+    {
+        $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
+
+        if (auth()->user()->isRoot())
+        {
+            $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
+        }
+        else
+        {
+            $projects = $this->__paginateProjectByNonRootUser($inputs, $withCountTaskByStatusQuery);
+        }
+
+        return (new ProjectCollection($projects))->response();
+
     }
 
     private function __paginateProjectByNonRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
@@ -75,16 +84,6 @@ class ProjectService implements Contracts\ProjectServiceContract
         return $this->projectRepository->paginate($inputs['per_page'] ?? 10, ['*'], [], [],
                                                   [['with', ['status']], ['filter', $inputs],
                                                    ['withCount', $withCountTaskByStatusQuery]]);
-    }
-
-    private function __listByRootUser (array $inputs) : Collection
-    {
-        return $this->projectRepository->find(['id', 'name'], [], [], [], [['filter', $inputs]]);
-    }
-
-    private function __listByNonRootUser (array $inputs) : Collection
-    {
-        return auth()->user()->assignedProjects()->filter($inputs)->get(['id', 'name']);
     }
 
     private function __generateQueryWithCountTasksByStatus () : array
@@ -136,6 +135,12 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $project->delete();
         return CusResponse::successful();
+    }
+
+    public function searchTasks (Project $project, array $inputs = []) : JsonResponse
+    {
+        $tasks = $project->tasks()->filter($inputs)->get(['id', 'name', 'project_id']);
+        return CusResponse::successful($tasks);
     }
 
     public function listTasks (Project $project, array $inputs = []) : JsonResponse
