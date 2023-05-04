@@ -11,11 +11,18 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up () : void
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
+        Schema::create('comments', function (Blueprint $table)
+        {
+            $table->unsignedMediumInteger('id')->autoIncrement();
+            $table->morphs('commentable');
+            $table->string('content');
+            $table->unsignedMediumInteger('user_id');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -24,7 +31,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down () : void
     {
         Schema::dropIfExists('comments');
     }

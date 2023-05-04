@@ -86,7 +86,7 @@ class TaskController extends Controller
     public function attachFiles (AttachFilesPostRequest $request, Task $task)
     {
         $this->authorize('attach-files', $task);
-        return $this->taskService->attachFiles($task, $request->validated());
+        return $this->taskService->attachFiles($task, $request->attachments);
     }
 
     /**

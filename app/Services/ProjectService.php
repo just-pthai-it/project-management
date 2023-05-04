@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Events\ObjectCreated;
+use App\Events\ObjectUpdated;
 use App\Helpers\CusResponse;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\Task\TaskCollection;
+use App\Jobs\UpdateActivityLog;
 use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;
@@ -112,16 +115,19 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $project = auth()->user()->projects()->create($inputs);
         $project->users()->attach($inputs['user_ids']);
+        event(new ObjectCreated($project, auth()->user()));
         return CusResponse::successful($project);
     }
 
     public function update (Project $project, array $inputs) : JsonResponse
     {
+        $oldData = $project->getOriginal();
         $project->update($inputs);
         if (isset($inputs['user_ids']))
         {
             $project->users()->sync($inputs['user_ids']);
         }
+        event(new ObjectUpdated($project, auth()->user(), $oldData));
 
         return CusResponse::successfulWithNoData();
     }
@@ -153,6 +159,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task->users()->attach($inputs['user_ids']);
         $task->project = $project;
         $this->__updateProjectStartEndAccordingToTask($project, $task);
+        event(new ObjectCreated($task, auth()->user()));
         return CusResponse::createSuccessful(['id' => $task->id]);
     }
 
@@ -167,8 +174,10 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function updateTask (Project $project, Task $task, array $inputs) : JsonResponse
     {
+        $oldData = $task->getOriginal();
         $task->update($inputs);
         $this->__updateProjectStartEndAccordingToTask($project, $task);
+        event(new ObjectUpdated($task, auth()->user(), $oldData));
         return CusResponse::successfulWithNoData();
     }
 }

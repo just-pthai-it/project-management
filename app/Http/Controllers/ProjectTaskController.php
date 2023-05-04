@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Task\CreateTaskPostRequest;
+use App\Http\Requests\Task\UpdateTaskPatchRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\Contracts\ProjectServiceContract;
@@ -62,13 +63,14 @@ class ProjectTaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int     $id
-     * @return Response
+     * @param UpdateTaskPatchRequest $request
+     * @param Project                $project
+     * @param Task                   $task
+     * @return JsonResponse
      */
-    public function update (Request $request, $id)
+    public function update (UpdateTaskPatchRequest $request, Project $project, Task $task) : JsonResponse
     {
-        //
+//        return $this->projectService->updateTask($project, $task, $request->validated());
     }
 
     /**

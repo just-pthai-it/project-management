@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\ObjectResourceUpdated;
 use App\Helpers\CusResponse;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\File;
@@ -45,6 +46,7 @@ class TaskService implements Contracts\TaskServiceContract
     {
         $filesInfo = $this->fileService->putUploadedFilesAndKeepName($attachments, "task_{$task->id}/attach_files");
         $files     = $this->__storeFiles($task, $filesInfo);
+        event(new ObjectResourceUpdated($task, auth()->user(), 'attached', 'files'));
         return CusResponse::createSuccessful($files);
     }
 
@@ -63,6 +65,7 @@ class TaskService implements Contracts\TaskServiceContract
     {
         $this->fileService->deleteFile($file->file_path, $file->disk);
         $file->delete();
+        event(new ObjectResourceUpdated($task, auth()->user(), 'detached', 'files', 'from'));
         return CusResponse::successfulWithNoData();
     }
 
@@ -78,6 +81,7 @@ class TaskService implements Contracts\TaskServiceContract
 
         $uploadFileInfo = $this->fileService->putUploadedFileAndKeepName($uploadedFile, "task_{$task->id}/reports");
         $taskUserPair->file()->create($uploadFileInfo);
+        event(new ObjectResourceUpdated($task, auth()->user(), 'submitted', 'a report'));
 
         return CusResponse::successfulWithNoData();
     }
@@ -85,9 +89,11 @@ class TaskService implements Contracts\TaskServiceContract
     public function deleteReport (Task $task) : JsonResponse
     {
         $taskUserPair = $task->taskUserPairs()->where('user_id', '=', auth()->id())->first();
-        $file = $taskUserPair->file;
+        $file         = $taskUserPair->file;
         $this->fileService->deleteFile($file->file_path, $file->disk);
         $file->delete();
+        event(new ObjectResourceUpdated($task, auth()->user(), 'removed', 'report', 'from'));
+
         return CusResponse::successfulWithNoData();
     }
 }

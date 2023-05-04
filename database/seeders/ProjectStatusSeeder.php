@@ -22,7 +22,7 @@ class ProjectStatusSeeder extends Seeder
                 'is_permanent' => 1,
             ],
             [
-                'name'         => ProjectStatus::STATUSES[ProjectStatus::STATUS_PROGRESS],
+                'name'         => ProjectStatus::STATUSES[ProjectStatus::STATUS_IN_PROGRESS],
                 'color'        => '#61C376',
                 'is_permanent' => 1,
 

@@ -22,7 +22,7 @@ class TaskStatusSeeder extends Seeder
                 'is_permanent' => 1,
             ],
             [
-                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_PROGRESS],
+                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_IN_PROGRESS],
                 'color'        => '#61C376',
                 'is_permanent' => 1,
             ],

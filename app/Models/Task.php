@@ -83,8 +83,8 @@ class Task extends Model
         return $this->hasMany(TaskUser::class);
     }
 
-//    public function constraintTasks ()
-//    {
-//        return $this->belongsToMany(Task::class, 'task_constraints', '')
-//    }
+    public function activityLogs () : MorphMany
+    {
+        return $this->morphMany(ActivityLog::class, 'objectable');
+    }
 }
