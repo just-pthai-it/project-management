@@ -15,4 +15,6 @@ interface CommentServiceContract
     public function update (Comment $comment, array $inputs);
 
     public function delete (Comment $comment);
+
+    public function listReplies (Comment $comment);
 }

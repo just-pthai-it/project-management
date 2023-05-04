@@ -76,4 +76,9 @@ class CommentController extends Controller
     {
         return $this->commentService->delete($comment);
     }
+
+    public function listReplies (Comment $comment) : JsonResponse
+    {
+        return $this->commentService->listReplies($comment);
+    }
 }
