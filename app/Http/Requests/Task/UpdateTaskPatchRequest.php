@@ -25,14 +25,15 @@ class UpdateTaskPatchRequest extends FormRequest
     public function rules () : array
     {
         return [
-            'name'           => ['sometimes', 'required', 'string'],
-            'description'    => ['sometimes', 'required', 'string'],
-            'starts_at'      => ['sometimes', 'required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
-            'ends_at'        => ['sometimes', 'required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
-            'duration'       => ['sometimes', 'required', 'integer'],
-            'status_id'      => ['sometimes', 'required', 'integer'],
-            'pending_reason' => ['required_if:status_id,' . TaskStatus::STATUS_PENDING, 'string'],
-            'user_ids'       => ['sometimes', 'required', 'array'],
+            'name'                => ['sometimes', 'required', 'string'],
+            'description'         => ['sometimes', 'required', 'string'],
+            'starts_at'           => ['sometimes', 'required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
+            'ends_at'             => ['sometimes', 'required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
+            'duration'            => ['sometimes', 'required', 'integer'],
+            'status_id'           => ['sometimes', 'required', 'integer'],
+            'pending_reason'      => ['required_if:status_id,' . TaskStatus::STATUS_PENDING, 'string'],
+            'assigned_user_ids'   => ['sometimes', 'required', 'array'],
+            'unassigned_user_ids' => ['sometimes', 'required', 'array'],
         ];
     }
 

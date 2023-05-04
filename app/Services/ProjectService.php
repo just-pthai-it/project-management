@@ -12,6 +12,7 @@ use App\Http\Resources\Project\Task\TaskCollection;
 use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;
+use App\Models\TaskStatus;
 use App\Repositories\Contracts\ProjectRepositoryContract;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -122,9 +123,13 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $oldData = $project->getOriginal();
         $project->update($inputs);
-        if (isset($inputs['user_ids']))
+        if (isset($inputs['assigned_user_ids']))
         {
-            $project->users()->sync($inputs['user_ids']);
+            $project->users()->attach($inputs['assigned_user_ids']);
+        }
+        if (isset($inputs['unassigned_user_ids']))
+        {
+            $project->users()->detach($inputs['unassigned_user_ids']);
         }
         event(new ObjectUpdated($project, auth()->user(), $oldData));
 
@@ -162,13 +167,25 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $task = $project->tasks()->create($inputs);
         $task->users()->attach($inputs['user_ids']);
-        $task->project = $project;
-        $this->__updateProjectStartEndAccordingToTask($project, $task);
+        $this->__updateProjectTimeAccordingToTask($project, $task);
+        $this->__updateProjectProgress($project, $task);
+        $project->save();
         event(new ObjectCreated($task, auth()->user()));
         return CusResponse::createSuccessful(['id' => $task->id]);
     }
 
-    private function __updateProjectStartEndAccordingToTask (Project $project, Task $task) : void
+    private function __updateProjectProgress (Project $project, Task $task) : void
+    {
+        if ($task->status_id == TaskStatus::STATUS_COMPLETE)
+        {
+            $completeTasksCount = $project->tasks()->where('status_id', '=', TaskStatus::STATUS_COMPLETE)->count();
+            $tasksCount         = $project->tasks()->where('status_id', '=', TaskStatus::STATUS_COMPLETE)->count();
+
+            $project->progress = $completeTasksCount / $tasksCount;
+        }
+    }
+
+    private function __updateProjectTimeAccordingToTask (Project $project, Task $task) : void
     {
         if ($task->ends_at->format('Y-m-d') > $project->ends_at->format('Y-m-d') ||
             $task->starts_at->format('Y-m-d') < $project->starts_at->format('Y-m-d'))
@@ -181,8 +198,13 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $oldData = $task->getOriginal();
         $task->update($inputs);
-        $this->__updateProjectStartEndAccordingToTask($project, $task);
+        $this->__updateProjectTimeAccordingToTask($project, $task);
+        if ($task->status_id == TaskStatus::STATUS_COMPLETE || $oldData['status_id'] == TaskStatus::STATUS_COMPLETE)
+        {
+            $this->__updateProjectProgress($project, $task);
+        }
         event(new ObjectUpdated($task, auth()->user(), $oldData));
+
         return CusResponse::successfulWithNoData();
     }
 
