@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\ObjectResourceUpdated;
 use App\Events\UserCommented;
 use App\Helpers\CusResponse;
+use App\Http\Resources\ActivityLog\ActivityLogResource;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\Comment;
 use App\Models\File;
@@ -121,5 +122,11 @@ class TaskService implements Contracts\TaskServiceContract
         }
 
         return CusResponse::createSuccessful(['id' => $comment->id]);
+    }
+
+    public function history (Task $task) : JsonResponse
+    {
+        $task->load(['activityLogs', 'activityLogs.comment']);
+        return ActivityLogResource::collection($task->activityLogs)->response();
     }
 }

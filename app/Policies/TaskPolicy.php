@@ -109,4 +109,10 @@ class TaskPolicy
     {
         return $user->tokenCan('task:create');
     }
+
+    public function history (User $user, Task $task) : bool
+    {
+        return $user->tokenCan('task:view') &&
+               $task->users()->where('users.id', '=', $user->id)->exists();
+    }
 }

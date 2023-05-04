@@ -100,4 +100,10 @@ class ProjectPolicy
     {
         //
     }
+
+    public function history (User $user, Project $project) : bool
+    {
+        return $user->tokenCan('project:view') &&
+               $project->users()->where('users.id', '=', $user->id)->exists();
+    }
 }

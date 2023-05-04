@@ -33,13 +33,14 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::get('me', [UserController::class, 'me']);
 
     Route::apiResource('users', UserController::class);
+    Route::get('projects/{project}/history', [ProjectController::class, 'history']);
     Route::apiResource('projects', ProjectController::class);
     Route::apiResource('projects.tasks', ProjectTaskController::class);
-
     Route::post('tasks/{task}/attach-files', [TaskController::class, 'attachFiles']);
     Route::delete('tasks/{task}/detach-file/{file}', [TaskController::class, 'detachFile']);
     Route::post('tasks/{task}/submit-report', [TaskController::class, 'submitReport']);
     Route::delete('tasks/{task}/delete-report', [TaskController::class, 'destroyReport']);
+    Route::get('tasks/{task}/history', [TaskController::class, 'history']);
     Route::apiResource('tasks', TaskController::class)->only(['index']);
     Route::apiResource('tasks.comments', TaskCommentController::class)->only(['store']);
     Route::apiResource('comments', CommentController::class)->only(['update', 'destroy']);

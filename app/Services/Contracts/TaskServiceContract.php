@@ -28,4 +28,6 @@ interface TaskServiceContract
 
     public function storeComment (Task $task, array $inputs);
 
+    public function history (Task $task);
+
 }

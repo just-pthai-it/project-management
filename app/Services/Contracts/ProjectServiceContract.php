@@ -24,4 +24,6 @@ interface ProjectServiceContract
     public function storeTask (Project $project, array $inputs);
 
     public function updateTask (Project $project, Task $task, array $inputs);
+
+    public function history (Project $project);
 }

@@ -107,4 +107,13 @@ class TaskController extends Controller
     {
         return $this->taskService->deleteReport($task);
     }
+
+        /**
+     * @throws AuthorizationException
+     */
+    public function history (Task $task) : JsonResponse
+    {
+        $this->authorize('history', $task);
+        return $this->taskService->history($task);
+    }
 }

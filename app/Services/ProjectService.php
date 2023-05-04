@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\ObjectCreated;
 use App\Events\ObjectUpdated;
 use App\Helpers\CusResponse;
+use App\Http\Resources\ActivityLog\ActivityLogResource;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\Task\TaskCollection;
@@ -178,5 +179,10 @@ class ProjectService implements Contracts\ProjectServiceContract
         $this->__updateProjectStartEndAccordingToTask($project, $task);
         event(new ObjectUpdated($task, auth()->user(), $oldData));
         return CusResponse::successfulWithNoData();
+    }
+
+    public function history (Project $project) : JsonResponse
+    {
+        return ActivityLogResource::collection($project->activityLogs)->response();
     }
 }

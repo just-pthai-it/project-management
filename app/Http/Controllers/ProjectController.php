@@ -6,6 +6,7 @@ use App\Http\Requests\Project\CreateProjectPostRequest;
 use App\Http\Requests\Project\UpdateProjectPatchRequest;
 use App\Models\Project;
 use App\Services\Contracts\ProjectServiceContract;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,5 +78,14 @@ class ProjectController extends Controller
     public function destroy (Project $project) : Response
     {
         return $this->projectService->delete($project);
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function history (Project $project) : JsonResponse
+    {
+        $this->authorize('history', $project);
+        return $this->projectService->history($project);
     }
 }
