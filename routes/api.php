@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
+use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -38,5 +40,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::delete('tasks/{task}/detach-file/{file}', [TaskController::class, 'detachFile']);
     Route::post('tasks/{task}/submit-report', [TaskController::class, 'submitReport']);
     Route::delete('tasks/{task}/delete-report', [TaskController::class, 'destroyReport']);
-    Route::apiResource('tasks', TaskController::class, ['only' => ['index']]);
+    Route::apiResource('tasks', TaskController::class)->only(['index']);
+    Route::apiResource('tasks.comments', TaskCommentController::class)->only(['store']);
+    Route::apiResource('comments', CommentController::class)->only(['update', 'destroy']);
 });

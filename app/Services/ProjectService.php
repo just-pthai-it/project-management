@@ -8,7 +8,6 @@ use App\Helpers\CusResponse;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\Task\TaskCollection;
-use App\Jobs\UpdateActivityLog;
 use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;

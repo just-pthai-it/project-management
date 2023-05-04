@@ -19,6 +19,7 @@ return new class extends Migration
             $table->morphs('commentable');
             $table->string('content');
             $table->unsignedMediumInteger('user_id');
+            $table->unsignedTinyInteger('deep_level');
             $table->timestamps();
             $table->softDeletes();
 

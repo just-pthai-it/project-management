@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Comment\CreateCommentPostRequest;
+use App\Models\Task;
+use App\Services\Contracts\TaskServiceContract;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class TaskCommentController extends Controller
+{
+    private TaskServiceContract $taskService;
+
+    /**
+     * @param TaskServiceContract $taskService
+     */
+    public function __construct (TaskServiceContract $taskService)
+    {
+        $this->taskService = $taskService;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index ()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param CreateCommentPostRequest $request
+     * @param Task                     $task
+     * @return JsonResponse
+     * @throws AuthorizationException
+     */
+    public function store (CreateCommentPostRequest $request, Task $task) : JsonResponse
+    {
+        $this->authorize('update', $task);
+        return $this->taskService->storeComment($task, $request->validated());
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Models\Task $task
+     * @return \Illuminate\Http\Response
+     */
+    public function show (Task $task)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Task         $task
+     * @return \Illuminate\Http\Response
+     */
+    public function update (Request $request, Task $task)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Models\Task $task
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy (Task $task)
+    {
+        //
+    }
+}

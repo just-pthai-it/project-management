@@ -25,4 +25,7 @@ interface TaskServiceContract
     public function submitReport (Task $task, UploadedFile $uploadedFile);
 
     public function deleteReport (Task $task);
+
+    public function storeComment (Task $task, array $inputs);
+
 }

@@ -96,6 +96,8 @@ class EventSubscriber
         }
         $data['description'] = Str::swap($descriptionProperties, ActivityLog::COMMENT_LOG_DESCRIPTION);
         $data['type_id']     = ActivityLog::OBJECT_UPDATE_LOG_TYPE_ID;
+        $data['name']        = 'update';
+        $data['user_id'] = $event->user->id;
         $data['comment_id']  = $event->commentId;
         $this->__updateActivityLog($event->object, $data);
     }
@@ -119,8 +121,8 @@ class EventSubscriber
 
         $data['description'] = Str::swap($descriptionProperties, ActivityLog::OBJECT_RESOURCE_UPDATE_LOG_DESCRIPTION);
         $data['type_id']     = ActivityLog::OBJECT_UPDATE_LOG_TYPE_ID;
-        $data['name']    = 'update';
-        $data['user_id'] = $event->user->id;
+        $data['name']        = 'update';
+        $data['user_id']     = $event->user->id;
         $this->__updateActivityLog($event->object, $data);
     }
 

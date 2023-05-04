@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Events\ObjectResourceUpdated;
+use App\Events\UserCommented;
 use App\Helpers\CusResponse;
 use App\Http\Resources\Task\TaskCollection;
+use App\Models\Comment;
 use App\Models\File;
 use App\Models\Task;
 use App\Repositories\Contracts\TaskRepositoryContract;
@@ -95,5 +97,29 @@ class TaskService implements Contracts\TaskServiceContract
         event(new ObjectResourceUpdated($task, auth()->user(), 'removed', 'report', 'from'));
 
         return CusResponse::successfulWithNoData();
+    }
+
+    public function storeComment (Task $task, array $inputs) : JsonResponse
+    {
+        if (isset($inputs['comment_id']))
+        {
+            $previousComment = Comment::query()->find($inputs['comment_id']);
+            if ($previousComment->deep_level == 1)
+            {
+                $comment = $previousComment->comments()->create($inputs + ['deep_level' => 2]);
+            }
+            else
+            {
+                $comment = $previousComment->replicate()->fill($inputs + ['deep_level' => 2]);
+                $comment->save();
+            }
+        }
+        else
+        {
+            $comment = $task->comments()->create($inputs + ['deep_level' => 1]);
+            event(new UserCommented($task, auth()->user(), $comment->id));
+        }
+
+        return CusResponse::createSuccessful(['id' => $comment->id]);
     }
 }

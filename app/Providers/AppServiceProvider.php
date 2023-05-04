@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Services\AuthenticationService;
+use App\Services\CommentService;
 use App\Services\Contracts\AuthenticationServiceContract;
+use App\Services\Contracts\CommentServiceContract;
 use App\Services\Contracts\FileServiceContract;
 use App\Services\Contracts\ProjectServiceContract;
 use App\Services\Contracts\TaskServiceContract;
@@ -22,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         ProjectServiceContract::class        => ProjectService::class,
         FileServiceContract::class           => FileService::class,
         TaskServiceContract::class           => TaskService::class,
+        CommentServiceContract::class        => CommentService::class,
     ];
 
     /**

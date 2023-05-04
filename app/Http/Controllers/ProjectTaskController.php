@@ -70,7 +70,7 @@ class ProjectTaskController extends Controller
      */
     public function update (UpdateTaskPatchRequest $request, Project $project, Task $task) : JsonResponse
     {
-//        return $this->projectService->updateTask($project, $task, $request->validated());
+        return $this->projectService->updateTask($project, $task, $request->validated());
     }
 
     /**

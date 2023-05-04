@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\CommentRepository;
+use App\Repositories\Contracts\CommentRepositoryContract;
 use App\Repositories\Contracts\FileRepositoryContract;
 use App\Repositories\Contracts\ProjectRepositoryContract;
 use App\Repositories\Contracts\TaskRepositoryContract;
@@ -19,6 +21,7 @@ class AppRepositoryProvider extends ServiceProvider
         ProjectRepositoryContract::class => ProjectRepository::class,
         FileRepositoryContract::class    => FileRepository::class,
         TaskRepositoryContract::class    => TaskRepository::class,
+        CommentRepositoryContract::class => CommentRepository::class,
     ];
 
     /**
