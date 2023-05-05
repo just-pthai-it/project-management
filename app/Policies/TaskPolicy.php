@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
+use mysql_xdevapi\Table;
 
 class TaskPolicy
 {
@@ -113,6 +114,11 @@ class TaskPolicy
     public function detachFile (User $user, Task $task) : bool
     {
         return $user->tokenCan('task:create');
+    }
+
+    public function report (User $user, Task $task) : bool
+    {
+        return $user->tokenCan('task:report');
     }
 
     public function history (User $user, Task $task) : bool

@@ -107,17 +107,25 @@ class TaskController extends Controller
         return $this->taskService->detachFile($task, $file);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function submitReport (SubmitReportPostRequest $request, Task $task) : JsonResponse
     {
+        $this->authorize('report', $task);
         return $this->taskService->submitReport($task, $request->file('report'));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroyReport (Task $task) : JsonResponse
     {
+        $this->authorize('report', $task);
         return $this->taskService->deleteReport($task);
     }
 
-        /**
+    /**
      * @throws AuthorizationException
      */
     public function history (Task $task) : JsonResponse
