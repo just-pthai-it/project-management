@@ -29,5 +29,7 @@ interface ProjectServiceContract
 
     public function updateTask (Project $project, Task $task, array $inputs);
 
+    public function deleteTask (Project $project, Task $task);
+
     public function history (Project $project);
 }

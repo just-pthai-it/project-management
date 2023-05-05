@@ -116,7 +116,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $project = auth()->user()->projects()->create($inputs);
         $project->users()->attach($inputs['user_ids']);
         event(new ObjectCreated($project, auth()->user()));
-        return CusResponse::successful($project);
+        return CusResponse::createSuccessful(['id' => $project->id]);
     }
 
     public function update (Project $project, array $inputs) : JsonResponse
@@ -198,6 +198,14 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $oldData = $task->getOriginal();
         $task->update($inputs);
+        if (isset($inputs['assigned_user_ids']))
+        {
+            $task->users()->attach($inputs['assigned_user_ids']);
+        }
+        if (isset($inputs['unassigned_user_ids']))
+        {
+            $task->users()->detach($inputs['unassigned_user_ids']);
+        }
         $this->__updateProjectTimeAccordingToTask($project, $task);
         if ($task->status_id == TaskStatus::STATUS_COMPLETE || $oldData['status_id'] == TaskStatus::STATUS_COMPLETE)
         {
@@ -205,6 +213,13 @@ class ProjectService implements Contracts\ProjectServiceContract
         }
         event(new ObjectUpdated($task, auth()->user(), $oldData));
 
+        return CusResponse::successfulWithNoData();
+    }
+
+    public function deleteTask (Project $project, Task $task) : JsonResponse
+    {
+        $this->__updateProjectProgress($project, $task);
+        $task->delete();
         return CusResponse::successfulWithNoData();
     }
 

@@ -86,11 +86,12 @@ class ProjectTaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return Response
+     * @param Project $project
+     * @param Task    $task
+     * @return JsonResponse
      */
-    public function destroy ($id)
+    public function destroy (Project $project, Task $task) : JsonResponse
     {
-        //
+        return $this->projectService->deleteTask($project, $task);
     }
 }

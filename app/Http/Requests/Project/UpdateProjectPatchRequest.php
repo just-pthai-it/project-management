@@ -24,15 +24,16 @@ class UpdateProjectPatchRequest extends FormRequest
     public function rules () : array
     {
         return [
-            'name'           => ['sometimes', 'required', 'string'],
-            'customer_name'  => ['sometimes', 'required', 'string'],
-            'code'           => ['sometimes', 'required', 'string'],
-            'starts_at'      => ['sometimes', 'required', 'date'],
-            'ends_at'        => ['sometimes', 'required', 'date', 'after_or_equal:starts_at'],
-            'duration'       => ['sometimes', 'required', 'integer'],
-            'status_id'      => ['sometimes', 'required', 'integer'],
-            'pending_reason' => ['sometimes', 'required', 'string'],
-            'user_ids'       => ['sometimes', 'required', 'array'],
+            'name'                => ['sometimes', 'required', 'string'],
+            'customer_name'       => ['sometimes', 'required', 'string'],
+            'code'                => ['sometimes', 'required', 'string'],
+            'starts_at'           => ['sometimes', 'required', 'date'],
+            'ends_at'             => ['sometimes', 'required', 'date', 'after_or_equal:starts_at'],
+            'duration'            => ['sometimes', 'required', 'integer'],
+            'status_id'           => ['sometimes', 'required', 'integer'],
+            'pending_reason'      => ['sometimes', 'required', 'string'],
+            'assigned_user_ids'   => ['sometimes', 'required', 'array'],
+            'unassigned_user_ids' => ['sometimes', 'required', 'array'],
         ];
     }
 
