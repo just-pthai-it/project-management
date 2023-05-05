@@ -6,6 +6,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class RoleSeeder extends Seeder
 {
@@ -16,20 +17,108 @@ class RoleSeeder extends Seeder
      */
     public function run () : void
     {
-        $rootRole    = Role::query()->create(['name' => 'root']);
-        $permissions = Permission::query()->pluck('id')->all();
-        $rootRole->permissions()->attach($permissions);
-
         $roles = [
-            ['name' => 'Intern',],
-            ['name' => 'Official employee'],
-            ['name' => 'Co-leader'],
-            ['name' => 'Leader'],
-            ['name' => 'Co-manager'],
-            ['name' => 'Manager'],
-            ['name' => 'Human resource management']
+            ['name'        => Role::ROLE_ROOT_NAME,
+             'permissions' => [
+                 'role:view-any',
+                 'role:view',
+                 'role:create',
+                 'role:update',
+                 'role:delete',
+                 'user:view-any',
+                 'user:view',
+                 'user:create',
+                 'user:update',
+                 'user:delete',
+                 'project:view-any',
+                 'project:view',
+                 'project:create',
+                 'project:update',
+                 'project:delete',
+                 'task:view-any',
+                 'task:view',
+                 'task:create',
+                 'task:update',
+                 'task:delete',
+                 'task:report',
+             ]],
+            ['name'        => 'Intern',
+             'permissions' => [
+                 'project:view-any',
+                 'project-view',
+                 'task:view-nay',
+                 'task:view',
+             ]],
+            ['name'        => 'Official employee',
+             'permissions' => [
+                 'project:view-any',
+                 'project-view',
+                 'task:view-nay',
+                 'task:view',
+                 'task:report',
+             ]],
+            ['name'        => 'Co-leader',
+             'permissions' => [
+                 'project:view-any',
+                 'project-view',
+                 'task:view-nay',
+                 'task:view',
+                 'task:update',
+                 'task:report',
+             ]],
+            ['name'        => 'Leader',
+             'permissions' => [
+                 'project:view-any',
+                 'project-view',
+                 'task:view-nay',
+                 'task:view',
+                 'task:create',
+                 'task:update',
+                 'task:delete',
+                 'task:report',
+
+             ]],
+            ['name'        => 'Co-manager',
+             'permissions' => [
+                 'project:view-any',
+                 'project-view',
+                 'project:update',
+                 'task:view-nay',
+                 'task:view',
+                 'task:create',
+                 'task:update',
+                 'task:delete',
+                 'task:report',
+             ]],
+            ['name'        => 'Manager',
+             'permissions' => [
+                 'project:view-any',
+                 'project-view',
+                 'project:create',
+                 'project:update',
+                 'project:delete',
+                 'task:view-nay',
+                 'task:view',
+                 'task:create',
+                 'task:update',
+                 'task:delete',
+                 'task:report',
+             ]],
+            ['name'        => 'Human resource management',
+             'permissions' => [
+                 'user:view-any',
+                 'user:view',
+                 'user:create',
+                 'user:update',
+                 'user:delete',
+             ]],
         ];
 
-        Role::query()->insert($roles);
+        foreach ($roles as $role)
+        {
+            $roleObj     = Role::query()->create(Arr::only($role, ['name']));
+            $permissions = Permission::query()->whereIn('name', $role['permissions'])->get();
+            $roleObj->permissions()->attach($permissions);
+        }
     }
 }

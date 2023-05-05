@@ -16,35 +16,34 @@ class PermissionSeeder extends Seeder
     public function run () : void
     {
         $permissionGroups = [
-            'role'    => [
-                'role:view',
+            'Role'    => [
                 'role:view-any',
+                'role:view',
                 'role:create',
                 'role:update',
                 'role:delete',
             ],
-            'user'    => [
-                'user_view',
+            'User'    => [
                 'user:view-any',
+                'user:view',
                 'user:create',
                 'user:update',
                 'user:delete',
-                'user:deactivate',
-                'user:activate',
             ],
-            'project' => [
-                'project:view',
+            'Project' => [
                 'project:view-any',
+                'project:view',
                 'project:create',
                 'project:update',
                 'project:delete',
             ],
             'Task'    => [
-                'task:view',
                 'task:view-any',
+                'task:view',
                 'task:create',
                 'task:update',
                 'task:delete',
+                'task:report',
             ],
         ];
 
