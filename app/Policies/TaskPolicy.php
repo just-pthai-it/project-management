@@ -65,8 +65,10 @@ class TaskPolicy
      */
     public function update (User $user, Task $task) : Response|bool
     {
-        return $user->tokenCan('task:update') &&
-               $task->users()->where('users.id', '=', $user->id)->exists();
+        return ($user->tokenCan('task:update') &&
+                $task->users()->where('users.id', '=', $user->id)->exists()) ||
+               $user->tokenCan('project:create') ||
+               $user->tokenCan('project:update');
     }
 
     /**
@@ -78,8 +80,10 @@ class TaskPolicy
      */
     public function delete (User $user, Task $task) : Response|bool
     {
-        return $user->tokenCan('task:delete') &&
-               $task->users()->where('users.id', '=', $user->id)->exists();
+        return ($user->tokenCan('task:delete') &&
+                $task->users()->where('users.id', '=', $user->id)->exists()) ||
+               $user->tokenCan('project:create') ||
+               $user->tokenCan('project:update');
     }
 
     /**
