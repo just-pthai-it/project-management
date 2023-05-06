@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Traits\HasFilter;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -100,5 +99,10 @@ class Task extends Model
     public function comments () : MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function notification () : MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
     }
 }

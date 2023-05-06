@@ -105,4 +105,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
+
+        public function notifications () : BelongsToMany
+    {
+        return $this->belongsToMany(Notification::class, 'notification_user')
+                    ->withPivot(['id', 'read_at']);
+    }
+
+    public function unreadNotifications () : BelongsToMany
+    {
+        return $this->belongsToMany(Notification::class, 'notification_user')
+                    ->withPivot(['id', 'read_at'])->whereNull('read_at');
+    }
 }

@@ -16,11 +16,12 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table)
         {
             $table->unsignedMediumInteger('id')->autoIncrement();
-            $table->morphs('notifiable');
+            $table->morphs('commentable');
             $table->unsignedTinyInteger('type')->nullable();
-            $table->text('data')->nullable();
+            $table->string('title')->nullable();
+            $table->text('content')->nullable();
             $table->string('action')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at');
             $table->softDeletes();
         });
     }
@@ -30,7 +31,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down ()
+    public function down () : void
     {
         Schema::dropIfExists('notifications');
     }

@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use App\Listeners\EventSubscriber;
+use App\Listeners\SystemEventSubscriber;
+use App\Listeners\UserImpactedSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,7 +23,8 @@ class EventServiceProvider extends ServiceProvider
     ];
 
     protected $subscribe = [
-        EventSubscriber::class,
+        SystemEventSubscriber::class,
+        UserImpactedSubscriber::class,
     ];
 
     /**

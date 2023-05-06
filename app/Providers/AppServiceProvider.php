@@ -7,10 +7,12 @@ use App\Services\CommentService;
 use App\Services\Contracts\AuthenticationServiceContract;
 use App\Services\Contracts\CommentServiceContract;
 use App\Services\Contracts\FileServiceContract;
+use App\Services\Contracts\NotificationServiceContract;
 use App\Services\Contracts\ProjectServiceContract;
 use App\Services\Contracts\TaskServiceContract;
 use App\Services\Contracts\UserServiceContract;
 use App\Services\FileService;
+use App\Services\NotificationService;
 use App\Services\ProjectService;
 use App\Services\TaskService;
 use App\Services\UserService;
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         FileServiceContract::class           => FileService::class,
         TaskServiceContract::class           => TaskService::class,
         CommentServiceContract::class        => CommentService::class,
+        NotificationServiceContract::class   => NotificationService::class,
     ];
 
     /**

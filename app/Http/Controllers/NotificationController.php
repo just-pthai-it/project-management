@@ -2,62 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use App\Services\Contracts\NotificationServiceContract;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
+    private NotificationServiceContract $notificationService;
+
+    /**
+     * @param NotificationServiceContract $notificationService
+     */
+    public function __construct (NotificationServiceContract $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index()
+    public function index (Request $request) : JsonResponse
     {
-        //
+        return $this->notificationService->list($request->all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function marksAsRead (Notification $notification) : JsonResponse
     {
-        //
+        return $this->notificationService->marksAsRead($notification);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function marksAllAsRead () : JsonResponse
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return $this->notificationService->marksAllAsRead();
     }
 }

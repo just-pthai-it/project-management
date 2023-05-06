@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use App\Helpers\CusResponse;
+use App\Http\Resources\Notification\NotificationCollection;
+use App\Models\Notification;
 use App\Repositories\Contracts\NotificationRepositoryContract;
+use Illuminate\Http\JsonResponse;
 
 class NotificationService implements Contracts\NotificationServiceContract
 {
@@ -13,28 +17,21 @@ class NotificationService implements Contracts\NotificationServiceContract
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function list (array $inputs = [])
+    public function list (array $inputs = []) : JsonResponse
     {
-
+        $notifications = auth()->user()->notifications()->latest()->cursorPaginate($inputs['per_page'] ?? 10);
+        return (new NotificationCollection($notifications))->response();
     }
 
-    public function get (int|string $id, array $inputs = [])
+    public function marksAsRead (Notification $notification) : JsonResponse
     {
-
+        $notification->users()->updateExistingPivot(auth()->id(), ['read_at' => now()]);
+        return CusResponse::successfulWithNoData();
     }
 
-    public function store (array $inputs)
+    public function marksAllAsRead () : JsonResponse
     {
-
-    }
-
-    public function update (int|string $id, array $inputs)
-    {
-
-    }
-
-    public function delete (int|string $id)
-    {
-
+        auth()->user()->unreadNotifications()->update(['read_at' => now()]);
+        return CusResponse::successfulWithNoData();
     }
 }

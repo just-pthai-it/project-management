@@ -7,13 +7,14 @@ use App\Events\ObjectResourceUpdated;
 use App\Events\ObjectUpdated;
 use App\Events\UserCommented;
 use App\Models\ActivityLog;
+use App\Models\Comment;
 use App\Models\Task;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Str;
 
-class EventSubscriber
+class SystemEventSubscriber
 {
     /**
      * Create the event listener.
@@ -32,11 +33,11 @@ class EventSubscriber
 
         if ($event->object instanceof Task)
         {
-            $descriptionProperties[':object'] = 'task';
+            $descriptionProperties[':commentable'] = 'task';
         }
         else
         {
-            $descriptionProperties[':object'] = 'project';
+            $descriptionProperties[':commentable'] = 'project';
         }
 
         $data['description'] = Str::swap($descriptionProperties, ActivityLog::OBJECT_CREATE_LOG_DESCRIPTION);
@@ -54,11 +55,11 @@ class EventSubscriber
         $descriptionProperties[':user_name']   = $event->user->name;
         if ($event->object instanceof Task)
         {
-            $descriptionProperties[':object'] = 'task';
+            $descriptionProperties[':commentable'] = 'task';
         }
         else
         {
-            $descriptionProperties[':object'] = 'project';
+            $descriptionProperties[':commentable'] = 'project';
         }
 
         $changes = array_diff($event->object->getOriginal(), $oldObject->getOriginal());
@@ -84,21 +85,26 @@ class EventSubscriber
 
     public function handleUserCommented (UserCommented $event) : void
     {
+        if ($event->previousComment != null)
+        {
+            return;
+        }
+
         $descriptionProperties[':object_name'] = $event->object->name;
-        $descriptionProperties[':user_name']   = $event->user->name;
+        $descriptionProperties[':user_name']   = $event->comment->user->name;
         if ($event->object instanceof Task)
         {
-            $descriptionProperties[':object'] = 'task';
+            $descriptionProperties[':commentable'] = 'task';
         }
         else
         {
-            $descriptionProperties[':object'] = 'project';
+            $descriptionProperties[':commentable'] = 'project';
         }
         $data['description'] = Str::swap($descriptionProperties, ActivityLog::COMMENT_LOG_DESCRIPTION);
         $data['type_id']     = ActivityLog::OBJECT_UPDATE_LOG_TYPE_ID;
         $data['name']        = 'update';
-        $data['user_id'] = $event->user->id;
-        $data['comment_id']  = $event->commentId;
+        $data['user_id'] = $event->comment->user->id;
+        $data['comment_id']  = $event->comment->id;
         $this->__updateActivityLog($event->object, $data);
     }
 
@@ -108,11 +114,11 @@ class EventSubscriber
         $descriptionProperties[':user_name']   = $event->user->name;
         if ($event->object instanceof Task)
         {
-            $descriptionProperties[':object'] = 'task';
+            $descriptionProperties[':commentable'] = 'task';
         }
         else
         {
-            $descriptionProperties[':object'] = 'project';
+            $descriptionProperties[':commentable'] = 'project';
         }
 
         $descriptionProperties[':action']      = $event->action;

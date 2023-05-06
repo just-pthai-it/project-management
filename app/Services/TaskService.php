@@ -121,11 +121,14 @@ class TaskService implements Contracts\TaskServiceContract
                 $comment = $previousComment->replicate()->fill($inputs + ['deep_level' => 2]);
                 $comment->save();
             }
+
+            event(new UserCommented($task, $comment, $previousComment));
+
         }
         else
         {
             $comment = $task->comments()->create($inputs + ['deep_level' => 1]);
-            event(new UserCommented($task, auth()->user(), $comment->id));
+            event(new UserCommented($task, $comment, null));
         }
 
         return CusResponse::createSuccessful(['id' => $comment->id]);

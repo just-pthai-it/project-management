@@ -2,8 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Comment;
-use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -13,23 +11,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserCommented
+class UserAssigned
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
     public Model $object;
-    public Comment $comment;
-    public ?Comment $previousComment;
+    public array $userIds;
 
     /**
-     * @param Model        $object
-     * @param Comment      $comment
-     * @param Comment|null $previousComment
+     * @param Model $notifiable
+     * @param array $userIds
      */
-    public function __construct (Model $object, Comment $comment, ?Comment $previousComment)
+    public function __construct (Model $notifiable, array $userIds)
     {
-        $this->object          = $object;
-        $this->comment         = $comment;
-        $this->previousComment = $previousComment;
+        $this->object  = $notifiable;
+        $this->userIds = $userIds;
     }
 
 
@@ -38,7 +34,7 @@ class UserCommented
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn ()
+    public function broadcastOn()
     {
         return new PrivateChannel('channel-name');
     }

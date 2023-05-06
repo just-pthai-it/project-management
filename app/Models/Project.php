@@ -88,4 +88,9 @@ class Project extends Model
     {
         return $this->morphMany(ActivityLog::class, 'objectable');
     }
+
+    public function notification () : MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 }

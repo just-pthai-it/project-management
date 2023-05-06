@@ -2,34 +2,30 @@
 
 namespace App\Events;
 
-use App\Models\Comment;
-use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserCommented
+class NotificationCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public Model $object;
-    public Comment $comment;
-    public ?Comment $previousComment;
+
+    public Notification $notification;
+    public array $userIds;
 
     /**
-     * @param Model        $object
-     * @param Comment      $comment
-     * @param Comment|null $previousComment
+     * @param Notification $notification
+     * @param array        $userIds
      */
-    public function __construct (Model $object, Comment $comment, ?Comment $previousComment)
+    public function __construct (Notification $notification, array $userIds)
     {
-        $this->object          = $object;
-        $this->comment         = $comment;
-        $this->previousComment = $previousComment;
+        $this->notification = $notification;
+        $this->userIds      = $userIds;
     }
 
 
@@ -38,7 +34,7 @@ class UserCommented
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn ()
+    public function broadcastOn()
     {
         return new PrivateChannel('channel-name');
     }

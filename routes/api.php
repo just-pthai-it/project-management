@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\TaskCommentController;
@@ -51,4 +52,9 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::apiResource('tasks.comments', TaskCommentController::class)->only(['store']);
     Route::get('comments/{comment}/replies', [CommentController::class, 'listReplies']);
     Route::apiResource('comments', CommentController::class)->only(['update', 'destroy']);
+
+    Route::post('notifications/{notification}/marks-as-read', [NotificationController::class, 'marksAsRead']);
+    Route::post('notifications/marks-all-as-read', [NotificationController::class, 'marksAllAsRead']);
+    Route::get('notifications/count-unread');
+    Route::apiResource('notifications', NotificationController::class)->only(['index']);
 });
