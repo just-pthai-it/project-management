@@ -5,6 +5,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -57,4 +58,6 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::post('notifications/marks-all-as-read', [NotificationController::class, 'marksAllAsRead']);
     Route::get('notifications/count-unread');
     Route::apiResource('notifications', NotificationController::class)->only(['index']);
+
+    Route::apiResource('roles', RoleController::class)->except(['show']);
 });

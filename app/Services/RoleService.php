@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use App\Helpers\CusResponse;
+use App\Models\Role;
 use App\Repositories\Contracts\RoleRepositoryContract;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 
 class RoleService implements Contracts\RoleServiceContract
 {
@@ -13,28 +17,39 @@ class RoleService implements Contracts\RoleServiceContract
         $this->roleRepository = $roleRepository;
     }
 
-    public function list (array $inputs = [])
+    public function list (array $inputs = []) : JsonResponse
     {
-
+        $roles = Role::all();
+        return CusResponse::successful($roles);
     }
 
-    public function get (int|string $id, array $inputs = [])
-    {
+    public function get (int|string $id, array $inputs = []) {}
 
+    public function store (array $inputs) : JsonResponse
+    {
+        $role = Role::query()->create(Arr::except($inputs, ['permission_ids']));
+        if (isset($inputs['permission_ids']))
+        {
+            $role->permissions()->attach($inputs['permission_ids']);
+        }
+        return CusResponse::createSuccessful($role);
     }
 
-    public function store (array $inputs)
+    public function update (Role $role, array $inputs) : JsonResponse
     {
-
+        $role->update(Arr::except($inputs, ['permission_ids']));
+        if (isset($inputs['permission_ids']))
+        {
+            $role->permissions()->sync($inputs['permission_ids']);
+        }
+        return CusResponse::successful();
     }
 
-    public function update (int|string $id, array $inputs)
+    public function delete (Role $role) : JsonResponse
     {
-
-    }
-
-    public function delete (int|string $id)
-    {
-
+        $role->users()->detach();
+        $role->permissions()->detach();
+        $role->delete();
+        return CusResponse::successful();
     }
 }

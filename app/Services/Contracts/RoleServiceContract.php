@@ -2,6 +2,8 @@
 
 namespace App\Services\Contracts;
 
+use App\Models\Role;
+
 interface RoleServiceContract
 {
     public function list (array $inputs = []);
@@ -10,7 +12,7 @@ interface RoleServiceContract
 
     public function store (array $inputs);
 
-    public function update (int|string $id, array $inputs);
+    public function update (Role $role, array $inputs);
 
-    public function delete (int|string $id);
+    public function delete (Role $role);
 }
