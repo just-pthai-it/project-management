@@ -2,9 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Events\ObjectCreated;
 use App\Events\ObjectResourceUpdated;
-use App\Events\ObjectUpdated;
+use App\Events\SystemObjectAffected;
 use App\Events\UserCommented;
 use App\Models\ActivityLog;
 use App\Models\Comment;
@@ -26,60 +25,31 @@ class SystemEventSubscriber
         //
     }
 
-    public function handleObjectCreated (ObjectCreated $event) : void
+    public function handleSystemObjectAffected (SystemObjectAffected $event) : void
     {
         $descriptionProperties[':object_name'] = $event->object->name;
-        $descriptionProperties[':user_name']   = $event->user->name;
+        $descriptionProperties[':user_name']   = $event->causer->name;
+        $descriptionProperties[':action']      = $event->action;
+        $descriptionProperties[':object_type'] = Str::lower(class_basename(get_class($event->object)));
+        $descriptionProperties[':extra']       = '';
 
-        if ($event->object instanceof Task)
+        if (!empty($event->oldData) && $event->action == 'updated')
         {
-            $descriptionProperties[':commentable'] = 'task';
-        }
-        else
-        {
-            $descriptionProperties[':commentable'] = 'project';
+            $oldObject         = $event->object->replicate()->fill($event->oldData);
+            $changedAttributes = array_diff($event->object->getOriginal(), $event->oldData);
+
+            if (isset($changedAttributes['status_id']))
+            {
+                $extraDescription = "status from {$oldObject->status->name} to {$event->object->status->name} in";;
+                $descriptionProperties[':extra'] = $extraDescription;
+            }
         }
 
-        $data['description'] = Str::swap($descriptionProperties, ActivityLog::OBJECT_CREATE_LOG_DESCRIPTION);
-        $data['user_id']     = $event->user->id;
-        $data['name']        = 'create';
+        $data['description'] = Str::swap($descriptionProperties, ActivityLog::SYSTEM_OBJECT_AFFECTED_LOG_DESCRIPTION);
+        $data['description'] = Str::squish($data['description']);
+        $data['user_id']     = $event->causer->id;
+        $data['name']        = $event->action;
         $data['type_id']     = ActivityLog::OBJECT_CREATE_LOG_TYPE_ID;
-
-        $this->__updateActivityLog($event->object, $data);
-    }
-
-    public function handleObjectUpdated (ObjectUpdated $event) : void
-    {
-        $oldObject                             = $event->object->replicate()->fill($event->oldData);
-        $descriptionProperties[':object_name'] = $event->object->name;
-        $descriptionProperties[':user_name']   = $event->user->name;
-        if ($event->object instanceof Task)
-        {
-            $descriptionProperties[':commentable'] = 'task';
-        }
-        else
-        {
-            $descriptionProperties[':commentable'] = 'project';
-        }
-
-        $changes = array_diff($event->object->getOriginal(), $oldObject->getOriginal());
-        if (isset($changes['status_id']))
-        {
-            $descriptionProperties[':attribute'] = 'status';
-            $descriptionProperties[':old_value'] = $oldObject->status->name;
-            $descriptionProperties[':new_value'] = $event->object->status->name;
-
-            $data['description'] = Str::swap($descriptionProperties,
-                                             ActivityLog::OBJECT_UPDATE_ATTRIBUTE_LOG_DESCRIPTION);
-        }
-        else
-        {
-            $data['description'] = Str::swap($descriptionProperties, ActivityLog::OBJECT_UPDATE_LOG_DESCRIPTION);
-        }
-
-        $data['user_id'] = $event->user->id;
-        $data['name']    = 'update';
-        $data['type_id'] = ActivityLog::OBJECT_UPDATE_LOG_TYPE_ID;
         $this->__updateActivityLog($event->object, $data);
     }
 
@@ -103,7 +73,7 @@ class SystemEventSubscriber
         $data['description'] = Str::swap($descriptionProperties, ActivityLog::COMMENT_LOG_DESCRIPTION);
         $data['type_id']     = ActivityLog::OBJECT_UPDATE_LOG_TYPE_ID;
         $data['name']        = 'update';
-        $data['user_id'] = $event->comment->user->id;
+        $data['user_id']     = $event->comment->user->id;
         $data['comment_id']  = $event->comment->id;
         $this->__updateActivityLog($event->object, $data);
     }
@@ -140,10 +110,9 @@ class SystemEventSubscriber
     public function subscribe ($events) : array
     {
         return [
-            ObjectCreated::class         => 'handleObjectCreated',
-            ObjectUpdated::class         => 'handleObjectUpdated',
             UserCommented::class         => 'handleUserCommented',
             ObjectResourceUpdated::class => 'handleObjectResourceUpdated',
+            SystemObjectAffected::class  => 'handleSystemObjectAffected',
         ];
     }
 }

@@ -79,9 +79,9 @@ class ProjectController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Project $project
-     * @return Response
+     * @return JsonResponse
      */
-    public function destroy (Project $project) : Response
+    public function destroy (Project $project) : JsonResponse
     {
         return $this->projectService->delete($project);
     }
