@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Traits\HasFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,6 +49,29 @@ class Project extends Model
         'name',
         'status_id',
     ];
+
+    protected function startsAtWithTime () : Attribute
+    {
+        return Attribute::make(
+            get: function ()
+            {
+                $value = $this->starts_at;
+                return $value;
+            }
+        );
+    }
+
+    protected function endsAtWithTime () : Attribute
+    {
+        return Attribute::make(
+            get: function ()
+            {
+                $value = $this->ends_at;
+                $value->setTime(23, 59, 59);
+                return $value;
+            }
+        );
+    }
 
     public function filterStartAt (Builder $query, string $startAt) : void
     {

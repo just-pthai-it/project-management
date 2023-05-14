@@ -126,6 +126,12 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function update (Project $project, array $inputs) : JsonResponse
     {
+        [$result, $message] = $this->__checkConditionBeforeUpdateProject($project, $inputs);
+        if (!$result)
+        {
+            return CusResponse::failed([], $message);
+        }
+
         $oldData = $project->getOriginal();
         $project->update($inputs);
         if (isset($inputs['assigned_user_ids']))
@@ -140,6 +146,55 @@ class ProjectService implements Contracts\ProjectServiceContract
         event(new SystemObjectAffected($project, auth()->user(), 'updated', $oldData));
 
         return CusResponse::successful();
+    }
+
+    private function __checkConditionBeforeUpdateProject (Project $project, array $inputs) : array
+    {
+        if (isset($inputs['status_id']) && $inputs['status_id'] == ProjectStatus::STATUS_COMPLETE)
+        {
+            if (!$this->__checkIfCanUpdateProjectToCompleteStatus($project))
+            {
+                return [false, 'Condition1'];
+            }
+        }
+
+        if (isset($inputs['status_id']) &&
+            $project->status_id == ProjectStatus::STATUS_BEHIND_SCHEDULE &&
+            in_array($inputs['status_id'], [ProjectStatus::STATUS_NOT_START, ProjectStatus::STATUS_IN_PROGRESS]))
+        {
+            if (!$this->__checkIfCanUpdateStatusFromBehindSchedule($project, $inputs))
+            {
+                return [false, 'Condition2'];
+            }
+        }
+
+        if (isset($inputs['starts_at']) && $inputs['ends_at'])
+        {
+            if ($this->__checkIfAnyTasksTimeOverProjectTime($project, $inputs))
+            {
+                return [false, 'Condition3'];
+            }
+        }
+
+        return [true, 'OK'];
+    }
+
+    private function __checkIfCanUpdateProjectToCompleteStatus (Project $project) : bool
+    {
+        return $project->progress == 100;
+    }
+
+    private function __checkIfCanUpdateStatusFromBehindSchedule (Project $project, array $inputs) : bool
+    {
+        return ($project->ends_at->format('Y-m-d') > now()->format('Y-m-d')) ||
+               (isset($inputs['starts_at']) && $inputs['starts_at'] > now()->format('Y-m-d'));
+    }
+
+    private function __checkIfAnyTasksTimeOverProjectTime (Project $project, array $inputs) : bool
+    {
+        $newProject = $project->replicate()->fill(Arr::only($inputs, ['starts_at', 'ends_at']));
+        return $project->tasks()->where('tasks.starts_at', '<', $newProject->starts_at_with_time)
+                       ->orWhere('tasks.ends_at', '>', $newProject->ends_at_with_time)->exists();
     }
 
     public function delete (Project $project) : JsonResponse
@@ -160,7 +215,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $tasks = $project->tasks()->filter($inputs)
                          ->with(['status', 'users:id,name,avatar'])
-                         ->get(['id', 'name', 'project_id', 'status_id']);
+                         ->get(['id', 'name', 'project_id', 'status_id', 'starts_at', 'ends_at']);
         return (new TaskCollection($tasks))->response();
     }
 
