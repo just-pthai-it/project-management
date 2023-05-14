@@ -32,9 +32,13 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 {
     Route::post('refresh-token', [AuthenticationController::class, 'refreshToken']);
 
-    Route::get('me', [UserController::class, 'me']);
+    Route::get('profile', [UserController::class, 'myProfile']);
+    Route::patch('profile', [UserController::class, 'updateMyProfile']);
+    Route::post('profile/avatar', [UserController::class, 'updateMyAvatar']);
 
+    Route::post('users/{user}/avatar', [UserController::class, 'updateAvatar']);
     Route::apiResource('users', UserController::class);
+
     Route::get('projects/{project}/history', [ProjectController::class, 'history']);
     Route::get('projects/search', [ProjectController::class, 'search']);
     Route::apiResource('projects', ProjectController::class);

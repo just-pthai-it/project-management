@@ -17,7 +17,7 @@ return new class extends Migration
         {
             $table->unsignedMediumInteger('id')->autoIncrement();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->date('date_of_birth')->nullable();

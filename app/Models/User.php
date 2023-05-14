@@ -32,6 +32,7 @@ class User extends Authenticatable
         'phone',
         'address',
         'job_title',
+        'status',
         'avatar',
         'remember_token',
         'last_login_at',
@@ -106,7 +107,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
-        public function notifications () : BelongsToMany
+    public function notifications () : BelongsToMany
     {
         return $this->belongsToMany(Notification::class, 'notification_user')
                     ->withPivot(['id', 'read_at']);

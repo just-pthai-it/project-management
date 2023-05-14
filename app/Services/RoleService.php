@@ -4,18 +4,11 @@ namespace App\Services;
 
 use App\Helpers\CusResponse;
 use App\Models\Role;
-use App\Repositories\Contracts\RoleRepositoryContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 
 class RoleService implements Contracts\RoleServiceContract
 {
-    private RoleRepositoryContract $roleRepository;
-
-    public function __construct (RoleRepositoryContract $roleRepository)
-    {
-        $this->roleRepository = $roleRepository;
-    }
 
     public function list (array $inputs = []) : JsonResponse
     {
