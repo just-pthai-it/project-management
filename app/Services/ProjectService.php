@@ -136,7 +136,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         }
         event(new ObjectUpdated($project, auth()->user(), $oldData));
 
-        return CusResponse::successfulWithNoData();
+        return CusResponse::successful();
     }
 
     public function delete (Project $project) : JsonResponse
@@ -175,18 +175,25 @@ class ProjectService implements Contracts\ProjectServiceContract
         $this->__updateProjectProgress($project, $task);
         $project->save();
         event(new ObjectCreated($task, auth()->user()));
+
         return CusResponse::createSuccessful(['id' => $task->id]);
     }
 
-    private function __updateProjectProgress (Project $project, Task $task) : void
+    private function __updateProjectProgress (Project $project, ?Task $task = null, ?Task $oldTask = null) : void
     {
-        if ($task->status_id == TaskStatus::STATUS_COMPLETE)
+        if ($task != null && $oldTask != null)
         {
-            $completeTasksCount = $project->tasks()->where('status_id', '=', TaskStatus::STATUS_COMPLETE)->count();
-            $tasksCount         = $project->tasks()->where('status_id', '=', TaskStatus::STATUS_COMPLETE)->count();
-
-            $project->progress = $completeTasksCount / $tasksCount;
+            if (($task->status_id == TaskStatus::STATUS_COMPLETE && $oldTask->status_id == TaskStatus::STATUS_COMPLETE) ||
+                ($task->status_id != TaskStatus::STATUS_COMPLETE && $oldTask->status_id != TaskStatus::STATUS_COMPLETE))
+            {
+                return;
+            }
         }
+
+        $completeTasksCount = $project->tasks()->where('status_id', '=', TaskStatus::STATUS_COMPLETE)->count();
+        $tasksCount         = $project->tasks()->count();
+
+        $project->progress = $completeTasksCount / $tasksCount * 100;
     }
 
     private function __updateProjectTimeAccordingToTask (Project $project, Task $task) : void
@@ -200,7 +207,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function updateTask (Project $project, Task $task, array $inputs) : JsonResponse
     {
-        $oldData = $task->getOriginal();
+        $oldTask = $task->replicate();
         $task->update($inputs);
         if (isset($inputs['assigned_user_ids']))
         {
@@ -212,19 +219,18 @@ class ProjectService implements Contracts\ProjectServiceContract
             $task->users()->detach(array_diff($inputs['unassigned_user_ids'], [auth()->id()]));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
-        if ($task->status_id == TaskStatus::STATUS_COMPLETE || $oldData['status_id'] == TaskStatus::STATUS_COMPLETE)
-        {
-            $this->__updateProjectProgress($project, $task);
-        }
-        event(new ObjectUpdated($task, auth()->user(), $oldData));
+        $this->__updateProjectProgress($project, $task, $oldTask);
+        $project->save();
 
-        return CusResponse::successfulWithNoData();
+        event(new ObjectUpdated($task, auth()->user(), $oldTask->getOriginal()));
+
+        return CusResponse::successful();
     }
 
     public function deleteTask (Project $project, Task $task) : JsonResponse
     {
-        $this->__updateProjectProgress($project, $task);
         $task->delete();
+        $this->__updateProjectProgress($project);
         return CusResponse::successfulWithNoData();
     }
 
