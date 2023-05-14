@@ -162,7 +162,7 @@ class ProjectService implements Contracts\ProjectServiceContract
             $project->status_id == ProjectStatus::STATUS_BEHIND_SCHEDULE &&
             in_array($inputs['status_id'], [ProjectStatus::STATUS_NOT_START, ProjectStatus::STATUS_IN_PROGRESS]))
         {
-            if (!$this->__checkIfCanUpdateStatusFromBehindSchedule($project, $inputs))
+            if (!$this->__checkIfCanUpdateProjectStatusFromBehindSchedule($project, $inputs))
             {
                 return [false, 'Condition2'];
             }
@@ -184,7 +184,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         return $project->progress == 100;
     }
 
-    private function __checkIfCanUpdateStatusFromBehindSchedule (Project $project, array $inputs) : bool
+    private function __checkIfCanUpdateProjectStatusFromBehindSchedule (Project $project, array $inputs) : bool
     {
         return ($project->ends_at->format('Y-m-d') > now()->format('Y-m-d')) ||
                (isset($inputs['starts_at']) && $inputs['starts_at'] > now()->format('Y-m-d'));
@@ -273,6 +273,12 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function updateTask (Project $project, Task $task, array $inputs) : JsonResponse
     {
+        [$result, $message] = $this->__checkConditionBeforeUpdateTask($task, $inputs);
+        if (!$result)
+        {
+            return CusResponse::failed([], $message);
+        }
+
         $oldTask = $task->replicate();
         $task->update($inputs);
         if (isset($inputs['assigned_user_ids']))
@@ -291,6 +297,40 @@ class ProjectService implements Contracts\ProjectServiceContract
         event(new SystemObjectAffected($task, auth()->user(), 'updated', $oldTask->getOriginal()));
 
         return CusResponse::successful();
+    }
+
+    private function __checkConditionBeforeUpdateTask (Task $task, array $inputs) : array
+    {
+        if (isset($inputs['status_id']) && $inputs['status_id'] == TaskStatus::STATUS_COMPLETE)
+        {
+            if (!$this->__checkIfCanUpdateTaskToCompleteStatus($task))
+            {
+                return [false, 'Condition1'];
+            }
+        }
+
+        if (isset($inputs['status_id']) &&
+            $task->status_id == TaskStatus::STATUS_BEHIND_SCHEDULE &&
+            in_array($inputs['status_id'], [TaskStatus::STATUS_NOT_START, TaskStatus::STATUS_IN_PROGRESS]))
+        {
+            if (!$this->__checkIfCanUpdateTaskStatusFromBehindSchedule($task, $inputs))
+            {
+                return [false, 'Condition2'];
+            }
+        }
+
+        return [true, 'OK'];
+    }
+
+    private function __checkIfCanUpdateTaskToCompleteStatus (Task $task) : bool
+    {
+        return !$task->children()->where('status_id', '!=', TaskStatus::STATUS_COMPLETE)->exists();
+    }
+
+    private function __checkIfCanUpdateTaskStatusFromBehindSchedule (Task $task, array $inputs) : bool
+    {
+        return ($task->ends_at->format('Y-m-d') > now()->format('Y-m-d')) ||
+               (isset($inputs['starts_at']) && $inputs['starts_at'] > now()->format('Y-m-d'));
     }
 
     public function deleteTask (Project $project, Task $task) : JsonResponse
