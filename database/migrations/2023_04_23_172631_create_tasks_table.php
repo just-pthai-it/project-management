@@ -19,8 +19,8 @@ return new class extends Migration
             $table->unsignedMediumInteger('user_id');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->date('starts_at');
-            $table->date('ends_at');
+            $table->timestamp('starts_at');
+            $table->timestamp('ends_at');
             $table->unsignedSmallInteger('duration');
             $table->unsignedTinyInteger('status_id');
             $table->string('pending_reason')->nullable();
