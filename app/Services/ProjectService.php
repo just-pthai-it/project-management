@@ -248,8 +248,8 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function listUsers (Project $project, array $inputs = []) : JsonResponse
     {
-        $project->load(['users:id,name']);
-        return (new UserCollection($project->users))->response();
+        $users = $project->users()->filter($inputs)->get(['users.id', 'users.name']);
+        return (new UserCollection($users))->response();
     }
 
     public function history (Project $project) : JsonResponse

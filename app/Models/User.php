@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Traits\HasFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,7 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasFilter;
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
@@ -64,6 +66,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    private array $filterable = [
+        'id',
+        'name',
+        'email',
+    ];
+
+    public function filterName (Builder $query, string $name) : void
+    {
+        $query->where('name', 'like', "%{$name}%");
+    }
 
     public function isRoot () : bool
     {
