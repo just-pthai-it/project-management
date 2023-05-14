@@ -107,6 +107,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
         $project->loadCount($withCountTaskByStatusQuery);
+        $project->load(['users:id,name,avatar']);
         return (new ProjectResource($project))->response();
     }
 
