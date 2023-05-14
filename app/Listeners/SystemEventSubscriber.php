@@ -51,6 +51,10 @@ class SystemEventSubscriber
         $data['name']        = $event->action;
         $data['type_id']     = ActivityLog::OBJECT_CREATE_LOG_TYPE_ID;
         $this->__updateActivityLog($event->object, $data);
+        if ($event->object instanceof Task && in_array($event->action, ['created', 'deleted']))
+        {
+            $this->__updateActivityLog($event->object->project, $data);
+        }
     }
 
     public function handleUserCommented (UserCommented $event) : void
