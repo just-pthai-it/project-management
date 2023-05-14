@@ -4,10 +4,12 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectStatusController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +40,10 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
     Route::post('users/{user}/avatar', [UserController::class, 'updateAvatar']);
     Route::apiResource('users', UserController::class);
+
+    Route::apiResource('project-statuses', ProjectStatusController::class)->only(['index']);
+
+    Route::apiResource('task-statuses', TaskStatusController::class)->only(['index']);
 
     Route::get('projects/{project}/history', [ProjectController::class, 'history']);
     Route::get('projects/search', [ProjectController::class, 'search']);

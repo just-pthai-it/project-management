@@ -9,14 +9,18 @@ use App\Services\Contracts\CommentServiceContract;
 use App\Services\Contracts\FileServiceContract;
 use App\Services\Contracts\NotificationServiceContract;
 use App\Services\Contracts\ProjectServiceContract;
+use App\Services\Contracts\ProjectStatusServiceContract;
 use App\Services\Contracts\RoleServiceContract;
 use App\Services\Contracts\TaskServiceContract;
+use App\Services\Contracts\TaskStatusServiceContract;
 use App\Services\Contracts\UserServiceContract;
 use App\Services\FileService;
 use App\Services\NotificationService;
 use App\Services\ProjectService;
+use App\Services\ProjectStatusService;
 use App\Services\RoleService;
 use App\Services\TaskService;
+use App\Services\TaskStatusService;
 use App\Services\UserService;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
         CommentServiceContract::class        => CommentService::class,
         NotificationServiceContract::class   => NotificationService::class,
         RoleServiceContract::class           => RoleService::class,
+        ProjectStatusServiceContract::class  => ProjectStatusService::class,
+        TaskStatusServiceContract::class     => TaskStatusService::class,
     ];
 
     /**
