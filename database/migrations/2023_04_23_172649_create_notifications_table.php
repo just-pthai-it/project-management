@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table)
         {
             $table->unsignedMediumInteger('id')->autoIncrement();
-            $table->morphs('commentable');
+            $table->morphs('notifiable');
             $table->unsignedTinyInteger('type')->nullable();
             $table->string('title')->nullable();
             $table->text('content')->nullable();
