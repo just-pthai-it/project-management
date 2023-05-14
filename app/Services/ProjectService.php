@@ -10,6 +10,7 @@ use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
 use App\Http\Resources\Project\Task\TaskCollection;
+use App\Http\Resources\Task\TaskSearchCollection;
 use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;
@@ -149,7 +150,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function searchTasks (Project $project, array $inputs = []) : JsonResponse
     {
         $tasks = $project->tasks()->filter($inputs)->get(['id', 'name', 'project_id']);
-        return CusResponse::successful($tasks);
+        return (new TaskSearchCollection($tasks))->response();
     }
 
     public function listTasks (Project $project, array $inputs = []) : JsonResponse
