@@ -31,5 +31,7 @@ interface ProjectServiceContract
 
     public function deleteTask (Project $project, Task $task);
 
+    public function listUsers (Project $project, array $inputs = []);
+
     public function history (Project $project);
 }

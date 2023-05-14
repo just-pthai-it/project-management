@@ -6,6 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectStatusController;
 use App\Http\Controllers\ProjectTaskController;
+use App\Http\Controllers\ProjectUserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
@@ -45,7 +46,9 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
     Route::apiResource('task-statuses', TaskStatusController::class)->only(['index']);
 
+
     Route::get('projects/{project}/history', [ProjectController::class, 'history']);
+    Route::apiResource('projects.users', ProjectUserController::class)->only(['index']);
     Route::get('projects/search', [ProjectController::class, 'search']);
     Route::apiResource('projects', ProjectController::class);
 

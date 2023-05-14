@@ -10,6 +10,7 @@ use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
 use App\Http\Resources\Project\Task\TaskCollection;
+use App\Http\Resources\Project\User\UserCollection;
 use App\Http\Resources\Task\TaskSearchCollection;
 use App\Models\Project;
 use App\Models\ProjectStatus;
@@ -148,6 +149,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         return CusResponse::successful();
     }
 
+
     public function searchTasks (Project $project, array $inputs = []) : JsonResponse
     {
         $tasks = $project->tasks()->filter($inputs)->get(['id', 'name', 'project_id']);
@@ -242,6 +244,12 @@ class ProjectService implements Contracts\ProjectServiceContract
         $this->__updateProjectProgress($project);
         event(new SystemObjectAffected($task, auth()->user(), 'deleted'));
         return CusResponse::successfulWithNoData();
+    }
+
+    public function listUsers (Project $project, array $inputs = []) : JsonResponse
+    {
+        $project->load(['users:id,name']);
+        return (new UserCollection($project->users))->response();
     }
 
     public function history (Project $project) : JsonResponse
