@@ -9,6 +9,7 @@ use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
+use App\Http\Resources\Project\ProjectSearchCollection;
 use App\Http\Resources\Project\Task\TaskCollection;
 use App\Models\Project;
 use App\Models\ProjectStatus;
@@ -42,7 +43,7 @@ class ProjectService implements Contracts\ProjectServiceContract
             $projects = $this->__listByNonRootUser($inputs);
         }
 
-        return CusResponse::successful($projects);
+        return (new ProjectSearchCollection($projects))->response();
     }
 
     private function __listByRootUser (array $inputs) : Collection
