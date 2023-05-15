@@ -22,6 +22,6 @@ class TaskKanbanCollection extends ResourceCollection
             ];
         });
 
-        return $this->collection;
+        return $this->collection->sortBy('status_id');
     }
 }
