@@ -25,8 +25,8 @@ class StoreRolePostRequest extends FormRequest
     {
         return [
             'name'             => ['required', 'string'],
-            'permission_ids'   => ['sometimes', 'required', 'array'],
-            'permission_ids.*' => ['sometimes', 'required', 'integer'],
+            'permission_ids'   => ['required', 'array'],
+            'permission_ids.*' => ['required', 'integer'],
         ];
     }
 }

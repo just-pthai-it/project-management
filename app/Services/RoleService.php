@@ -12,7 +12,7 @@ class RoleService implements Contracts\RoleServiceContract
 
     public function list (array $inputs = []) : JsonResponse
     {
-        $roles = Role::all();
+        $roles = Role::query()->where('name', '!=', Role::ROLE_ROOT_NAME)->get();
         return CusResponse::successful($roles);
     }
 
@@ -21,10 +21,7 @@ class RoleService implements Contracts\RoleServiceContract
     public function store (array $inputs) : JsonResponse
     {
         $role = Role::query()->create(Arr::except($inputs, ['permission_ids']));
-        if (isset($inputs['permission_ids']))
-        {
-            $role->permissions()->attach($inputs['permission_ids']);
-        }
+        $role->permissions()->attach($inputs['permission_ids']);
         return CusResponse::createSuccessful($role);
     }
 
@@ -43,6 +40,6 @@ class RoleService implements Contracts\RoleServiceContract
         $role->users()->detach();
         $role->permissions()->detach();
         $role->delete();
-        return CusResponse::successful();
+        return CusResponse::successfulWithNoData();
     }
 }
