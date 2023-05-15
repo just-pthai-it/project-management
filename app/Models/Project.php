@@ -110,7 +110,7 @@ class Project extends Model
 
     public function activityLogs () : MorphMany
     {
-        return $this->morphMany(ActivityLog::class, 'objectable');
+        return $this->morphMany(ActivityLog::class, 'objectable')->latest();
     }
 
     public function notification () : MorphMany
