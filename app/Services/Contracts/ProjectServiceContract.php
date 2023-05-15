@@ -23,6 +23,8 @@ interface ProjectServiceContract
 
     public function listTasks (Project $project, array $inputs = []);
 
+    public function listTasksKanban (Project $project, array $inputs = []);
+
     public function getTask (Project $project, Task $task);
 
     public function storeTask (Project $project, array $inputs);

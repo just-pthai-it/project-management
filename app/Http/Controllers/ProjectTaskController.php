@@ -46,6 +46,11 @@ class ProjectTaskController extends Controller
         return $this->projectService->listTasks($project, $request->all());
     }
 
+    public function indexKanban (Request $request, Project $project) : JsonResponse
+    {
+        return $this->projectService->listTasksKanban($project, $request->all());
+    }
+
     /**
      * Store a newly created resource in storage.
      *

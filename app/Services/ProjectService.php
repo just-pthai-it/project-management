@@ -10,6 +10,7 @@ use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
 use App\Http\Resources\Project\Task\TaskCollection;
+use App\Http\Resources\Project\Task\TaskKanbanCollection;
 use App\Http\Resources\Project\User\UserCollection;
 use App\Http\Resources\Task\TaskSearchCollection;
 use App\Models\Project;
@@ -219,6 +220,19 @@ class ProjectService implements Contracts\ProjectServiceContract
         return (new TaskCollection($tasks))->response();
     }
 
+    public function listTasksKanban (Project $project, array $inputs = []) : JsonResponse
+    {
+        $tasks = $project->tasks()->filter($inputs)
+                         ->with(['users:id,name,avatar'])
+                         ->get(['id', 'name', 'project_id', 'status_id', 'starts_at', 'ends_at']);
+        $tasks = $this->__groupTasksByStatus($tasks);
+        return (new TaskKanbanCollection($tasks))->response();
+    }
+
+    private function __groupTasksByStatus (Collection $tasks)
+    {
+        return $tasks->groupBy('status_id');
+    }
     public function getTask (Project $project, Task $task) : JsonResponse
     {
         $task->project = $project;

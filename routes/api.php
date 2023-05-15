@@ -55,6 +55,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
 
     Route::get('projects/{project}/tasks/search', [ProjectTaskController::class, 'search']);
+    Route::get('projects/{project}/tasks/kanban', [ProjectTaskController::class, 'indexKanban']);
     Route::apiResource('projects.tasks', ProjectTaskController::class);
     Route::post('tasks/{task}/attach-files', [TaskController::class, 'attachFiles']);
     Route::delete('tasks/{task}/detach-file/{file}', [TaskController::class, 'detachFile']);
