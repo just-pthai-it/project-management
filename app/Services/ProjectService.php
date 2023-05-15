@@ -154,7 +154,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             if (!$this->__checkIfCanUpdateProjectToCompleteStatus($project))
             {
-                return [false, 'Condition1'];
+                return [false, 'Không thể thực hiện hành động do vẫn còn đầu việc chưa hoàn thành.'];
             }
         }
 
@@ -164,7 +164,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             if (!$this->__checkIfCanUpdateProjectStatusFromBehindSchedule($project, $inputs))
             {
-                return [false, 'Condition2'];
+                return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
             }
         }
 
@@ -172,7 +172,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             if ($this->__checkIfAnyTasksTimeOverProjectTime($project, $inputs))
             {
-                return [false, 'Condition3'];
+                return [false, 'Không thể thực hiện hành động do phạm vi ngày bắt đầu và ngày kết thúc không bao quát hết tất cả đầu việc.'];
             }
         }
 
@@ -305,7 +305,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             if (!$this->__checkIfCanUpdateTaskToCompleteStatus($task))
             {
-                return [false, 'Condition1'];
+                return [false, 'Không thể thực hiện được hành động do chưa hoàn thành hết các đầu việc con.'];
             }
         }
 
@@ -315,7 +315,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             if (!$this->__checkIfCanUpdateTaskStatusFromBehindSchedule($task, $inputs))
             {
-                return [false, 'Condition2'];
+                return [false, 'Không thể thực hiện được hành động do thời gian hiện tại đã vượt quá thời gian kết thúc của đầu việc.'];
             }
         }
 
