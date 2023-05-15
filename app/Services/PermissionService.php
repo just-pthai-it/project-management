@@ -2,20 +2,16 @@
 
 namespace App\Services;
 
-use App\Repositories\Contracts\PermissionRepositoryContract;
+use App\Helpers\CusResponse;
+use App\Models\Permission;
+use Illuminate\Http\JsonResponse;
 
 class PermissionService implements Contracts\PermissionServiceContract
 {
-    private PermissionRepositoryContract $permissionRepository;
-
-    public function __construct (PermissionRepositoryContract $permissionRepository)
+    public function list (array $inputs = []) : JsonResponse
     {
-        $this->permissionRepository = $permissionRepository;
-    }
-
-    public function list (array $inputs = [])
-    {
-
+        $permissions = Permission::all();
+        return CusResponse::successful($permissions);
     }
 
     public function get (int|string $id, array $inputs = [])

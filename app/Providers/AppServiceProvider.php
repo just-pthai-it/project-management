@@ -8,6 +8,7 @@ use App\Services\Contracts\AuthenticationServiceContract;
 use App\Services\Contracts\CommentServiceContract;
 use App\Services\Contracts\FileServiceContract;
 use App\Services\Contracts\NotificationServiceContract;
+use App\Services\Contracts\PermissionServiceContract;
 use App\Services\Contracts\ProjectServiceContract;
 use App\Services\Contracts\ProjectStatusServiceContract;
 use App\Services\Contracts\RoleServiceContract;
@@ -16,6 +17,7 @@ use App\Services\Contracts\TaskStatusServiceContract;
 use App\Services\Contracts\UserServiceContract;
 use App\Services\FileService;
 use App\Services\NotificationService;
+use App\Services\PermissionService;
 use App\Services\ProjectService;
 use App\Services\ProjectStatusService;
 use App\Services\RoleService;
@@ -37,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         RoleServiceContract::class           => RoleService::class,
         ProjectStatusServiceContract::class  => ProjectStatusService::class,
         TaskStatusServiceContract::class     => TaskStatusService::class,
+        PermissionServiceContract::class     => PermissionService::class,
     ];
 
     /**

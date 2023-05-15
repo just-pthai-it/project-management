@@ -2,18 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Contracts\PermissionServiceContract;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PermissionController extends Controller
 {
+    private PermissionServiceContract $permissionService;
+
+    /**
+     * @param PermissionServiceContract $permissionService
+     */
+    public function __construct (PermissionServiceContract $permissionService)
+    {
+        $this->permissionService = $permissionService;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function index()
+    public function index() :JsonResponse
     {
-        //
+        return $this->permissionService->list();
     }
 
     /**

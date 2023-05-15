@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectStatusController;
 use App\Http\Controllers\ProjectTaskController;
@@ -73,4 +74,6 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::apiResource('notifications', NotificationController::class)->only(['index']);
 
     Route::apiResource('roles', RoleController::class)->except(['show']);
+
+    Route::apiResource('permissions', PermissionController::class)->only(['index']);
 });
