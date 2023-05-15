@@ -205,7 +205,6 @@ class ProjectService implements Contracts\ProjectServiceContract
         return CusResponse::successful();
     }
 
-
     public function searchTasks (Project $project, array $inputs = []) : JsonResponse
     {
         $tasks = $project->tasks()->filter($inputs)->get(['id', 'name', 'project_id']);
@@ -229,10 +228,11 @@ class ProjectService implements Contracts\ProjectServiceContract
         return (new TaskKanbanCollection($tasks))->response();
     }
 
-    private function __groupTasksByStatus (Collection $tasks)
+    private function __groupTasksByStatus (Collection $tasks) : Collection
     {
         return $tasks->groupBy('status_id');
     }
+
     public function getTask (Project $project, Task $task) : JsonResponse
     {
         $task->project = $project;
@@ -358,7 +358,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function listUsers (Project $project, array $inputs = []) : JsonResponse
     {
-        $users = $project->users()->filter($inputs)->get(['users.id', 'users.name']);
+        $users = $project->users()->filter($inputs)->get(['users.id', 'users.name', 'users.email']);
         return (new UserCollection($users))->response();
     }
 
