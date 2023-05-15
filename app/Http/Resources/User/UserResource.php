@@ -9,6 +9,14 @@ use JsonSerializable;
 
 class UserResource extends JsonResource
 {
+    private bool $isIncludePermissions;
+
+    public function __construct ($resource, bool $isIncludePermissions = false)
+    {
+        parent::__construct($resource);
+        $this->isIncludePermissions = $isIncludePermissions;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -28,7 +36,7 @@ class UserResource extends JsonResource
             'status'        => $this->status,
             'avatar'        => $this->avatar,
             'roles'         => $this->roles,
-            'permissions'   => $this->permissions(),
+            'permissions'   => $this->when($this->isIncludePermissions, $this->permissions),
         ];
     }
 

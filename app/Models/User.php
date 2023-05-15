@@ -83,16 +83,21 @@ class User extends Authenticatable
         return $this->roles()->where('name', '=', Role::ROLE_ROOT_NAME)->exists();
     }
 
-    public function permissions () : array
+    protected function permissions () : Attribute
     {
-        $this->load(['roles:id', 'roles.permissions:id,name']);
-        $permissions = collect();
-        foreach ($this->roles as $role)
-        {
-            $permissions->push(...$role->permissions->pluck('name')->all());
-        }
+        return Attribute::make(
+            get: function ()
+            {
+                $this->load(['roles:id', 'roles.permissions:id,name']);
+                $permissions = collect();
+                foreach ($this->roles as $role)
+                {
+                    $permissions->push(...$role->permissions->pluck('name')->all());
+                }
 
-        return $permissions->unique()->all();
+                return $permissions->unique()->all();
+            }
+        );
     }
 
     public function projects () : HasMany

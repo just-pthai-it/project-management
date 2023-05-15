@@ -12,7 +12,7 @@ class AuthenticationService implements Contracts\AuthenticationServiceContract
         auth()->attempt(['email' => $email, 'password' => $password, 'status' => User::STATUS_ACTIVE]);
 
         $responseData = [
-            'access_token' => $this->__generateTokenForResponse(auth()->user()->permissions()),
+            'access_token' => $this->__generateTokenForResponse(auth()->user()->isRoot() ? ['all:crud'] : auth()->user()->permissions),
         ];
 
         if ($isRememberMe === true)
@@ -26,7 +26,7 @@ class AuthenticationService implements Contracts\AuthenticationServiceContract
     public function refreshToken () : JsonResponse
     {
         return response()->json(['data' => [
-            'access_token' => $this->__generateTokenForResponse(auth()->user()->permissions()),
+            'access_token' => $this->__generateTokenForResponse(auth()->user()->isRoot() ? ['all:crud'] : auth()->user()->permissions),
         ]]);
     }
 

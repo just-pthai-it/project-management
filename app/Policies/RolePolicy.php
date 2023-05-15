@@ -13,7 +13,7 @@ class RolePolicy
 
     public function before (User $user, $ability) : ?bool
     {
-        return $user->isRoot() ? true : null;
+        return $user->tokenCan('all:crud') ? true : null;
     }
 
     /**

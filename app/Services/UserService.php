@@ -26,7 +26,7 @@ class UserService implements Contracts\UserServiceContract
 
     public function list (array $inputs = []) : JsonResponse
     {
-        $users = User::query()->paginate($inputs['per_page'] ?? Constants::DEFAULT_PER_PAGE);
+        $users = User::query()->with(['roles'])->paginate($inputs['per_page'] ?? Constants::DEFAULT_PER_PAGE);
         return (new UserCollection($users))->response();
     }
 
@@ -78,6 +78,6 @@ class UserService implements Contracts\UserServiceContract
 
     public function myProfile () : JsonResponse
     {
-        return (new UserResource(auth()->user()))->response();
+        return (new UserResource(auth()->user(), true))->response();
     }
 }
