@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::post('profile/avatar', [UserController::class, 'updateMyAvatar']);
 
     Route::post('users/{user}/avatar', [UserController::class, 'updateAvatar']);
+    Route::get('users/search', [UserController::class, 'search']);
     Route::apiResource('users', UserController::class);
 
     Route::apiResource('project-statuses', ProjectStatusController::class)->only(['index']);

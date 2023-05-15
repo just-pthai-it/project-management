@@ -28,14 +28,14 @@ class UserResource extends JsonResource
         return [
             'id'            => $this->id,
             'name'          => $this->name,
-            'email'         => $this->email,
-            'phone'         => $this->phone,
-            'address'       => $this->address,
-            'date_of_birth' => $this->date_of_birth,
-            'job_title'     => $this->job_title,
-            'status'        => $this->status,
-            'avatar'        => $this->avatar,
-            'roles'         => $this->roles,
+            'email'         => $this->whenHas('email'),
+            'phone'         => $this->whenHas('phone'),
+            'address'       => $this->whenHas('address'),
+            'date_of_birth' => $this->whenHas('date_of_birth'),
+            'job_title'     => $this->whenHas('job_title'),
+            'status'        => $this->whenHas('status'),
+            'avatar'        => $this->whenHas('avatar'),
+            'roles'         => $this->whenLoaded('roles'),
             'permissions'   => $this->when($this->isIncludePermissions, $this->permissions),
         ];
     }

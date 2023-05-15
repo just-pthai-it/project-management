@@ -35,6 +35,11 @@ class UserController extends Controller
         return $this->userService->list($request->all());
     }
 
+    public function search (Request $request) : JsonResponse
+    {
+        return $this->userService->search($request->all());
+    }
+
     /**
      * Store a newly created resource in storage.
      *

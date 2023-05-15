@@ -8,6 +8,7 @@ use App\Http\Resources\User\UserCollection;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Services\Contracts\FileServiceContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -27,6 +28,12 @@ class UserService implements Contracts\UserServiceContract
     public function list (array $inputs = []) : JsonResponse
     {
         $users = User::query()->with(['roles'])->paginate($inputs['per_page'] ?? Constants::DEFAULT_PER_PAGE);
+        return (new UserCollection($users))->response();
+    }
+
+    public function search (array $inputs = []) : JsonResponse
+    {
+        $users = User::query()->get(['id', 'name', 'email']);
         return (new UserCollection($users))->response();
     }
 

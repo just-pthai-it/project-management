@@ -9,6 +9,8 @@ interface UserServiceContract
 {
     public function list (array $inputs = []);
 
+    public function search (array $inputs = []);
+
     public function get (User $user);
 
     public function store (array $inputs);
