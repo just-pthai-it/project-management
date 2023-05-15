@@ -222,7 +222,8 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function getTask (Project $project, Task $task) : JsonResponse
     {
         $task->project = $project;
-        $task->load(['status', 'files:id,name,url,fileable_type,fileable_id', 'taskUserPairs:id,task_id', 'taskUserPairs.file']);
+        $task->load(['status', 'files:id,name,url,fileable_type,fileable_id', 'taskUserPairs:id,task_id',
+                     'taskUserPairs.file', 'children', 'parent']);
         return CusResponse::successful($task);
     }
 

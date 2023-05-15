@@ -76,7 +76,7 @@ class Task extends Model
         return $this->morphMany(File::class, 'fileable');
     }
 
-    public function preTask () : BelongsTo
+    public function parent () : BelongsTo
     {
         return $this->belongsTo(Task::class, 'parent_id', 'id');
     }
