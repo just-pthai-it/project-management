@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\CusResponse;
+use App\Http\Resources\Role\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -12,8 +13,8 @@ class RoleService implements Contracts\RoleServiceContract
 
     public function list (array $inputs = []) : JsonResponse
     {
-        $roles = Role::query()->where('name', '!=', Role::ROLE_ROOT_NAME)->get();
-        return CusResponse::successful($roles);
+        $roles = Role::all();
+        return RoleResource::collection($roles)->response();
     }
 
     public function get (int|string $id, array $inputs = []) {}
