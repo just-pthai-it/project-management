@@ -25,16 +25,16 @@ class CreateProjectPostRequest extends FormRequest
     public function rules () : array
     {
         return [
-            'name'              => ['required', 'string'],
-            'customer_name'     => ['required', 'string'],
-            'code'              => ['required', 'string'],
-            'summary'           => ['string'],
-            'starts_at'         => ['required', 'date'],
-            'ends_at'           => ['required', 'date', 'after_or_equal:starts_at'],
-            'duration'          => ['required', 'integer'],
-            'status_id'         => ['required', 'integer'],
-            'pending_reason'    => ['required_if:status_id,' . ProjectStatus::STATUS_PENDING, 'string'],
-            'assigned_user_ids' => ['sometimes', 'required', 'array'],
+            'name'           => ['required', 'string'],
+            'customer_name'  => ['required', 'string'],
+            'code'           => ['required', 'string'],
+            'summary'        => ['string'],
+            'starts_at'      => ['required', 'date'],
+            'ends_at'        => ['required', 'date', 'after_or_equal:starts_at'],
+            'duration'       => ['required', 'integer'],
+            'status_id'      => ['required', 'integer'],
+            'pending_reason' => ['required_if:status_id,' . ProjectStatus::STATUS_PENDING, 'string'],
+            'user_ids'       => ['sometimes', 'required', 'array'],
         ];
     }
 

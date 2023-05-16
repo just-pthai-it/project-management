@@ -21,6 +21,7 @@ use App\Repositories\Contracts\ProjectRepositoryContract;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
@@ -135,18 +136,25 @@ class ProjectService implements Contracts\ProjectServiceContract
 
         $oldData = $project->getOriginal();
         $project->update($inputs);
-        if (isset($inputs['assigned_user_ids']))
+        if (isset($inputs['user_ids']))
         {
-            $project->users()->syncWithoutDetaching($inputs['assigned_user_ids']);
-            event(new UserAssigned($project, array_diff($inputs['assigned_user_ids'], [auth()->id()])));
-        }
-        if (isset($inputs['unassigned_user_ids']))
-        {
-            $project->users()->detach(array_diff($inputs['unassigned_user_ids'], [auth()->id()]));
+            $newAssignee = $this->__assignUsers($project, $inputs['user_ids']);
+            event(new UserAssigned($project, $newAssignee));
         }
         event(new SystemObjectAffected($project, auth()->user(), 'updated', $oldData));
 
         return CusResponse::successful();
+    }
+
+    private function __assignUsers (Model $object, array $userIds) : array
+    {
+        $currentAssigneeIds = $object->users()->pluck('id')->all();
+        $newAssignee        = array_diff($userIds, $currentAssigneeIds);
+        $oldAssignee        = array_diff($currentAssigneeIds, $userIds);
+        $object->users()->attach($newAssignee);
+        $object->users()->detach($oldAssignee);
+
+        return $newAssignee;
     }
 
     private function __checkConditionBeforeUpdateProject (Project $project, array $inputs) : array
