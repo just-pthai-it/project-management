@@ -8,6 +8,8 @@ interface CommentServiceContract
 {
     public function list (array $inputs = []);
 
+    public function listReplies (Comment $comment);
+
     public function get (Comment $comment);
 
     public function store (array $inputs);
@@ -15,6 +17,4 @@ interface CommentServiceContract
     public function update (Comment $comment, array $inputs);
 
     public function delete (Comment $comment);
-
-    public function listReplies (Comment $comment);
 }

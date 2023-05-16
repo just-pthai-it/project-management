@@ -8,6 +8,7 @@ use App\Services\Contracts\TaskServiceContract;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class TaskCommentController extends Controller
 {
@@ -24,11 +25,12 @@ class TaskCommentController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Task $task
+     * @return JsonResponse
      */
-    public function index ()
+    public function index (Task $task) : JsonResponse
     {
-        //
+        return $this->taskService->listComments($task);
     }
 
     /**
@@ -49,7 +51,7 @@ class TaskCommentController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\Task $task
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show (Task $task)
     {
@@ -61,7 +63,7 @@ class TaskCommentController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Task         $task
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update (Request $request, Task $task)
     {
@@ -72,7 +74,7 @@ class TaskCommentController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\Task $task
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy (Task $task)
     {

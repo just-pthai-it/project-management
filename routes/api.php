@@ -66,7 +66,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::get('tasks/search', [TaskController::class, 'search']);
     Route::apiResource('tasks', TaskController::class)->only(['index']);
 
-    Route::apiResource('tasks.comments', TaskCommentController::class)->only(['store']);
+    Route::apiResource('tasks.comments', TaskCommentController::class)->only(['index', 'store']);
     Route::get('comments/{comment}/replies', [CommentController::class, 'listReplies']);
     Route::apiResource('comments', CommentController::class)->only(['update', 'destroy']);
 

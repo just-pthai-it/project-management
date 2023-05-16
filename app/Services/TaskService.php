@@ -6,6 +6,7 @@ use App\Events\ObjectResourceUpdated;
 use App\Events\UserCommented;
 use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
+use App\Http\Resources\Comment\CommentResource;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\Comment;
 use App\Models\File;
@@ -122,16 +123,22 @@ class TaskService implements Contracts\TaskServiceContract
                 $comment->save();
             }
 
-            event(new UserCommented($task, $comment, $previousComment));
+//            event(new UserCommented($task, $comment, $previousComment));
 
         }
         else
         {
             $comment = $task->comments()->create($inputs + ['deep_level' => 1]);
-            event(new UserCommented($task, $comment, null));
+//            event(new UserCommented($task, $comment, null));
         }
 
         return CusResponse::createSuccessful(['id' => $comment->id]);
+    }
+
+    public function listComments (Task $task) : JsonResponse
+    {
+        $comments = $task->comments()->latest()->orderByDesc('id')->get();
+        return CommentResource::collection($comments)->response();
     }
 
     public function history (Task $task) : JsonResponse
