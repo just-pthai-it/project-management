@@ -152,7 +152,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     private function __assignUsers (Model $object, array $userIds) : array
     {
-        $currentAssigneeIds = $object->users()->pluck('id')->all();
+        $currentAssigneeIds = $object->users()->pluck('users.id')->all();
         $newAssignee        = array_diff($userIds, $currentAssigneeIds);
         $oldAssignee        = array_diff($currentAssigneeIds, $userIds);
         $object->users()->attach($newAssignee);
