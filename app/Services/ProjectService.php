@@ -257,8 +257,11 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function storeTask (Project $project, array $inputs) : JsonResponse
     {
         $task = $project->tasks()->create($inputs);
-        $task->users()->attach($inputs['assigned_user_ids']);
-        event(new UserAssigned($task, array_diff($inputs['assigned_user_ids'], [auth()->id()])));
+        if (isset($inputs['user_ids']))
+        {
+            $project->users()->attach($inputs['user_ids']);
+            event(new UserAssigned($project, array_diff($inputs['user_ids'], [auth()->id()])));
+        }
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task);
         $project->save();
@@ -309,14 +312,10 @@ class ProjectService implements Contracts\ProjectServiceContract
 
         $oldTask = $task->replicate();
         $task->update($inputs);
-        if (isset($inputs['assigned_user_ids']))
+        if (isset($inputs['user_ids']))
         {
-            $task->users()->syncWithoutDetaching($inputs['assigned_user_ids']);
-            event(new UserAssigned($task, array_diff($inputs['assigned_user_ids'], [auth()->id()])));
-        }
-        if (isset($inputs['unassigned_user_ids']))
-        {
-            $task->users()->detach(array_diff($inputs['unassigned_user_ids'], [auth()->id()]));
+            $newAssignee = $this->__assignUsers($project, $inputs['user_ids']);
+            event(new UserAssigned($project, array_diff($newAssignee, [auth()->id()])));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task, $oldTask);
