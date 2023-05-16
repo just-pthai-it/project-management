@@ -37,20 +37,4 @@ class CreateProjectPostRequest extends FormRequest
             'user_ids'       => ['sometimes', 'required', 'array'],
         ];
     }
-
-    public function validated ($key = null, $default = null)
-    {
-        $inputs = parent::validated($key, $default);
-
-        if (isset($inputs['user_ids']))
-        {
-            $inputs['user_ids'] = array_unique(array_merge($inputs['user_ids'], [auth()->id()]));
-        }
-        else
-        {
-            $inputs['user_ids'] = [auth()->id()];
-        }
-
-        return $inputs;
-    }
 }

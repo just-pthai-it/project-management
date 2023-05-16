@@ -120,9 +120,13 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function store (array $inputs) : JsonResponse
     {
         $project = auth()->user()->projects()->create($inputs);
-        $project->users()->attach($inputs['assigned_user_ids']);
+        if (isset($inputs['user_ids']))
+        {
+            $project->users()->attach($inputs['user_ids']);
+            event(new UserAssigned($project, array_diff($inputs['user_ids'], [auth()->id()])));
+        }
         event(new SystemObjectAffected($project, auth()->user(), 'created'));
-        event(new UserAssigned($project, array_diff($inputs['assigned_user_ids'], [auth()->id()])));
+
         return CusResponse::createSuccessful(['id' => $project->id]);
     }
 
@@ -139,7 +143,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         if (isset($inputs['user_ids']))
         {
             $newAssignee = $this->__assignUsers($project, $inputs['user_ids']);
-            event(new UserAssigned($project, $newAssignee));
+            event(new UserAssigned($project, array_diff($newAssignee, [auth()->id()])));
         }
         event(new SystemObjectAffected($project, auth()->user(), 'updated', $oldData));
 
