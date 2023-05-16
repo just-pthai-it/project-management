@@ -28,6 +28,7 @@ class CreateProjectPostRequest extends FormRequest
             'name'              => ['required', 'string'],
             'customer_name'     => ['required', 'string'],
             'code'              => ['required', 'string'],
+            'summary'           => ['string'],
             'starts_at'         => ['required', 'date'],
             'ends_at'           => ['required', 'date', 'after_or_equal:starts_at'],
             'duration'          => ['required', 'integer'],
