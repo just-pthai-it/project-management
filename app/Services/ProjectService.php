@@ -351,6 +351,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function deleteTask (Project $project, Task $task) : JsonResponse
     {
         $task->delete();
+        $task->children()->delete();
         $this->__updateProjectProgress($project);
         event(new SystemObjectAffected($task, auth()->user(), 'deleted'));
         return CusResponse::successfulWithNoData();
