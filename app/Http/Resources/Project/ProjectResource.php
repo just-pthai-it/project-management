@@ -21,6 +21,7 @@ class ProjectResource extends JsonResource
         $data = [
             'id'             => $this->id,
             'name'           => $this->name,
+            'customer_name'  => $this->whenHas('customer_name'),
             'code'           => $this->whenHas('code'),
             'summary'        => $this->whenHas('summary'),
             'starts_at'      => $this->starts_at->format('Y-m-d'),
