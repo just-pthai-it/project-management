@@ -25,15 +25,20 @@ class CreateTaskPostRequest extends FormRequest
     public function rules () : array
     {
         return [
-            'name'           => ['required', 'string'],
-            'description'    => ['required', 'string'],
-            'starts_at'      => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
-            'ends_at'        => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
-            'duration'       => ['required', 'integer'],
-            'status_id'      => ['sometimes', 'required', 'integer'],
-            'pending_reason' => ['required_if:status_id,' . TaskStatus::STATUS_PENDING, 'string'],
-            'user_ids'       => ['sometimes', 'required', 'array'],
-            'parent_id'      => ['sometimes', 'required', 'integer'],
+            'name'              => ['required', 'string'],
+            'description'       => ['required', 'string'],
+            'starts_at'         => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
+            'ends_at'           => ['required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP'],
+            'duration'          => ['required', 'integer'],
+            'status_id'         => ['sometimes', 'required', 'integer'],
+            'pending_reason'    => ['required_if:status_id,' . TaskStatus::STATUS_PENDING, 'string'],
+            'assigned_user_ids' => ['sometimes', 'required', 'array'],
+            'parent_id'         => ['sometimes', 'required', 'integer'],
         ];
+    }
+
+    public function validated ($key = null, $default = null)
+    {
+        return parent::validated($key, $default) + ['user_id' => auth()->id()];
     }
 }
