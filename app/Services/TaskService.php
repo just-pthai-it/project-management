@@ -91,10 +91,10 @@ class TaskService implements Contracts\TaskServiceContract
         }
 
         $uploadFileInfo = $this->fileService->putUploadedFileAndKeepName($uploadedFile, "task_{$task->id}/reports");
-        $taskUserPair->file()->create($uploadFileInfo);
+        $fileModel      = $taskUserPair->file()->create($uploadFileInfo);
         event(new ObjectResourceUpdated($task, auth()->user(), 'submitted', 'a report'));
 
-        return CusResponse::successfulWithNoData();
+        return CusResponse::successful($fileModel);
     }
 
     public function deleteReport (Task $task) : JsonResponse
