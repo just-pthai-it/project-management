@@ -314,7 +314,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task->update($inputs);
         if (isset($inputs['user_ids']))
         {
-            $newAssignee = $this->__assignUsers($project, $inputs['user_ids']);
+            $newAssignee = $this->__assignUsers($task, $inputs['user_ids']);
             event(new UserAssigned($project, array_diff($newAssignee, [auth()->id()])));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
