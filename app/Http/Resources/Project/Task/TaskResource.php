@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Project\Task;
 
+use App\Http\Resources\File\FileResource;
+use App\Http\Resources\Task\TaskReportResource;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,13 +20,18 @@ class TaskResource extends JsonResource
     public function toArray ($request) : array|JsonSerializable|Arrayable
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'project_id' => $this->project_id,
-            'starts_at'  => $this->starts_at,
-            'ends_at'    => $this->ends_at,
-            'status'     => $this->status,
-            'users'      => $this->users,
+            'id'             => $this->id,
+            'name'           => $this->name,
+            'project_id'     => $this->project_id,
+            'description'    => $this->description,
+            'starts_at'      => $this->starts_at,
+            'ends_at'        => $this->ends_at,
+            'status'         => $this->status,
+            'pending_reason' => $this->pending_reason,
+            'project'        => $this->project,
+            'files'          => FileResource::collection($this->files),
+            'reports'        => TaskReportResource::collection($this->taskUserPairs->whereNotNull('file')),
+            'users'          => $this->users,
         ];
     }
 }

@@ -61,7 +61,7 @@ class TaskService implements Contracts\TaskServiceContract
         return CusResponse::createSuccessful($files);
     }
 
-    private function __storeFiles (Task $task, array $filesInfo) : array
+    private function __storeFiles (Task $task, array $filesInfo) : array1
     {
         $files = [];
         foreach ($filesInfo as $fileInfo)

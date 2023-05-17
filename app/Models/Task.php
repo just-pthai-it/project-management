@@ -68,7 +68,7 @@ class Task extends Model
 
     public function users () : BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->using(TaskUser::class);
     }
 
     public function files () : MorphMany

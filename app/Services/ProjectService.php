@@ -11,6 +11,7 @@ use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
 use App\Http\Resources\Project\Task\TaskCollection;
 use App\Http\Resources\Project\Task\TaskKanbanCollection;
+use App\Http\Resources\Project\Task\TaskResource;
 use App\Http\Resources\Project\User\UserCollection;
 use App\Http\Resources\Task\TaskSearchCollection;
 use App\Models\Project;
@@ -249,8 +250,9 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function getTask (Project $project, Task $task) : JsonResponse
     {
         $task->project = $project;
-        $task->load(['status', 'files:id,name,url,fileable_type,fileable_id', 'taskUserPairs:id,task_id',
-                     'taskUserPairs.file', 'children', 'parent']);
+        $task->load(['status', 'files:id,name,url,fileable_type,fileable_id', 'taskUserPairs:id,task_id,user_id',
+                     'taskUserPairs.file', 'taskUserPairs.user', 'users:id,email,avatar', 'children', 'parent']);
+        return (new TaskResource($task))->response();
         return CusResponse::successful($task);
     }
 

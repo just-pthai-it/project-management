@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -19,5 +20,10 @@ class TaskUser extends Pivot
     public function file () : MorphOne
     {
         return $this->morphOne(File::class, 'fileable');
+    }
+
+    public function user () : BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
