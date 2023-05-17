@@ -6,7 +6,6 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
-use mysql_xdevapi\Table;
 
 class TaskPolicy
 {
@@ -14,6 +13,11 @@ class TaskPolicy
 
     public function before (User $user, $ability) : ?bool
     {
+        if ($ability == 'report')
+        {
+            return null;
+        }
+
         return $user->tokenCan('all:crud') ? true : null;
     }
 
@@ -122,7 +126,8 @@ class TaskPolicy
 
     public function report (User $user, Task $task) : bool
     {
-        return $user->tokenCan('task:report');
+        return $user->tokenCan('task:report') ||
+               $task->users()->where('users.id', '=', $user->id)->exists();
     }
 
     public function history (User $user, Task $task) : bool
