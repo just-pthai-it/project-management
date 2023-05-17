@@ -29,7 +29,6 @@ class UpdateTaskPatchRequest extends FormRequest
             'description'    => ['sometimes', 'required', 'string'],
             'starts_at'      => ['sometimes', 'required', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP,Y/m/d H:i:s,Y/m/d\\TH:i:sP'],
             'ends_at'        => ['sometimes', 'required', 'after_or_equal:starts_at', 'date_format:Y-m-d H:i:s,Y-m-d\\TH:i:sP,Y/m/d H:i:s,Y/m/d\\TH:i:sP'],
-            'duration'       => ['sometimes', 'required', 'integer'],
             'status_id'      => ['sometimes', 'required', 'integer'],
             'pending_reason' => [
 //                'required_if:status_id,' . TaskStatus::STATUS_PENDING, 'string'
