@@ -85,6 +85,8 @@ class UserService implements Contracts\UserServiceContract
 
     public function myProfile () : JsonResponse
     {
-        return (new UserResource(auth()->user(), true))->response();
+        $userResource = new UserResource(auth()->user());
+        $userResource->setIsIncludePermissions(true);
+        return $userResource->response();
     }
 }
