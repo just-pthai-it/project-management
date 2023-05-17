@@ -5,7 +5,9 @@ ARG groupid=1000
 
 WORKDIR /app
 
+COPY .docker/config/php8.1/php.ini-development /etc/php81/php.ini
 RUN apk add curl
+RUN apk add nano
 COPY . .
 RUN addgroup -g $userid appgroup
 RUN adduser -D -u $groupid appuser -G appgroup

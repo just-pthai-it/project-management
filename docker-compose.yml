@@ -14,3 +14,4 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./:/app
+      - .docker/config/php8.1/php.ini-development:/etc/php81/php.ini
