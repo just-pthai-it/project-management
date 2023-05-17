@@ -31,6 +31,8 @@ class TaskResource extends JsonResource
             'project'        => $this->project,
             'files'          => FileResource::collection($this->files),
             'reports'        => TaskReportResource::collection($this->taskUserPairs->whereNotNull('file')),
+            'children'       => $this->children,
+            'parent'         => $this->parent,
             'users'          => $this->users,
         ];
     }
