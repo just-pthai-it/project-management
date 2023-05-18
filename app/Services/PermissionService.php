@@ -11,7 +11,7 @@ class PermissionService implements Contracts\PermissionServiceContract
     public function list (array $inputs = []) : JsonResponse
     {
         $permissions = Permission::all();
-        return CusResponse::successful($permissions);
+        return CusResponse::successful($permissions->groupBy('group_name'));
     }
 
     public function get (int|string $id, array $inputs = [])
