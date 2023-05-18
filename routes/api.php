@@ -75,7 +75,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::get('notifications/count-unread');
     Route::apiResource('notifications', NotificationController::class)->only(['index']);
 
-    Route::apiResource('roles', RoleController::class)->except(['show']);
+    Route::apiResource('roles', RoleController::class);
 
     Route::apiResource('permissions', PermissionController::class)->only(['index']);
 });

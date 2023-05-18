@@ -253,7 +253,6 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task->load(['status', 'files:id,name,url,fileable_type,fileable_id', 'taskUserPairs:id,task_id,user_id',
                      'taskUserPairs.file', 'taskUserPairs.user', 'users:id,name,email,avatar', 'children.status', 'parent.status']);
         return (new TaskResource($task))->response();
-        return CusResponse::successful($task);
     }
 
     public function storeTask (Project $project, array $inputs) : JsonResponse

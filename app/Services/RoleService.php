@@ -17,7 +17,11 @@ class RoleService implements Contracts\RoleServiceContract
         return RoleResource::collection($roles)->response();
     }
 
-    public function get (int|string $id, array $inputs = []) {}
+    public function get (Role $role) : JsonResponse
+    {
+        $role->load('permissions');
+        return (new RoleResource($role))->response();
+    }
 
     public function store (array $inputs) : JsonResponse
     {

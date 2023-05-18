@@ -32,6 +32,10 @@ class RoleController extends Controller
         return $this->roleService->list();
     }
 
+    public function show (Role $role) : JsonResponse
+    {
+        return $this->roleService->get($role);
+    }
     /**
      * Store a newly created resource in storage.
      *

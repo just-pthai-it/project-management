@@ -8,7 +8,7 @@ interface RoleServiceContract
 {
     public function list (array $inputs = []);
 
-    public function get (int|string $id, array $inputs = []);
+    public function get (Role $role);
 
     public function store (array $inputs);
 

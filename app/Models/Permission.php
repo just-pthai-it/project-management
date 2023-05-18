@@ -17,6 +17,12 @@ class Permission extends Model
         'updated_at',
     ];
 
+    protected $hidden = [
+        'pivot',
+        'created_at',
+        'updated_at',
+    ];
+
     public function roles () : BelongsToMany
     {
         return $this->belongsToMany(Role::class);
