@@ -30,6 +30,11 @@ class NotificationController extends Controller
         return $this->notificationService->list($request->all());
     }
 
+    public function countUnreadNotifications () : JsonResponse
+    {
+        return $this->notificationService->countUnreadNotifications();
+    }
+
     public function marksAsRead (Notification $notification) : JsonResponse
     {
         return $this->notificationService->marksAsRead($notification);

@@ -72,7 +72,7 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
     Route::post('notifications/{notification}/marks-as-read', [NotificationController::class, 'marksAsRead']);
     Route::post('notifications/marks-all-as-read', [NotificationController::class, 'marksAllAsRead']);
-    Route::get('notifications/count-unread');
+    Route::get('notifications/count-unread', [NotificationController::class, 'countUnreadNotifications']);
     Route::apiResource('notifications', NotificationController::class)->only(['index']);
 
     Route::apiResource('roles', RoleController::class);

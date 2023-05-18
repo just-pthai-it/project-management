@@ -23,6 +23,11 @@ class NotificationService implements Contracts\NotificationServiceContract
         return (new NotificationCollection($notifications))->response();
     }
 
+    public function countUnreadNotifications () : JsonResponse
+    {
+        return CusResponse::successful(auth()->user()->unreadNotifications()->count());
+    }
+
     public function marksAsRead (Notification $notification) : JsonResponse
     {
         $notification->users()->updateExistingPivot(auth()->id(), ['read_at' => now()]);

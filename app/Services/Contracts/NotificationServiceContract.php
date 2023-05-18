@@ -8,6 +8,8 @@ interface NotificationServiceContract
 {
     public function list (array $inputs = []);
 
+    public function countUnreadNotifications ();
+
     public function marksAsRead (Notification $notification);
 
     public function marksAllAsRead ();
