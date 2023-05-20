@@ -11,12 +11,12 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NotificationCreated
+class NotificationCreated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Notification $notification;
-    public array $userIds;
+    private array $userIds;
 
     /**
      * @param Notification $notification
@@ -28,14 +28,13 @@ class NotificationCreated
         $this->userIds      = $userIds;
     }
 
-
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
-    public function broadcastOn()
+    public function broadcastOn() : Channel|array
     {
-        return new PrivateChannel('channel-name');
+        return $this->userIds;
     }
 }
