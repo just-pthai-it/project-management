@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ActivityLog extends Model
 {
@@ -18,6 +19,7 @@ class ActivityLog extends Model
     const SYSTEM_OBJECT_AFFECTED_LOG_DESCRIPTION = ':user_name :action :extra :object_type :object_name.';
 
     public const UPDATED_AT = null;
+
     protected $fillable = [
         'objectable_type',
         'objectable_id',
@@ -29,8 +31,8 @@ class ActivityLog extends Model
         'created_at',
     ];
 
-    public function comment () : BelongsTo
+    public function objectable () : MorphTo
     {
-        return $this->belongsTo(Comment::class);
+        return $this->morphTo();
     }
 }

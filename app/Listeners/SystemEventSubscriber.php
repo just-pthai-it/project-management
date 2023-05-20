@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\ActivityLogCreated;
 use App\Events\ObjectResourceUpdated;
 use App\Events\SystemObjectAffected;
 use App\Events\UserCommented;
@@ -76,7 +77,7 @@ class SystemEventSubscriber
         }
         $data['description'] = Str::swap($descriptionProperties, ActivityLog::COMMENT_LOG_DESCRIPTION);
         $data['type_id']     = ActivityLog::OBJECT_UPDATE_LOG_TYPE_ID;
-        $data['name']        = 'update';
+        $data['name']        = 'commented';
         $data['user_id']     = $event->comment->user->id;
         $data['comment_id']  = $event->comment->id;
         $this->__updateActivityLog($event->object, $data);
@@ -108,7 +109,8 @@ class SystemEventSubscriber
 
     private function __updateActivityLog (Model $object, array $data) : void
     {
-        $object->activityLogs()->create($data);
+      $activityLog =  $object->activityLogs()->create($data);
+        event(new ActivityLogCreated($activityLog));
     }
 
     public function subscribe ($events) : array
