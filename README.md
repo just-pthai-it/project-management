@@ -15,7 +15,7 @@ Docker engine version: 23.0.4
 ## Installation
 Install dependencies
 ```
-sudo docker run --rm --user 1000:1000 -v $(pwd):/app composer:2.5.5 composer i
+sudo docker run --rm --user 1000:1000 -v $(pwd):/app composer:2.5.5 composer i --ignore-platform-reqs
 ```
 Start containers
 ```
