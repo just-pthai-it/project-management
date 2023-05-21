@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Permisison;
+namespace App\Http\Resources\Permission;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;

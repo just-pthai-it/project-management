@@ -2,8 +2,7 @@
 
 namespace App\Services;
 
-use App\Helpers\CusResponse;
-use App\Http\Resources\Permisison\PermissionCollection;
+use App\Http\Resources\Permission\PermissionCollection;
 use App\Models\Permission;
 use Illuminate\Http\JsonResponse;
 
