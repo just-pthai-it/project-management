@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Role;
 
+use App\Http\Resources\Permission\PermissionCollection;
 use App\Models\Role;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class RoleResource extends JsonResource
             'id'          => $this->id,
             'name'        => $this->name,
             'is_editable' => $this->name != Role::ROLE_ROOT_NAME,
-            'permissions' => $this->permissions->groupBy('group_name'),
+            'permissions' => new PermissionCollection($this->permissions),
         ];
     }
 }
