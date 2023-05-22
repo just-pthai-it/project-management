@@ -86,11 +86,11 @@ class User extends Authenticatable
         return Attribute::make(
             get: function ()
             {
-                $this->load(['roles:id', 'roles.permissions:id,name']);
+                $this->load(['roles:id', 'roles.permissions:id,ability']);
                 $permissions = collect();
                 foreach ($this->roles as $role)
                 {
-                    $permissions->push(...$role->permissions->pluck('name')->all());
+                    $permissions->push(...$role->permissions->pluck('ability')->all());
                 }
 
                 return $permissions->unique()->all();
