@@ -39,18 +39,23 @@ RUN mv composer.phar /usr/local/bin/composer
 ARG userid=1000
 ARG groupid=1000
 
-WORKDIR /app
-COPY . .
+RUN apk add curl nano supervisor
 
-RUN apk add curl
-RUN apk add nano
+RUN mkdir -p /etc/supervisor.d/
 
 COPY .docker/config/php8.1/php.ini-development /etc/php81/php.ini
+COPY .docker/config/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY .docker/config/supervisor/supervisor.d/ /etc/supervisor.d/
+
+RUN echo "* * * * * php /app/artisan schedule:run >> /dev/null 2>&1" >> /etc/crontabs/appuser
+
+WORKDIR /app
+COPY . .
 
 RUN addgroup -g $userid appgroup
 RUN adduser -D -u $groupid appuser -G appgroup
 RUN chown -R appuser:appgroup /app
 
-USER appuser
+#USER appuser
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
+CMD supervisord -n -c /etc/supervisord.conf

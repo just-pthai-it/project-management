@@ -15,6 +15,7 @@ services:
     volumes:
       - ./:/app
       - .docker/config/php8.1/php.ini-development:/etc/php81/php.ini
+      - .docker/config/supervisor/supervisor.d:/etc/supervisor.d/
     depends_on:
       - redis
       - mariadb
