@@ -42,7 +42,9 @@ class ProjectPolicy
     public function view (User $user, Project $project) : Response|bool
     {
         return $user->tokenCan('project:view') &&
-               $project->users()->where('users.id', '=', $user->id)->exists();
+               ($user->tokenCan('statistical:project') ||
+                $project->user_id == $user->id ||
+                $project->users()->where('users.id', '=', $user->id)->exists());
     }
 
     /**
@@ -66,7 +68,8 @@ class ProjectPolicy
     public function update (User $user, Project $project) : Response|bool
     {
         return $user->tokenCan('project:update') &&
-               $project->users()->where('users.id', '=', $user->id)->exists();
+               ($project->user_id == $user->id ||
+                $project->users()->where('users.id', '=', $user->id)->exists());
     }
 
     /**
@@ -79,7 +82,8 @@ class ProjectPolicy
     public function delete (User $user, Project $project) : Response|bool
     {
         return $user->tokenCan('project:delete') &&
-               $project->users()->where('users.id', '=', $user->id)->exists();
+               ($project->user_id == $user->id ||
+                $project->users()->where('users.id', '=', $user->id)->exists());
     }
 
     /**
@@ -109,6 +113,8 @@ class ProjectPolicy
     public function history (User $user, Project $project) : bool
     {
         return $user->tokenCan('project:view') &&
-               $project->users()->where('users.id', '=', $user->id)->exists();
+               ($user->tokenCan('statistical:project') ||
+                $project->user_id == $user->id ||
+                $project->users()->where('users.id', '=', $user->id)->exists());
     }
 }
