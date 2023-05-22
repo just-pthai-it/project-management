@@ -22,7 +22,6 @@ class Task extends Model
         'project_id',
         'starts_at',
         'ends_at',
-        'duration',
         'status_id',
         'pending_reason',
         'parent_id',
@@ -33,7 +32,6 @@ class Task extends Model
 
     protected $attributes = [
         'status_id' => TaskStatus::STATUS_NOT_START,
-        'duration'  => 0,
     ];
 
     protected $casts = [
