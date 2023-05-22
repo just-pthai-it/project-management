@@ -17,8 +17,6 @@ return new class extends Migration
         {
             $table->unsignedMediumInteger('id')->autoIncrement();
             $table->morphs('notifiable');
-            $table->unsignedTinyInteger('type')->nullable();
-            $table->string('title')->nullable();
             $table->text('content')->nullable();
             $table->string('action')->nullable();
             $table->timestamp('created_at');

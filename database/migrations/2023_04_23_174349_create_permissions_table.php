@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('id')->autoIncrement();
             $table->string('group_name');
             $table->string('name');
+            $table->string('ability');
             $table->timestamps();
         });
     }

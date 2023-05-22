@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('job_title')->nullable();
             $table->boolean('status');
             $table->string('avatar')->nullable();
-            $table->rememberToken();
             $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

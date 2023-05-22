@@ -21,7 +21,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('starts_at');
             $table->timestamp('ends_at');
-            $table->unsignedSmallInteger('duration');
             $table->unsignedTinyInteger('status_id');
             $table->string('pending_reason')->nullable();
             $table->unsignedMediumInteger('parent_id')->nullable();

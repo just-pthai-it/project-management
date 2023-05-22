@@ -16,34 +16,61 @@ class PermissionSeeder extends Seeder
     public function run () : void
     {
         $permissionGroups = [
-            'Role'    => [
-                'role:view-any',
-                'role:view',
-                'role:create',
-                'role:update',
-                'role:delete',
+            'Vai trò'    => [
+                ['name'    => 'Xem nhiều',
+                 'ability' => 'role:view-any'],
+                ['name'    => 'Xem chi tiết',
+                 'ability' => 'role:view'],
+                ['name'    => 'Thêm',
+                 'ability' => 'role:create'],
+                ['name'    => 'Sửa',
+                 'ability' => 'role:update'],
+                ['name'    => 'Xóa',
+                 'ability' => 'role:delete'],
             ],
-            'User'    => [
-                'user:view-any',
-                'user:view',
-                'user:create',
-                'user:update',
-                'user:delete',
+            'Người dùng' => [
+                ['name'    => 'Xem nhiều',
+                 'ability' => 'user:view-any'],
+                ['name'    => 'Xem chi tiết',
+                 'ability' => 'user:view'],
+                ['name'    => 'Thêm',
+                 'ability' => 'user:create'],
+                ['name'    => 'Sửa',
+                 'ability' => 'user:update'],
+                ['name'    => 'Xóa',
+                 'ability' => 'user:delete'],
             ],
-            'Project' => [
-                'project:view-any',
-                'project:view',
-                'project:create',
-                'project:update',
-                'project:delete',
+            'Dự án'      => [
+                ['name'    => 'Xem nhiều',
+                 'ability' => 'project:view-any'],
+                ['name'    => 'Xem chi tiết',
+                 'ability' => 'project:view'],
+                ['name'    => 'Thêm',
+                 'ability' => 'project:create'],
+                ['name'    => 'Sửa',
+                 'ability' => 'project:update'],
+                ['name'    => 'Xóa',
+                 'ability' => 'project:delete'],
             ],
-            'Task'    => [
-                'task:view-any',
-                'task:view',
-                'task:create',
-                'task:update',
-                'task:delete',
-                'task:report',
+            'Đầu việc'   => [
+                ['name'    => 'Xem nhiều',
+                 'ability' => 'task:view-any'],
+                ['name'    => 'Xem chi tiết',
+                 'ability' => 'task:view'],
+                ['name'    => 'Thêm',
+                 'ability' => 'task:create'],
+                ['name'    => 'Sửa',
+                 'ability' => 'task:update'],
+                ['name'    => 'Xóa',
+                 'ability' => 'task:delete'],
+                ['name'    => 'Báo cáo',
+                 'ability' => 'task:report'],
+            ],
+            'Thống kê'   => [
+                ['name'    => 'Thống kê dự án',
+                 'ability' => 'statistical:project'],
+                ['name'    => 'Thống kê đầu việc',
+                 'ability' => 'statistical:task'],
             ],
         ];
 
@@ -51,7 +78,7 @@ class PermissionSeeder extends Seeder
         {
             foreach ($permissionGroup as $permission)
             {
-                Permission::query()->create(['group_name' => $groupName, 'name' => $permission]);
+                Permission::query()->create(['group_name' => $groupName] + $permission);
             }
         }
     }

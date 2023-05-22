@@ -22,11 +22,9 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('data')->nullable();
             $table->unsignedMediumInteger('user_id');
-            $table->unsignedMediumInteger('comment_id')->nullable();
             $table->timestamp('created_at');
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('comment_id')->references('id')->on('comments');
 
         });
     }

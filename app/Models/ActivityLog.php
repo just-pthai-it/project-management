@@ -27,7 +27,6 @@ class ActivityLog extends Model
         'type_id',
         'description',
         'user_id',
-        'comment_id',
         'created_at',
     ];
 

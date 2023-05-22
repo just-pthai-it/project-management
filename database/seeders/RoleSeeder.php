@@ -42,14 +42,14 @@ class RoleSeeder extends Seeder
                  'task:delete',
                  'task:report',
              ]],
-            ['name'        => 'Intern',
+            ['name'        => 'Thực tập sinh',
              'permissions' => [
                  'project:view-any',
                  'project-view',
                  'task:view-nay',
                  'task:view',
              ]],
-            ['name'        => 'Official employee',
+            ['name'        => 'Nhân viên chính thức',
              'permissions' => [
                  'project:view-any',
                  'project-view',
@@ -57,7 +57,7 @@ class RoleSeeder extends Seeder
                  'task:view',
                  'task:report',
              ]],
-            ['name'        => 'Co-leader',
+            ['name'        => 'Phó nhóm',
              'permissions' => [
                  'project:view-any',
                  'project-view',
@@ -66,7 +66,7 @@ class RoleSeeder extends Seeder
                  'task:update',
                  'task:report',
              ]],
-            ['name'        => 'Leader',
+            ['name'        => 'Truởng nhóm',
              'permissions' => [
                  'project:view-any',
                  'project-view',
@@ -78,7 +78,7 @@ class RoleSeeder extends Seeder
                  'task:report',
 
              ]],
-            ['name'        => 'Co-manager',
+            ['name'        => 'Phó dự án',
              'permissions' => [
                  'project:view-any',
                  'project-view',
@@ -90,7 +90,7 @@ class RoleSeeder extends Seeder
                  'task:delete',
                  'task:report',
              ]],
-            ['name'        => 'Manager',
+            ['name'        => 'Trưởng dự án',
              'permissions' => [
                  'project:view-any',
                  'project-view',
@@ -104,7 +104,7 @@ class RoleSeeder extends Seeder
                  'task:delete',
                  'task:report',
              ]],
-            ['name'        => 'Human resource management',
+            ['name'        => 'Quản lý nhân sự',
              'permissions' => [
                  'user:view-any',
                  'user:view',
@@ -112,12 +112,21 @@ class RoleSeeder extends Seeder
                  'user:update',
                  'user:delete',
              ]],
+            ['name'        => 'Giám sát viên',
+             'permissions' => [
+                 'statistical:project',
+                 'statistical:task',
+                 'project:view-any',
+                 'project-view',
+                 'task:view-nay',
+                 'task:view',
+             ]],
         ];
 
         foreach ($roles as $role)
         {
             $roleObj     = Role::query()->create(Arr::only($role, ['name']));
-            $permissions = Permission::query()->whereIn('name', $role['permissions'])->get();
+            $permissions = Permission::query()->whereIn('ability', $role['permissions'])->get();
             $roleObj->permissions()->attach($permissions);
         }
     }
