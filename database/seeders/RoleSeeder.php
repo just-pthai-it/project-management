@@ -106,6 +106,7 @@ class RoleSeeder extends Seeder
              ]],
             ['name'        => 'Quản lý nhân sự',
              'permissions' => [
+                 'role:view-any',
                  'user:view-any',
                  'user:view',
                  'user:create',

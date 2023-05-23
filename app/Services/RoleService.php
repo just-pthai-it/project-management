@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Helpers\CusResponse;
 use App\Http\Resources\Role\RoleResource;
 use App\Models\Role;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 
@@ -13,7 +14,10 @@ class RoleService implements Contracts\RoleServiceContract
 
     public function list (array $inputs = []) : JsonResponse
     {
-        $roles = Role::all();
+        $roles = Role::query()->when(!auth()->user()->isRoot(), function (Builder $query)
+        {
+            $query->where('name', '!=', Role::ROLE_ROOT_NAME);
+        })->get();
         return RoleResource::collection($roles)->response();
     }
 
