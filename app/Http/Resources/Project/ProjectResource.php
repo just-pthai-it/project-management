@@ -39,10 +39,13 @@ class ProjectResource extends JsonResource
 
         foreach (ProjectStatus::STATUSES as $id => $name)
         {
-            $tasks_count                     += $this->{"{$id}_tasks"};
+            $projectStatus = ProjectStatus::query()->find($id);
+            $tasks_count   += $this->{"{$id}_tasks"};
+
             $data['tasks_count_by_status'][] = [
                 'id'          => $id,
                 'name'        => $name,
+                'color'       => $projectStatus->color,
                 'tasks_count' => $this->{"{$id}_tasks"},
             ];
         }
