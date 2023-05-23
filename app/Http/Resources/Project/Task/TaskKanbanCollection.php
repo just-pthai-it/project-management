@@ -2,17 +2,20 @@
 
 namespace App\Http\Resources\Project\Task;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use JsonSerializable;
 
 class TaskKanbanCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param Request $request
+     * @return array|Arrayable|JsonSerializable
      */
-    public function toArray ($request)
+    public function toArray ($request) : array|JsonSerializable|Arrayable
     {
         $this->collection->transform(function ($item, $key)
         {

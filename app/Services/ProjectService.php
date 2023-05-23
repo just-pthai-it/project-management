@@ -244,7 +244,18 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     private function __groupTasksByStatus (Collection $tasks) : Collection
     {
-        return $tasks->groupBy('status_id');
+        $task = $tasks->groupBy('status_id');
+        foreach (TaskStatus::STATUSES as $id => $name)
+        {
+            if ($task->doesntContain(function (Collection $value, int $key) use ($id)
+            {
+                return $id == $key;
+            }))
+            {
+                $task->put($id, Collection::make());
+            }
+        }
+        return $task;
     }
 
     public function getTask (Project $project, Task $task) : JsonResponse
