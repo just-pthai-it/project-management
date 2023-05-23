@@ -14,7 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
-class UserImpactedSubscriber
+class UserImpactedSubscriber implements ShouldQueue
 {
     /**
      * Create the event listener.

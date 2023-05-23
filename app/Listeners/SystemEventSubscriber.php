@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Str;
 
-class SystemEventSubscriber
+class SystemEventSubscriber implements ShouldQueue
 {
     /**
      * Create the event listener.
