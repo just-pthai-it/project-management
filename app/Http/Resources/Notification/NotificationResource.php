@@ -18,12 +18,13 @@ class NotificationResource extends JsonResource
     public function toArray ($request) : array|JsonSerializable|Arrayable
     {
         return [
-            'id'         => $this->id,
-            'title'      => $this->title,
-            'content'    => $this->content,
-            'action'     => $this->action,
-            'created_at' => $this->created_at,
-            'read_at'    => $this->pivot->read_at,
+            'id'                   => $this->id,
+            'title'                => $this->title,
+            'content'              => $this->content,
+            'action'               => $this->action,
+            'created_at'           => $this->created_at,
+            'created_at_for_human' => $this->created_at_for_human,
+            'read_at'              => $this->pivot->read_at,
         ];
     }
 }
