@@ -13,10 +13,10 @@ class UpdateUserPatchRequest extends FormRequest
      */
     public function authorize () : bool
     {
-        if ($this->has('password'))
-        {
-            return $this->user()->tokenCan('all:crud');
-        }
+//        if ($this->has('password'))
+//        {
+//            return $this->user()->tokenCan('all:crud');
+//        }
 
         return true;
     }

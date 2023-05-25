@@ -9,7 +9,7 @@ class FileService implements Contracts\FileServiceContract
 {
     public function putUploadedFile (UploadedFile $file, string $path = '', string $disk = 'public') : array
     {
-        $fileInfo['name']      = $file->hashName();
+        $fileInfo['name']      = "{$file->hashName()}.{$file->extension()}";
         $fileInfo['extension'] = $file->extension();
         $fileInfo['disk']      = $disk;
         $fileInfo['file_path'] = $file->store($path, $disk);
@@ -20,7 +20,7 @@ class FileService implements Contracts\FileServiceContract
 
     public function putUploadedFileAndKeepName (UploadedFile $file, string $path = '', string $disk = 'public') : array
     {
-        $fileInfo['name']      = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $fileInfo['name']      = $file->getClientOriginalName();
         $fileInfo['extension'] = $file->extension();
         $fileInfo['disk']      = $disk;
         $fileInfo['file_path'] = $file->storeAs($path, $fileInfo['name'], $disk);
@@ -31,7 +31,7 @@ class FileService implements Contracts\FileServiceContract
 
     public function putUploadedFileAs (UploadedFile $file, string $name, string $path = '', string $disk = 'public') : array
     {
-        $fileInfo['name']      = $name;
+        $fileInfo['name']      = "{$name}.{$file->extension()}";
         $fileInfo['extension'] = $file->extension();
         $fileInfo['disk']      = $disk;
         $fileInfo['file_path'] = $file->storeAs($path, $fileInfo['name'], $disk);
