@@ -23,7 +23,7 @@ class UserPolicy
      */
     public function viewAny (User $user) : Response|bool
     {
-        return $user->can('user:view-any');
+        return $user->tokenCan('user:view-any');
     }
 
     /**
@@ -34,7 +34,7 @@ class UserPolicy
      */
     public function view (User $user) : Response|bool
     {
-        return $user->can('user:view');
+        return $user->tokenCan('user:view');
 
     }
 
@@ -46,7 +46,7 @@ class UserPolicy
      */
     public function create (User $user) : bool
     {
-        return $user->can('user:create');
+        return $user->tokenCan('user:create');
 
     }
 
@@ -58,7 +58,7 @@ class UserPolicy
      */
     public function update (User $user) : Response|bool
     {
-        return $user->can('user:update');
+        return $user->tokenCan('user:update');
 
     }
 
@@ -70,7 +70,7 @@ class UserPolicy
      */
     public function delete (User $user) : bool
     {
-        return $user->can('user:delete');
+        return $user->tokenCan('user:delete');
 
     }
 
@@ -93,6 +93,6 @@ class UserPolicy
      */
     public function forceDelete (User $user) : Response|bool
     {
-        return $user->can('user:delete');
+        return $user->tokenCan('user:delete');
     }
 }
