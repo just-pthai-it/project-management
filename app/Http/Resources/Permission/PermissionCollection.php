@@ -23,8 +23,9 @@ class PermissionCollection extends ResourceCollection
             $item->transform(function ($item, $key)
             {
                 return [
-                    'value' => $item->id,
-                    'label' => $item->name,
+                    'value'   => $item->id,
+                    'label'   => $item->name,
+                    'ability' => $item->ability,
                 ];
             });
 
