@@ -5,6 +5,7 @@ namespace App\Http\Resources\Permission;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Str;
 use JsonSerializable;
 
 class PermissionCollection extends ResourceCollection
@@ -26,10 +27,12 @@ class PermissionCollection extends ResourceCollection
                     'value'   => $item->id,
                     'label'   => $item->name,
                     'ability' => $item->ability,
+                    'name'    => Str::camel(Str::replace(':', '-', $item->ability)),
                 ];
             });
 
             return [
+                'name'        => Str::before($item->first()['ability'], ':'),
                 'groupName'   => $key,
                 'permissions' => $item,
             ];
