@@ -18,11 +18,12 @@ class FileResource extends JsonResource
     public function toArray ($request) : array|JsonSerializable|Arrayable
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'extension'  => $this->extension,
-            'url'        => $this->url,
-            'created_at' => $this->created_at,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'extension'   => $this->extension,
+            'url'         => $this->url,
+            'created_at'  => $this->created_at,
+            'is_editable' => true,
         ];
     }
 }
