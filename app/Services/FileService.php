@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileService implements Contracts\FileServiceContract
@@ -20,7 +21,9 @@ class FileService implements Contracts\FileServiceContract
 
     public function putUploadedFileAndKeepName (UploadedFile $file, string $path = '', string $disk = 'public') : array
     {
-        $fileInfo['name']      = $file->getClientOriginalName();
+        ;
+        $fileInfo['name']      = Str::of(pathinfo($file->getClientOriginalName(),
+                                                  PATHINFO_FILENAME))->slug('_') . ".{$file->extension()}";
         $fileInfo['extension'] = $file->extension();
         $fileInfo['disk']      = $disk;
         $fileInfo['file_path'] = $file->storeAs($path, $fileInfo['name'], $disk);
