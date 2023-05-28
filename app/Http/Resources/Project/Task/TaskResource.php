@@ -32,7 +32,7 @@ class TaskResource extends JsonResource
             'files'          => FileResource::collection($this->whenLoaded('files')),
             'reports'        => TaskReportResource::collection($this->whenLoaded('reports',
                 fn () => $this->taskUserPairs->whereNotNull('file'))),
-            'children'       => $this->children,
+            'children'       => $this->whenLoaded('children'),
             'parent'         => $this->whenLoaded('parent'),
             'users'          => $this->users,
         ];
