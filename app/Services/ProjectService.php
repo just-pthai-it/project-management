@@ -221,7 +221,9 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function searchTasks (Project $project, array $inputs = []) : JsonResponse
     {
-        $tasks = $project->tasks()->filter($inputs)->get(['id', 'name', 'project_id']);
+        $tasks = Task::query()
+                     ->where('project_id', '=', $project->id)
+                     ->filter($inputs)->get(['id', 'name', 'project_id']);
         return (new TaskSearchCollection($tasks))->response();
     }
 
