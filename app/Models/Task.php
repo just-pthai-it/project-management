@@ -83,6 +83,14 @@ class Task extends Model
         }
     }
 
+    public function filterProjectName (Builder $query, ?string $projectName) : void
+    {
+        if (!empty($projectName))
+        {
+            $query->whereRelation('project', 'projects.name', 'like', "%{$projectName}%");
+        }
+    }
+
     public function status () : BelongsTo
     {
         return $this->belongsTo(TaskStatus::class);
