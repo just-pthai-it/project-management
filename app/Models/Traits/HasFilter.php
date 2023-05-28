@@ -63,7 +63,7 @@ trait HasFilter
     private function __whereIn (Builder $query, string $field, string $value) : void
     {
         $values = explode('&&', $value);
-        if (count($values) > 0)
+        if (count($values) > 1)
         {
             $query->whereIn($field, $values);
         }

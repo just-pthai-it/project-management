@@ -73,7 +73,18 @@ class User extends Authenticatable
 
     public function filterName (Builder $query, string $name) : void
     {
-        $query->where('name', 'like', "%{$name}%");
+        if (!empty($name))
+        {
+            $query->where('name', 'like', "%{$name}%");
+        }
+    }
+
+    public function filterEmail (Builder $query, ?string $email) : void
+    {
+        if (!empty($email))
+        {
+            $query->where('email', 'like', "%{$email}%");
+        }
     }
 
     public function isRoot () : bool
