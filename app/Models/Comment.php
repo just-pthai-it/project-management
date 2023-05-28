@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,18 @@ class Comment extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    protected $appends = [
+        'is_editable',
+    ];
+
+    protected function isEditable () : Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->user_id === auth()->id()
+        );
+    }
+
 
     public function user () : BelongsTo
     {
