@@ -71,9 +71,7 @@ class TaskPolicy
     {
         return ($user->tokenCan('task:update') &&
                 ($task->user_id == $user->id ||
-                 $task->users()->where('users.id', '=', $user->id)->exists())) ||
-               $user->tokenCan('project:create') ||
-               $user->tokenCan('project:update');
+                 $task->users()->where('users.id', '=', $user->id)->exists()));
     }
 
     /**
@@ -85,11 +83,7 @@ class TaskPolicy
      */
     public function delete (User $user, Task $task) : Response|bool
     {
-        return ($user->tokenCan('task:delete') &&
-                ($task->user_id == $user->id ||
-                 $task->users()->where('users.id', '=', $user->id)->exists())) ||
-               $user->tokenCan('project:create') ||
-               $user->tokenCan('project:update');
+        return $user->tokenCan('task:delete') && $task->user_id == $user->id;
     }
 
     /**
@@ -118,12 +112,12 @@ class TaskPolicy
 
     public function attachFiles (User $user, Task $task) : bool
     {
-        return $user->tokenCan('task:create');
+        return $user->tokenCan('task:create') && $task->user_id == $user->id;
     }
 
     public function detachFile (User $user, Task $task) : bool
     {
-        return $user->tokenCan('task:create');
+        return $user->tokenCan('task:create') && $task->user_id == $user->id;
     }
 
     public function report (User $user, Task $task) : bool

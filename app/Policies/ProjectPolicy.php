@@ -81,9 +81,7 @@ class ProjectPolicy
      */
     public function delete (User $user, Project $project) : Response|bool
     {
-        return $user->tokenCan('project:delete') &&
-               ($project->user_id == $user->id ||
-                $project->users()->where('users.id', '=', $user->id)->exists());
+        return $user->tokenCan('project:delete') &&               $project->user_id == $user->id;
     }
 
     /**
