@@ -230,7 +230,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $tasks = $project->tasks()->filter($inputs)
                          ->with(['status', 'users:id,name,avatar'])
                          ->get(['id', 'name', 'project_id', 'status_id', 'starts_at', 'ends_at']);
-        return (new TaskCollection($tasks))->response();
+        return (TaskResource::collection($tasks))->response();
     }
 
     public function listTasksKanban (Project $project, array $inputs = []) : JsonResponse

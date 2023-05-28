@@ -28,11 +28,12 @@ class TaskResource extends JsonResource
             'ends_at'        => $this->ends_at,
             'status'         => $this->status,
             'pending_reason' => $this->pending_reason,
-            'project'        => $this->project,
-            'files'          => FileResource::collection($this->files),
-            'reports'        => TaskReportResource::collection($this->taskUserPairs->whereNotNull('file')),
+            'project'        => $this->whenLoaded('project'),
+            'files'          => FileResource::collection($this->whenLoaded('files')),
+            'reports'        => TaskReportResource::collection($this->whenLoaded('reports',
+                fn () => $this->taskUserPairs->whereNotNull('file'))),
             'children'       => $this->children,
-            'parent'         => $this->parent,
+            'parent'         => $this->whenLoaded('parent'),
             'users'          => $this->users,
         ];
     }

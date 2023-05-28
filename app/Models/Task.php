@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\HasFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,6 +50,38 @@ class Task extends Model
         'project_id',
         'status_id',
     ];
+
+    public function filterStartAt (Builder $query, ?string $startAt) : void
+    {
+        if (!empty($startAt))
+        {
+            $query->where('starts_at', '>=', $startAt);
+        }
+    }
+
+    public function filterEndAt (Builder $query, ?string $endAt) : void
+    {
+        if (!empty($endAt))
+        {
+            $query->where('ends_at', '<=', $endAt);
+        }
+    }
+
+    public function filterName (Builder $query, ?string $name) : void
+    {
+        if (!empty($name))
+        {
+            $query->where('name', 'like', "%{$name}%");
+        }
+    }
+
+    public function filterAssignee (Builder $query, ?string $userId) : void
+    {
+        if (!empty($userId))
+        {
+            $query->whereRelation('users', 'users.id', '=', $userId);
+        }
+    }
 
     public function status () : BelongsTo
     {

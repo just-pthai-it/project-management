@@ -73,19 +73,28 @@ class Project extends Model
         );
     }
 
-    public function filterStartAt (Builder $query, string $startAt) : void
+    public function filterStartAt (Builder $query, ?string $startAt) : void
     {
-        $query->where('starts_at', '>=', $startAt);
+        if (empty(!$startAt))
+        {
+            $query->where('starts_at', '>=', $startAt);
+        }
     }
 
-    public function filterEndAt (Builder $query, string $startAt) : void
+    public function filterEndAt (Builder $query, ?string $endAt) : void
     {
-        $query->where('ends_at', '<=', $startAt);
+        if (empty(!$endAt))
+        {
+            $query->where('ends_at', '<=', $endAt);
+        }
     }
 
-    public function filterName (Builder $query, string $name) : void
+    public function filterName (Builder $query, ?string $name) : void
     {
-        $query->where('name', 'like', "%{$name}%");
+        if (empty(!$name))
+        {
+            $query->where('name', 'like', "%{$name}%");
+        }
     }
 
     public function user () : BelongsTo
