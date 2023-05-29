@@ -15,7 +15,7 @@ class UpdateUserPatchRequest extends FormRequest
     {
 //        if ($this->has('password'))
 //        {
-//            return $this->user()->tokenCan('all:crud');
+//            return $this->user()->tokenCan('*');
 //        }
 
         return true;

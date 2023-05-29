@@ -12,13 +12,14 @@ class AuthenticationService implements Contracts\AuthenticationServiceContract
     {
         if (auth()->attempt(['email' => $email, 'password' => $password, 'status' => User::STATUS_ACTIVE]))
         {
+            $permissions  = array_merge(auth()->user()->permissions, auth()->user()->isRoot() ? ['*'] : []);
             $responseData = [
-                'access_token' => $this->__generateTokenForResponse(auth()->user()->permissions + (auth()->user()->isRoot() ? ['all:crud'] : [])),
+                'access_token' => $this->__generateAccessTokenInfoForResponse($permissions),
             ];
 
             if ($isRememberMe === true)
             {
-                $responseData['refresh_token'] = $this->__generateTokenForResponse([], true);
+                $responseData['refresh_token'] = $this->__generateRefreshTokenInfoForResponse();
             }
 
             return response()->json(['data' => $responseData]);
@@ -29,22 +30,25 @@ class AuthenticationService implements Contracts\AuthenticationServiceContract
 
     public function refreshToken () : JsonResponse
     {
+        $permissions = array_merge(auth()->user()->permissions, auth()->user()->isRoot() ? ['*'] : []);
         return response()->json(['data' => [
-            'access_token' => $this->__generateTokenForResponse(auth()->user()->permissions + (auth()->user()->isRoot() ? ['all:crud'] : [])),
+            'access_token' => $this->__generateAccessTokenInfoForResponse($permissions),
         ]]);
     }
 
-    private function __generateTokenForResponse (array $permissions, bool $isRefreshToken = false) : array
+    private function __generateRefreshTokenInfoForResponse () : array
     {
-        if ($isRefreshToken)
-        {
-            $token = auth()->user()->createToken('refresh_token', $permissions, now()->addMonth());
-        }
-        else
-        {
-            $token = auth()->user()->createToken('access_token', $permissions);
-        }
+        $token = auth()->user()->createToken('refresh_token', [], now()->addMonth());
+        return [
+            'token'      => $token->plainTextToken,
+            'expires_at' => $token->accessToken->expires_at,
+        ];
+    }
 
+
+    private function __generateAccessTokenInfoForResponse (array $permissions) : array
+    {
+        $token = auth()->user()->createToken('access_token', $permissions);
         return [
             'token'      => $token->plainTextToken,
             'expires_at' => $token->accessToken->expires_at,

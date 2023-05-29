@@ -17,8 +17,7 @@ class TaskPolicy
         {
             return null;
         }
-
-        return $user->tokenCan('all:crud') ? true : null;
+        return $user->tokenCan('*') ? true : null;
     }
 
     public function search (User $user) : bool
@@ -112,12 +111,16 @@ class TaskPolicy
 
     public function attachFiles (User $user, Task $task) : bool
     {
-        return $user->tokenCan('task:create') && $task->user_id == $user->id;
+        return ($user->tokenCan('task:update') &&
+                ($task->user_id == $user->id ||
+                 $task->users()->where('users.id', '=', $user->id)->exists()));
     }
 
     public function detachFile (User $user, Task $task) : bool
     {
-        return $user->tokenCan('task:create') && $task->user_id == $user->id;
+        return ($user->tokenCan('task:update') &&
+                ($task->user_id == $user->id ||
+                 $task->users()->where('users.id', '=', $user->id)->exists()));
     }
 
     public function report (User $user, Task $task) : bool
