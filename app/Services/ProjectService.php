@@ -4,12 +4,16 @@ namespace App\Services;
 
 use App\Events\SystemObjectAffected;
 use App\Events\UserAssigned;
+use App\Helpers\Constants;
 use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
 use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectGanttChartResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
-use App\Http\Resources\Project\Task\TaskCollection;
+use App\Http\Resources\Project\ProjectStatisticsCollection;
+use App\Http\Resources\Project\Task\TaskGanttChartCollection;
+use App\Http\Resources\Project\Task\TaskGanttChartResource;
 use App\Http\Resources\Project\Task\TaskKanbanCollection;
 use App\Http\Resources\Project\Task\TaskResource;
 use App\Http\Resources\Project\User\UserCollection;
@@ -26,6 +30,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ProjectService implements Contracts\ProjectServiceContract
 {
@@ -74,7 +80,6 @@ class ProjectService implements Contracts\ProjectServiceContract
         }
 
         return (new ProjectCollection($projects))->response();
-
     }
 
     private function __paginateProjectByNonRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
@@ -105,6 +110,44 @@ class ProjectService implements Contracts\ProjectServiceContract
         }
 
         return $withCountArr;
+    }
+
+    public function listGanttChart (array $inputs = []) : JsonResponse
+    {
+        if (auth()->user()->tokenCan('*') || auth()->user()->tokenCan('statistical:project'))
+        {
+            $query = Project::query();
+        }
+        else
+        {
+            $query = auth()->user()->assignedProjects();
+        }
+
+        $projects = $query->when(empty($inputs), fn (Builder $query) => $query->limit(Constants::DEFAULT_PER_PAGE))
+                          ->filter($inputs)->get();
+
+        return ProjectGanttChartResource::collection($projects)->response();
+    }
+
+    public function statistics (array $inputs) : JsonResponse
+    {
+        if (!isset($inputs['start_at']) && !isset($inputs['end_at']))
+        {
+            $inputs = ['start_at' => Carbon::now()->firstOfMonth(), 'end_at' => Carbon::now()->endOfMonth()];
+        }
+
+        if (!isset($inputs['start_at']) || !isset($inputs['end_at']))
+        {
+            abort(400);
+        }
+
+        $groupProjectsCount = DB::table('projects')
+                                ->where('starts_at', '>=', $inputs['start_at'])
+                                ->where('ends_at', '<=', $inputs['end_at'])
+                                ->groupBy('status_id')
+                                ->selectRaw('count(*) as projects_count, status_id')->get();
+
+        return (new ProjectStatisticsCollection($groupProjectsCount))->response();
     }
 
     public function get (Project $project, array $inputs = []) : JsonResponse
@@ -258,6 +301,13 @@ class ProjectService implements Contracts\ProjectServiceContract
             }
         }
         return $task;
+    }
+
+    public function listTasksGanttChart (Project $project, array $inputs = []) : JsonResponse
+    {
+        $tasks = $project->tasks()->filter($inputs)
+                         ->get(['id', 'name', 'project_id', 'status_id', 'parent_id', 'starts_at', 'ends_at']);
+        return TaskGanttChartResource::collection($tasks)->response();
     }
 
     public function getTask (Project $project, Task $task) : JsonResponse

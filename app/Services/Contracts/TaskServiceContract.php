@@ -12,6 +12,8 @@ interface TaskServiceContract
 
     public function list (array $inputs = []);
 
+    public function statistics (array $inputs);
+
     public function get (int|string $id, array $inputs = []);
 
     public function store (array $inputs);

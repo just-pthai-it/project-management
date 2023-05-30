@@ -11,6 +11,10 @@ interface ProjectServiceContract
 
     public function list (array $inputs = []);
 
+    public function listGanttChart (array $inputs = []);
+
+    public function statistics (array $inputs);
+
     public function get (Project $project, array $inputs = []);
 
     public function store (array $inputs);
@@ -24,6 +28,8 @@ interface ProjectServiceContract
     public function listTasks (Project $project, array $inputs = []);
 
     public function listTasksKanban (Project $project, array $inputs = []);
+
+    public function listTasksGanttChart (Project $project, array $inputs = []);
 
     public function getTask (Project $project, Task $task);
 

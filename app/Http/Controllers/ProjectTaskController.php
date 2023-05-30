@@ -51,6 +51,11 @@ class ProjectTaskController extends Controller
         return $this->projectService->listTasksKanban($project, $request->all());
     }
 
+    public function indexGanttChart (Request $request, Project $project)
+    {
+        return $this->projectService->listTasksGanttChart($project, $request->all());
+    }
+
     /**
      * Store a newly created resource in storage.
      *

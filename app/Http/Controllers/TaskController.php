@@ -44,6 +44,11 @@ class TaskController extends Controller
         return $this->taskService->list($request->all());
     }
 
+    public function statistics (Request $request) : JsonResponse
+    {
+        return $this->taskService->statistics($request->all());
+    }
+
     /**
      * Store a newly created resource in storage.
      *

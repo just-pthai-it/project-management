@@ -8,6 +8,7 @@ use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
 use App\Http\Resources\Comment\CommentResource;
 use App\Http\Resources\Task\TaskCollection;
+use App\Http\Resources\Task\TaskStatisticsCollection;
 use App\Models\Comment;
 use App\Models\File;
 use App\Models\Task;
@@ -15,6 +16,8 @@ use App\Repositories\Contracts\TaskRepositoryContract;
 use App\Services\Contracts\FileServiceContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class TaskService implements Contracts\TaskServiceContract
@@ -43,6 +46,27 @@ class TaskService implements Contracts\TaskServiceContract
                                   ['tasks.id', 'name', 'project_id', 'starts_at', 'ends_at', 'status_id']);
 
         return (new TaskCollection($tasks))->response();
+    }
+
+    public function statistics (array $inputs) : JsonResponse
+    {
+        if (!isset($inputs['start_at']) && !isset($inputs['end_at']))
+        {
+            $inputs = ['start_at' => Carbon::now()->firstOfMonth(), 'end_at' => Carbon::now()->endOfMonth()];
+        }
+
+        if (!isset($inputs['start_at']) || !isset($inputs['end_at']))
+        {
+            abort(400);
+        }
+
+        $groupTasksCount = DB::table('tasks')
+                             ->where('starts_at', '>=', $inputs['start_at'])
+                             ->where('ends_at', '<=', $inputs['end_at'])
+                             ->groupBy('status_id')
+                             ->selectRaw('count(*) as tasks_count, status_id')->get();
+
+        return (new TaskStatisticsCollection($groupTasksCount))->response();
     }
 
     public function get (int|string $id, array $inputs = []) {}

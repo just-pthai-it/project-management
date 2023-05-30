@@ -54,21 +54,37 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
     Route::apiResource('task-statuses', TaskStatusController::class)->only(['index']);
 
 
-    Route::get('projects/{project}/history', [ProjectController::class, 'history']);
+    Route::prefix('projects')->group(function ()
+    {
+        Route::get('gantt-chart', [ProjectController::class, 'indexGanttChart']);
+        Route::get('{project}/history', [ProjectController::class, 'history']);
+        Route::get('statistics', [ProjectController::class, 'statistics']);
+        Route::get('search', [ProjectController::class, 'search']);
+    });
     Route::apiResource('projects.users', ProjectUserController::class)->only(['index']);
-    Route::get('projects/search', [ProjectController::class, 'search']);
     Route::apiResource('projects', ProjectController::class);
 
 
-    Route::get('projects/{project}/tasks/search', [ProjectTaskController::class, 'search']);
-    Route::get('projects/{project}/tasks/kanban', [ProjectTaskController::class, 'indexKanban']);
+    Route::prefix('projects/{project}/tasks')->group(function ()
+    {
+        Route::get('search', [ProjectTaskController::class, 'search']);
+        Route::get('kanban', [ProjectTaskController::class, 'indexKanban']);
+        Route::get('gantt-chart', [ProjectTaskController::class, 'indexGanttChart']);
+    });
+    Route::prefix('tasks')->group(function ()
+    {
+        Route::prefix('{task}')->group(function ()
+        {
+            Route::post('attach-files', [TaskController::class, 'attachFiles']);
+            Route::delete('detach-file/{file}', [TaskController::class, 'detachFile']);
+            Route::post('report', [TaskController::class, 'submitReport']);
+            Route::delete('report', [TaskController::class, 'destroyReport']);
+            Route::get('history', [TaskController::class, 'history']);
+        });
+        Route::get('search', [TaskController::class, 'search']);
+        Route::get('statistics', [TaskController::class, 'statistics']);
+    });
     Route::apiResource('projects.tasks', ProjectTaskController::class);
-    Route::post('tasks/{task}/attach-files', [TaskController::class, 'attachFiles']);
-    Route::delete('tasks/{task}/detach-file/{file}', [TaskController::class, 'detachFile']);
-    Route::post('tasks/{task}/report', [TaskController::class, 'submitReport']);
-    Route::delete('tasks/{task}/report', [TaskController::class, 'destroyReport']);
-    Route::get('tasks/{task}/history', [TaskController::class, 'history']);
-    Route::get('tasks/search', [TaskController::class, 'search']);
     Route::apiResource('tasks', TaskController::class)->only(['index']);
 
     Route::apiResource('tasks.comments', TaskCommentController::class)->only(['index', 'store']);
@@ -86,38 +102,3 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
     Route::post('upload-file', [ResourceController::class, 'upload']);
 });
-
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->middleware('guest')->name('password.request');
-
-Route::get('/reset-password/{token}', function ($token) {
-    return view('auth.reset-password', ['token' => $token]);
-})->middleware('guest')->name('password.reset');
-
-Route::post('/reset-password', function (Request $request) {
-
-    return \App\Models\Notification::all();
-    $request->validate([
-        'token' => 'required',
-        'email' => 'required|email',
-        'password' => 'required|confirmed',
-    ]);
-
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function ($user, $password) {
-            $user->forceFill([
-                'password' => Hash::make($password)
-            ]);
-
-            $user->save();
-
-            event(new PasswordReset($user));
-        }
-    );
-
-//    return $status === Password::PASSWORD_RESET
-//                ? redirect()->route('login')->with('status', __($status))
-//                : back()->withErrors(['email' => [__($status)]]);
-})->middleware('guest')->name('password.update');

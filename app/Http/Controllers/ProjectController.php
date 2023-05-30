@@ -41,6 +41,15 @@ class ProjectController extends Controller
         return $this->projectService->list($request->all());
     }
 
+    public function indexGanttChart (Request $request) : JsonResponse
+    {
+        return $this->projectService->listGanttChart($request->all());
+    }
+
+    public function statistics (Request $request) : JsonResponse
+    {
+        return $this->projectService->statistics($request->all());
+    }
     /**
      * Store a newly created resource in storage.
      *
