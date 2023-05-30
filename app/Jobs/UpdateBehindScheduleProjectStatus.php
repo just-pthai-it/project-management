@@ -32,7 +32,9 @@ class UpdateBehindScheduleProjectStatus implements ShouldQueue
      */
     public function handle () : void
     {
-        Project::query()->where('ends_at', '>', now('+7'))
+        Project::query()
+               ->whereNotIn('status_id', [ProjectStatus::STATUS_BEHIND_SCHEDULE, ProjectStatus::STATUS_COMPLETE])
+               ->where('ends_at', '>', now('+7'))
                ->update(['status_id' => ProjectStatus::STATUS_BEHIND_SCHEDULE]);
 
     }

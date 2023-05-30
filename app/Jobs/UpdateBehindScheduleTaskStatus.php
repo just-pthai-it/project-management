@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ProjectStatus;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use Illuminate\Bus\Queueable;
@@ -32,7 +33,9 @@ class UpdateBehindScheduleTaskStatus implements ShouldQueue
      */
     public function handle () : void
     {
-        Task::query()->where('ends_at', '>', now('+7'))
+        Task::query()
+            ->whereNotIn('status_id', [TaskStatus::STATUS_BEHIND_SCHEDULE, TaskStatus::STATUS_COMPLETE])
+            ->where('ends_at', '>', now('+7'))
             ->update(['status_id' => TaskStatus::STATUS_BEHIND_SCHEDULE]);
     }
 }

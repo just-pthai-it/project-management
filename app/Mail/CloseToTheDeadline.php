@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class UserAssigned extends Mailable implements ShouldQueue
+class CloseToTheDeadline extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,22 +31,22 @@ class UserAssigned extends Mailable implements ShouldQueue
      *
      * @return \Illuminate\Mail\Mailables\Envelope
      */
-    public function envelope ()
+    public function envelope()
     {
         return new Envelope(
-            subject: 'User Assigned',
+            subject: 'Close To The Deadline',
         );
     }
 
     /**
      * Get the message content definition.
      *
-     * @return Content
+     * @return \Illuminate\Mail\Mailables\Content
      */
-    public function content () : Content
+    public function content()
     {
         return new Content(
-            view: 'mail-forms.user-assigned',
+            view: 'mail-forms.close-to-the-deadline',
             with: ['content' => $this->notification->content],
         );
     }
@@ -56,7 +56,7 @@ class UserAssigned extends Mailable implements ShouldQueue
      *
      * @return array
      */
-    public function attachments ()
+    public function attachments()
     {
         return [];
     }

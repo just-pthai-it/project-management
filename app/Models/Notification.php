@@ -18,6 +18,7 @@ class Notification extends Model
     const USER_ASSIGNED_NOTIFICATION_CONTENT = ':user_name assigned you to :object :object_name.';
     const USER_ATTACHED_FILES_NOTIFICATION_CONTENT = ':user_name đã đính kèm tệp cho :object :object_name.';
     const USER_SUBMITTED_REPORT_NOTIFICATION_CONTENT = ':user_name đã nộp một báo cáo cho :object :object_name.';
+    const NOTIFY_DEADLINE_NOTIFICATION_CONTENT = ':object :object_name chỉ còn :time :time_unit nữa là sẽ đến hạn.';
 
     public const UPDATED_AT = null;
 

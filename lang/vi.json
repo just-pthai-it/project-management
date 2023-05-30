@@ -1,4 +1,6 @@
 {
   "task": "đầu việc",
-  "project": "dự án"
+  "project": "dự án",
+  "hour": "giờ",
+  "day": "ngày"
 }

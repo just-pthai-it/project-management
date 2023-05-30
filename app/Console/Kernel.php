@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Jobs\NotifyDeadlineProject;
+use App\Jobs\NotifyDeadlineTask;
+use App\Jobs\Test;
 use App\Jobs\UpdateBehindScheduleProjectStatus;
 use App\Jobs\UpdateBehindScheduleTaskStatus;
 use Illuminate\Console\Scheduling\Schedule;
@@ -17,9 +20,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule (Schedule $schedule) : void
     {
-        $schedule->job(new UpdateBehindScheduleProjectStatus())->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:00');
+        $schedule->job(new UpdateBehindScheduleProjectStatus())->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:01');
         $schedule->job(new UpdateBehindScheduleTaskStatus())->hourly();
-
+        $schedule->job(new NotifyDeadlineProject())->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:01');
+        $schedule->job(new NotifyDeadlineTask('hourly'))->everyMinute();
+        $schedule->job(new NotifyDeadlineTask('daily'))->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:01');
     }
 
     /**
