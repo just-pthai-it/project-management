@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ObjectResourceUpdated
+class ObjectResourceUpdatedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

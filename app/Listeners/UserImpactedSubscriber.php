@@ -2,9 +2,9 @@
 
 namespace App\Listeners;
 
-use App\Events\NotificationCreated;
-use App\Events\UserAssigned;
-use App\Events\UserCommented;
+use App\Events\NotificationCreatedEvent;
+use App\Events\UserAssignedEvent;
+use App\Events\UserCommentedEvent;
 use App\Models\Notification;
 use App\Models\Project;
 use App\Models\User;
@@ -26,7 +26,7 @@ class UserImpactedSubscriber implements ShouldQueue
         //
     }
 
-    public function handleUserCommented (UserCommented $event) : void
+    public function handleUserCommented (UserCommentedEvent $event) : void
     {
         if ($event->previousComment == null ||
             $event->comment->user_id == $event->previousComment->user_id)
@@ -44,7 +44,7 @@ class UserImpactedSubscriber implements ShouldQueue
         $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
     }
 
-    public function handleUserAssigned (UserAssigned $event) : void
+    public function handleUserAssigned (UserAssignedEvent $event) : void
     {
         if (empty($event->userIds))
         {
@@ -70,7 +70,7 @@ class UserImpactedSubscriber implements ShouldQueue
 
     private function __broadcastNotification (Notification $notification, array $userIds) : void
     {
-        event(new NotificationCreated($notification, $userIds));
+        event(new NotificationCreatedEvent($notification, $userIds));
     }
 
     private function __mailToUserAssigned (Notification $notification, array $userIds) : void
@@ -81,8 +81,8 @@ class UserImpactedSubscriber implements ShouldQueue
     public function subscribe ($events) : array
     {
         return [
-            UserCommented::class => 'handleUserCommented',
-            UserAssigned::class  => 'handleUserAssigned',
+            UserCommentedEvent::class => 'handleUserCommented',
+            UserAssignedEvent::class  => 'handleUserAssigned',
         ];
     }
 }

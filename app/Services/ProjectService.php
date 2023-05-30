@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Events\SystemObjectAffected;
-use App\Events\UserAssigned;
+use App\Events\SystemObjectAffectedEvent;
+use App\Events\UserAssignedEvent;
 use App\Helpers\Constants;
 use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
@@ -167,9 +167,9 @@ class ProjectService implements Contracts\ProjectServiceContract
         if (isset($inputs['user_ids']))
         {
             $project->users()->attach($inputs['user_ids']);
-            event(new UserAssigned($project, array_diff($inputs['user_ids'], [auth()->id()])));
+            event(new UserAssignedEvent($project, array_diff($inputs['user_ids'], [auth()->id()])));
         }
-        event(new SystemObjectAffected($project, auth()->user(), 'created'));
+        event(new SystemObjectAffectedEvent($project, auth()->user(), 'created'));
 
         return CusResponse::createSuccessful(['id' => $project->id]);
     }
@@ -187,9 +187,9 @@ class ProjectService implements Contracts\ProjectServiceContract
         if (isset($inputs['user_ids']))
         {
             $newAssignee = $this->__assignUsers($project, $inputs['user_ids']);
-            event(new UserAssigned($project, array_diff($newAssignee, [auth()->id()])));
+            event(new UserAssignedEvent($project, array_diff($newAssignee, [auth()->id()])));
         }
-        event(new SystemObjectAffected($project, auth()->user(), 'updated', $oldData));
+        event(new SystemObjectAffectedEvent($project, auth()->user(), 'updated', $oldData));
 
         return CusResponse::successful();
     }
@@ -258,7 +258,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $project->delete();
         $project->tasks()->delete();
-        event(new SystemObjectAffected($project, auth()->user(), 'deleted'));
+        event(new SystemObjectAffectedEvent($project, auth()->user(), 'deleted'));
         return CusResponse::successful();
     }
 
@@ -324,12 +324,12 @@ class ProjectService implements Contracts\ProjectServiceContract
         if (isset($inputs['user_ids']))
         {
             $project->users()->attach($inputs['user_ids']);
-            event(new UserAssigned($project, array_diff($inputs['user_ids'], [auth()->id()])));
+            event(new UserAssignedEvent($project, array_diff($inputs['user_ids'], [auth()->id()])));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task);
         $project->save();
-        event(new SystemObjectAffected($task, auth()->user(), 'created'));
+        event(new SystemObjectAffectedEvent($task, auth()->user(), 'created'));
 
         return CusResponse::createSuccessful(['id' => $task->id]);
     }
@@ -379,13 +379,13 @@ class ProjectService implements Contracts\ProjectServiceContract
         if (isset($inputs['user_ids']))
         {
             $newAssignee = $this->__assignUsers($task, $inputs['user_ids']);
-            event(new UserAssigned($project, array_diff($newAssignee, [auth()->id()])));
+            event(new UserAssignedEvent($project, array_diff($newAssignee, [auth()->id()])));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task, $oldTask);
         $project->save();
 
-        event(new SystemObjectAffected($task, auth()->user(), 'updated', $oldTask->getOriginal()));
+        event(new SystemObjectAffectedEvent($task, auth()->user(), 'updated', $oldTask->getOriginal()));
 
         return CusResponse::successful();
     }
@@ -429,7 +429,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task->delete();
         $task->children()->delete();
         $this->__updateProjectProgress($project);
-        event(new SystemObjectAffected($task, auth()->user(), 'deleted'));
+        event(new SystemObjectAffectedEvent($task, auth()->user(), 'deleted'));
         return CusResponse::successfulWithNoData();
     }
 

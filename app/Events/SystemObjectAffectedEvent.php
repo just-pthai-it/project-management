@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SystemObjectAffected
+class SystemObjectAffectedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

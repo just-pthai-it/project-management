@@ -2,38 +2,40 @@
 
 namespace App\Events;
 
-use App\Models\ActivityLog;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 
-class ActivityLogCreated implements ShouldBroadcast
+class UserAssignedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public ActivityLog $activityLog;
-
+    public Model $object;
+    public array $userIds;
 
     /**
-     * @param ActivityLog $activityLog
+     * @param Model $notifiable
+     * @param array $userIds
      */
-    public function __construct (ActivityLog $activityLog)
+    public function __construct (Model $notifiable, array $userIds)
     {
-        $this->activityLog = $activityLog;
+        $this->object  = $notifiable;
+        $this->userIds = $userIds;
     }
+
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|array
+     * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn () : Channel|array
+    public function broadcastOn()
     {
-        return new Channel(Str::lower(class_basename(get_class($this->activityLog->objectable))) . "_{$this->activityLog->objectable->id}");
+        return new PrivateChannel('channel-name');
     }
 }

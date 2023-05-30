@@ -2,10 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Events\ActivityLogCreated;
-use App\Events\ObjectResourceUpdated;
-use App\Events\SystemObjectAffected;
-use App\Events\UserCommented;
+use App\Events\ActivityLogCreatedEvent;
+use App\Events\ObjectResourceUpdatedEvent;
+use App\Events\SystemObjectAffectedEvent;
+use App\Events\UserCommentedEvent;
 use App\Models\ActivityLog;
 use App\Models\Comment;
 use App\Models\Task;
@@ -26,7 +26,7 @@ class SystemEventSubscriber implements ShouldQueue
         //
     }
 
-    public function handleSystemObjectAffected (SystemObjectAffected $event) : void
+    public function handleSystemObjectAffected (SystemObjectAffectedEvent $event) : void
     {
         $descriptionProperties[':object_name'] = $event->object->name;
         $descriptionProperties[':user_name']   = $event->causer->name;
@@ -58,7 +58,7 @@ class SystemEventSubscriber implements ShouldQueue
         }
     }
 
-    public function handleUserCommented (UserCommented $event) : void
+    public function handleUserCommented (UserCommentedEvent $event) : void
     {
         if ($event->previousComment != null)
         {
@@ -83,7 +83,7 @@ class SystemEventSubscriber implements ShouldQueue
         $this->__updateActivityLog($event->object, $data);
     }
 
-    public function handleObjectResourceUpdated (ObjectResourceUpdated $event) : void
+    public function handleObjectResourceUpdated (ObjectResourceUpdatedEvent $event) : void
     {
         $descriptionProperties[':object_name'] = $event->object->name;
         $descriptionProperties[':user_name']   = $event->user->name;
@@ -110,15 +110,15 @@ class SystemEventSubscriber implements ShouldQueue
     private function __updateActivityLog (Model $object, array $data) : void
     {
       $activityLog =  $object->activityLogs()->create($data);
-        event(new ActivityLogCreated($activityLog));
+        event(new ActivityLogCreatedEvent($activityLog));
     }
 
     public function subscribe ($events) : array
     {
         return [
-            UserCommented::class         => 'handleUserCommented',
-            ObjectResourceUpdated::class => 'handleObjectResourceUpdated',
-            SystemObjectAffected::class  => 'handleSystemObjectAffected',
+            UserCommentedEvent::class         => 'handleUserCommented',
+            ObjectResourceUpdatedEvent::class => 'handleObjectResourceUpdated',
+            SystemObjectAffectedEvent::class  => 'handleSystemObjectAffected',
         ];
     }
 }

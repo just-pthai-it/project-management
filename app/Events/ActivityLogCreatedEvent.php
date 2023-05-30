@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Notification;
+use App\Models\ActivityLog;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,22 +10,21 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
-class NotificationCreated implements ShouldBroadcast
+class ActivityLogCreatedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Notification $notification;
-    private array $userIds;
+    public ActivityLog $activityLog;
+
 
     /**
-     * @param Notification $notification
-     * @param array        $userIds
+     * @param ActivityLog $activityLog
      */
-    public function __construct (Notification $notification, array $userIds)
+    public function __construct (ActivityLog $activityLog)
     {
-        $this->notification = $notification;
-        $this->userIds      = $userIds;
+        $this->activityLog = $activityLog;
     }
 
     /**
@@ -33,8 +32,8 @@ class NotificationCreated implements ShouldBroadcast
      *
      * @return Channel|array
      */
-    public function broadcastOn() : Channel|array
+    public function broadcastOn () : Channel|array
     {
-        return $this->userIds;
+        return new Channel(Str::lower(class_basename(get_class($this->activityLog->objectable))) . "_{$this->activityLog->objectable->id}");
     }
 }

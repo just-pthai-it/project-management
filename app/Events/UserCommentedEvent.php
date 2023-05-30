@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserCommented
+class UserCommentedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public Model $object;
