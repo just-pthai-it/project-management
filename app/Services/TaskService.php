@@ -11,6 +11,7 @@ use App\Http\Resources\Task\TaskCollection;
 use App\Http\Resources\Task\TaskStatisticsCollection;
 use App\Models\Comment;
 use App\Models\File;
+use App\Models\Notification;
 use App\Models\Task;
 use App\Repositories\Contracts\TaskRepositoryContract;
 use App\Services\Contracts\FileServiceContract;
@@ -81,7 +82,8 @@ class TaskService implements Contracts\TaskServiceContract
     {
         $filesInfo = $this->fileService->putUploadedFilesAndKeepName($attachments, "task_{$task->id}/attach_files");
         $files     = $this->__storeFiles($task, $filesInfo);
-        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'attached', 'files'));
+        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'attached', 'files', 'to',
+                                             Notification::USER_ATTACHED_FILES_NOTIFICATION_CONTENT));
         return CusResponse::createSuccessful($files);
     }
 
@@ -116,7 +118,7 @@ class TaskService implements Contracts\TaskServiceContract
 
         $uploadFileInfo = $this->fileService->putUploadedFileAndKeepName($uploadedFile, "task_{$task->id}/reports");
         $fileModel      = $taskUserPair->file()->create($uploadFileInfo);
-        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'submitted', 'a report'));
+        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'submitted', 'a report', 'to', Notification::USER_SUBMITTED_REPORT_NOTIFICATION_CONTENT));
 
         return CusResponse::successful($fileModel);
     }
