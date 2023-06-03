@@ -43,7 +43,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function search (array $inputs = []) : JsonResponse
     {
-        if (auth()->user()->tokenCan('*'))
+        if (auth()->user()->tokenCan('*') || auth()->user()->tokenCan('statistical:project'))
         {
             $projects = $this->__listByRootUser($inputs);
         }
@@ -69,7 +69,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
 
-        if (auth()->user()->tokenCan('*'))
+        if (auth()->user()->tokenCan('*') || auth()->user()->tokenCan('statistical:project'))
         {
             $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
         }
