@@ -12,7 +12,6 @@ use App\Http\Resources\Project\ProjectGanttChartResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
 use App\Http\Resources\Project\ProjectStatisticsCollection;
-use App\Http\Resources\Project\Task\TaskGanttChartCollection;
 use App\Http\Resources\Project\Task\TaskGanttChartResource;
 use App\Http\Resources\Project\Task\TaskKanbanCollection;
 use App\Http\Resources\Project\Task\TaskResource;
@@ -44,7 +43,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function search (array $inputs = []) : JsonResponse
     {
-        if (auth()->user()->isRoot())
+        if (auth()->user()->tokenCan('*'))
         {
             $projects = $this->__listByRootUser($inputs);
         }
@@ -70,7 +69,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
 
-        if (auth()->user()->isRoot())
+        if (auth()->user()->tokenCan('*'))
         {
             $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
         }

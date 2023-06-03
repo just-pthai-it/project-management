@@ -14,7 +14,7 @@ class RoleService implements Contracts\RoleServiceContract
 
     public function list (array $inputs = []) : JsonResponse
     {
-        $roles = Role::query()->when(!auth()->user()->isRoot(), function (Builder $query)
+        $roles = Role::query()->when(!auth()->user()->tokenCan('*'), function (Builder $query)
         {
             $query->where('name', '!=', Role::ROLE_ROOT_NAME);
         })->get();
