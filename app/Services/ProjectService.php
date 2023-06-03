@@ -322,7 +322,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task = $project->tasks()->create($inputs);
         if (isset($inputs['user_ids']))
         {
-            $project->users()->attach($inputs['user_ids']);
+            $task->users()->attach($inputs['user_ids']);
             event(new UserAssignedEvent($project, array_diff($inputs['user_ids'], [auth()->id()])));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
