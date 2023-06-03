@@ -21,6 +21,7 @@ use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;
 use App\Models\TaskStatus;
+use App\Models\User;
 use App\Repositories\Contracts\ProjectRepositoryContract;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -185,8 +186,8 @@ class ProjectService implements Contracts\ProjectServiceContract
         $project->update($inputs);
         if (isset($inputs['user_ids']))
         {
-            $newAssignee = $this->__assignUsers($project, $inputs['user_ids']);
-            event(new UserAssignedEvent($project, array_diff($newAssignee, [auth()->id()])));
+            [$newAssigneeIds,] = $this->__assignUsers($project, $inputs['user_ids']);
+            event(new UserAssignedEvent($project, array_diff($newAssigneeIds, [auth()->id()])));
         }
         event(new SystemObjectAffectedEvent($project, auth()->user(), 'updated', $oldData));
 
@@ -196,12 +197,24 @@ class ProjectService implements Contracts\ProjectServiceContract
     private function __assignUsers (Model $object, array $userIds) : array
     {
         $currentAssigneeIds = $object->users()->pluck('users.id')->all();
-        $newAssignee        = array_diff($userIds, $currentAssigneeIds);
-        $oldAssignee        = array_diff($currentAssigneeIds, $userIds);
-        $object->users()->attach($newAssignee);
-        $object->users()->detach($oldAssignee);
+        $newAssigneeIds     = array_diff($userIds, $currentAssigneeIds);
+        $oldAssigneeIds     = array_diff($currentAssigneeIds, $userIds);
+        $object->users()->attach($newAssigneeIds);
+        $object->users()->detach($oldAssigneeIds);
+        if ($object instanceof Project)
+        {
+            $this->__unassignUserFromTaskAfterUnassignedFromProject($object, $oldAssigneeIds);
+        }
 
-        return $newAssignee;
+        return [$newAssigneeIds, $oldAssigneeIds];
+    }
+
+    private function __unassignUserFromTaskAfterUnassignedFromProject (Project $project, array $oldAssigneeIds) : void
+    {
+        foreach ($project->tasks as $task)
+        {
+            $task->users()->detach($oldAssigneeIds);
+        }
     }
 
     private function __checkConditionBeforeUpdateProject (Project $project, array $inputs) : array
@@ -377,8 +390,8 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task->update($inputs);
         if (isset($inputs['user_ids']))
         {
-            $newAssignee = $this->__assignUsers($task, $inputs['user_ids']);
-            event(new UserAssignedEvent($project, array_diff($newAssignee, [auth()->id()])));
+            [$newAssigneeIds,] = $this->__assignUsers($task, $inputs['user_ids']);
+            event(new UserAssignedEvent($project, array_diff($newAssigneeIds, [auth()->id()])));
         }
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task, $oldTask);
