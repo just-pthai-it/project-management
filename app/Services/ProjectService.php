@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Events\SystemObjectAffectedEvent;
+use App\Events\SystemObjectEvent;
 use App\Events\UserAssignedEvent;
 use App\Helpers\Constants;
 use App\Helpers\CusResponse;
@@ -165,7 +165,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $project = auth()->user()->projects()->create($inputs);
         $this->__assignUsers($project, $inputs['user_ids'] ?? []);
-        event(new SystemObjectAffectedEvent($project, auth()->user(), 'created'));
+        event(new SystemObjectEvent($project, auth()->user(), 'created'));
 
         return CusResponse::createSuccessful(['id' => $project->id]);
     }
@@ -182,7 +182,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $oldData = $project->getOriginal();
         $project->update($inputs);
         $this->__assignUsers($project, $inputs['user_ids'] ?? []);
-        event(new SystemObjectAffectedEvent($project, auth()->user(), 'updated', $oldData));
+        event(new SystemObjectEvent($project, auth()->user(), 'updated', $oldData));
 
         return CusResponse::successful();
     }
@@ -269,7 +269,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $project->delete();
         $project->tasks()->delete();
-        event(new SystemObjectAffectedEvent($project, auth()->user(), 'deleted'));
+        event(new SystemObjectEvent($project, auth()->user(), 'deleted'));
         return CusResponse::successful();
     }
 
@@ -336,7 +336,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task);
         $project->save();
-        event(new SystemObjectAffectedEvent($task, auth()->user(), 'created'));
+        event(new SystemObjectEvent($task, auth()->user(), 'created'));
 
         return CusResponse::createSuccessful(['id' => $task->id]);
     }
@@ -389,7 +389,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $this->__updateProjectProgress($project, $task, $oldTask);
         $project->save();
 
-        event(new SystemObjectAffectedEvent($task, auth()->user(), 'updated', $oldTask->getOriginal()));
+        event(new SystemObjectEvent($task, auth()->user(), 'updated', $oldTask->getOriginal()));
 
         return CusResponse::successful();
     }
@@ -433,7 +433,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task->delete();
         $task->children()->delete();
         $this->__updateProjectProgress($project);
-        event(new SystemObjectAffectedEvent($task, auth()->user(), 'deleted'));
+        event(new SystemObjectEvent($task, auth()->user(), 'deleted'));
         return CusResponse::successfulWithNoData();
     }
 
@@ -445,6 +445,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function history (Project $project) : JsonResponse
     {
+        $project->load(['activityLogs.user:id,name,email,avatar']);
         return ActivityLogResource::collection($project->activityLogs)->response();
     }
 }

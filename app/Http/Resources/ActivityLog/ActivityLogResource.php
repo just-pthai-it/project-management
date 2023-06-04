@@ -22,6 +22,7 @@ class ActivityLogResource extends JsonResource
             'description' => $this->description,
             'comment'     => $this->whenLoaded('comment'),
             'created_at'  => $this->created_at,
+            'user'        => $this->user,
         ];
     }
 }
