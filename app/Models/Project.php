@@ -50,6 +50,22 @@ class Project extends Model
         'status_id',
     ];
 
+    protected function pendingReason () : Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: function ($value)
+            {
+                if ($this->status_id != ProjectStatus::STATUS_PENDING)
+                {
+                    return '';
+                }
+
+                return $value;
+            }
+        );
+    }
+
     protected function startsAtWithTime () : Attribute
     {
         return Attribute::make(
