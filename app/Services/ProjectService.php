@@ -70,7 +70,6 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
 
-        var_dump(auth()->user()->isRoot());
         if (auth()->user()->tokenCan('*') || auth()->user()->tokenCan('statistical:project'))
         {
             $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
