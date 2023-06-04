@@ -344,9 +344,10 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     private function __updateProjectProgress (Project $project, ?Task $task = null, ?Task $oldTask = null) : void
     {
+        // update task case
         if ($task != null && $oldTask != null)
         {
-            if (($task->status_id == TaskStatus::STATUS_COMPLETE && $oldTask->status_id == TaskStatus::STATUS_COMPLETE) ||
+            if (($task->status_id == $oldTask->status_id) ||
                 ($task->status_id != TaskStatus::STATUS_COMPLETE && $oldTask->status_id != TaskStatus::STATUS_COMPLETE))
             {
                 return;
