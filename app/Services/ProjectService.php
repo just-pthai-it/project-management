@@ -70,6 +70,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
 
+        var_dump(auth()->user()->isRoot());
         if (auth()->user()->tokenCan('*') || auth()->user()->tokenCan('statistical:project'))
         {
             $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
@@ -164,15 +165,12 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function store (array $inputs) : JsonResponse
     {
         $project = auth()->user()->projects()->create($inputs);
-        if (isset($inputs['user_ids']))
-        {
-            $project->users()->attach($inputs['user_ids']);
-            event(new UserAssignedEvent($project, array_diff($inputs['user_ids'], [auth()->id()])));
-        }
+        $this->__assignUsers($project, $inputs['user_ids'] ?? []);
         event(new SystemObjectAffectedEvent($project, auth()->user(), 'created'));
 
         return CusResponse::createSuccessful(['id' => $project->id]);
     }
+
 
     public function update (Project $project, array $inputs) : JsonResponse
     {
@@ -184,29 +182,31 @@ class ProjectService implements Contracts\ProjectServiceContract
 
         $oldData = $project->getOriginal();
         $project->update($inputs);
-        if (isset($inputs['user_ids']))
-        {
-            [$newAssigneeIds,] = $this->__assignUsers($project, $inputs['user_ids']);
-            event(new UserAssignedEvent($project, array_diff($newAssigneeIds, [auth()->id()])));
-        }
+        $this->__assignUsers($project, $inputs['user_ids'] ?? []);
         event(new SystemObjectAffectedEvent($project, auth()->user(), 'updated', $oldData));
 
         return CusResponse::successful();
     }
 
-    private function __assignUsers (Model $object, array $userIds) : array
+    private function __assignUsers (Model $object, array $userIds) : void
     {
-        $currentAssigneeIds = $object->users()->pluck('users.id')->all();
+        if (empty($userIds))
+        {
+            return;
+        }
+
+        $currentAssigneeIds = $object->wasRecentlyCreated ? [] : $object->users()->pluck('users.id')->all();
         $newAssigneeIds     = array_diff($userIds, $currentAssigneeIds);
         $oldAssigneeIds     = array_diff($currentAssigneeIds, $userIds);
         $object->users()->attach($newAssigneeIds);
         $object->users()->detach($oldAssigneeIds);
-        if ($object instanceof Project)
+
+        if ($object instanceof Project && !$object->wasRecentlyCreated)
         {
             $this->__unassignUserFromTaskAfterUnassignedFromProject($object, $oldAssigneeIds);
         }
 
-        return [$newAssigneeIds, $oldAssigneeIds];
+        event(new UserAssignedEvent($object, array_diff($newAssigneeIds, [auth()->id()])));
     }
 
     private function __unassignUserFromTaskAfterUnassignedFromProject (Project $project, array $oldAssigneeIds) : void
@@ -333,11 +333,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     public function storeTask (Project $project, array $inputs) : JsonResponse
     {
         $task = $project->tasks()->create($inputs);
-        if (isset($inputs['user_ids']))
-        {
-            $task->users()->attach($inputs['user_ids']);
-            event(new UserAssignedEvent($project, array_diff($inputs['user_ids'], [auth()->id()])));
-        }
+        $this->__assignUsers($task, $inputs['user_ids'] ?? []);
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task);
         $project->save();
@@ -388,11 +384,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
         $oldTask = $task->replicate();
         $task->update($inputs);
-        if (isset($inputs['user_ids']))
-        {
-            [$newAssigneeIds,] = $this->__assignUsers($task, $inputs['user_ids']);
-            event(new UserAssignedEvent($project, array_diff($newAssigneeIds, [auth()->id()])));
-        }
+        $this->__assignUsers($task, $inputs['user_ids'] ?? []);
         $this->__updateProjectTimeAccordingToTask($project, $task);
         $this->__updateProjectProgress($project, $task, $oldTask);
         $project->save();
