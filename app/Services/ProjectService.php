@@ -262,8 +262,8 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     private function __checkIfCanUpdateProjectStatusFromBehindSchedule (Project $project, array $inputs) : bool
     {
-        return ($project->ends_at->format('Y-m-d') > now()->format('Y-m-d')) ||
-               (isset($inputs['starts_at']) && $inputs['starts_at'] > now()->format('Y-m-d'));
+        return ($project->ends_at->toDateString() > now()->toDateString()) ||
+               (isset($inputs['ends_at']) && Carbon::parse($inputs['ends_at'])->toDateString() > now()->toDateString());
     }
 
     private function __checkIfAnyTasksTimeOverProjectTime (Project $project, array $inputs) : bool
