@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new UpdateBehindScheduleProjectStatus())->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:01');
         $schedule->job(new UpdateBehindScheduleTaskStatus())->hourly();
         $schedule->job(new NotifyDeadlineProject())->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:01');
-        $schedule->job(new NotifyDeadlineTask('hourly'))->everyMinute();
+        $schedule->job(new NotifyDeadlineTask('hourly'))->hourly();
         $schedule->job(new NotifyDeadlineTask('daily'))->timezone('Asia/Ho_Chi_Minh')->dailyAt('00:01');
     }
 
