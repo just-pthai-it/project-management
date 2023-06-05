@@ -263,8 +263,11 @@ class ProjectService implements Contracts\ProjectServiceContract
     private function __checkIfAnyTasksTimeOverProjectTime (Project $project, array $inputs) : bool
     {
         $newProject = $project->replicate()->fill(Arr::only($inputs, ['starts_at', 'ends_at']));
-        return $project->tasks()->where('tasks.starts_at', '<', $newProject->starts_at_with_time)
-                       ->orWhere('tasks.ends_at', '>', $newProject->ends_at_with_time)->exists();
+        return $project->tasks()->where(function (Builder $query) use ($newProject)
+        {
+            $query->where('tasks.starts_at', '<', $newProject->starts_at_with_time)
+                  ->orWhere('tasks.ends_at', '>', $newProject->ends_at_with_time);
+        })->exists();
     }
 
     public function delete (Project $project) : JsonResponse
