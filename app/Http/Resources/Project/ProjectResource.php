@@ -29,7 +29,7 @@ class ProjectResource extends JsonResource
             'duration'       => $this->duration,
             'status'         => $this->status,
             'progress'       => $this->progress,
-            'pending_reason' => $this->whenHas('progress'),
+            'pending_reason' => $this->whenHas('pending_reason'),
             'users'          => $this->whenLoaded('users'),
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
