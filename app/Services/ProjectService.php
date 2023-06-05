@@ -197,18 +197,23 @@ class ProjectService implements Contracts\ProjectServiceContract
             return;
         }
 
+
         $currentAssigneeIds = $object->wasRecentlyCreated ? [] : $object->users()->pluck('users.id')->all();
         $newAssigneeIds     = array_diff($userIds, $currentAssigneeIds);
         $oldAssigneeIds     = array_diff($currentAssigneeIds, $userIds);
         $object->users()->attach($newAssigneeIds);
         $object->users()->detach($oldAssigneeIds);
 
+
         if ($object instanceof Project && !$object->wasRecentlyCreated)
         {
             $this->__unassignUserFromTaskAfterUnassignedFromProject($object, $oldAssigneeIds);
         }
 
-        event(new UserAssignedEvent($object, auth()->user(), array_diff($newAssigneeIds, [auth()->id()])));
+        if (!empty($newAssigneeIds))
+        {
+            event(new UserAssignedEvent($object, auth()->user(), array_diff($newAssigneeIds, [auth()->id()])));
+        }
     }
 
     private function __unassignUserFromTaskAfterUnassignedFromProject (Project $project, array $oldAssigneeIds) : void
