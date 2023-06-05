@@ -167,7 +167,7 @@ class TaskService implements Contracts\TaskServiceContract
 
     public function history (Task $task) : JsonResponse
     {
-        $task->load(['activityLogs']);
+        $task->load(['activityLogs.user:id,name,email.avatar']);
         return ActivityLogResource::collection($task->activityLogs)->response();
     }
 }
