@@ -32,6 +32,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProjectService implements Contracts\ProjectServiceContract
 {
@@ -173,21 +175,34 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     public function update (Project $project, array $inputs) : JsonResponse
     {
-        [$result, $message] = $this->__checkConditionBeforeUpdateProject($project, $inputs);
-        if (!$result)
+        try
         {
-            return CusResponse::failed([], $message);
-        }
+            DB::beginTransaction();
+            $oldData = $project->getOriginal();
+            $project->update($inputs);
+            if ($project->wasChanged())
+            {
+                $this->__checkIfUpdateActionIsValid($project, $oldData);
+                event(new SystemObjectEvent($project, auth()->user(), 'updated', $oldData, $project->getChanges()));
+            }
+            $this->__assignUsers($project, $inputs['user_ids'] ?? []);
 
-        $oldData = $project->getOriginal();
-        $project->update($inputs);
-        $this->__assignUsers($project, $inputs['user_ids'] ?? []);
-        if ($project->wasChanged())
+            DB::commit();
+            return CusResponse::successful();
+        }
+        catch (Exception $exception)
         {
-            event(new SystemObjectEvent($project, auth()->user(), 'updated', $oldData, $project->getChanges()));
+            DB::rollBack();
+            if ($exception->getStatusCode() != Response::HTTP_UNPROCESSABLE_ENTITY)
+            {
+                report($exception);
+                abort(500);
+            }
+            else
+            {
+                abort(422, $exception->getMessage());
+            }
         }
-
-        return CusResponse::successful();
     }
 
     private function __assignUsers (Model $object, array $userIds) : void
@@ -197,15 +212,13 @@ class ProjectService implements Contracts\ProjectServiceContract
             return;
         }
 
-
         $currentAssigneeIds = $object->wasRecentlyCreated ? [] : $object->users()->pluck('users.id')->all();
         $newAssigneeIds     = array_diff($userIds, $currentAssigneeIds);
         $oldAssigneeIds     = array_diff($currentAssigneeIds, $userIds);
         $object->users()->attach($newAssigneeIds);
         $object->users()->detach($oldAssigneeIds);
 
-
-        if ($object instanceof Project && !$object->wasRecentlyCreated)
+        if ($object instanceof Project && !$object->wasRecentlyCreated && !empty($oldAssigneeIds))
         {
             $this->__unassignUserFromTaskAfterUnassignedFromProject($object, $oldAssigneeIds);
         }
@@ -224,56 +237,79 @@ class ProjectService implements Contracts\ProjectServiceContract
         }
     }
 
-    private function __checkConditionBeforeUpdateProject (Project $project, array $inputs) : array
+    private function __checkIfUpdateActionIsValid (Project $project, array $oldData) : void
     {
-        if (isset($inputs['status_id']) && $inputs['status_id'] == ProjectStatus::STATUS_COMPLETE)
+        $results   = [];
+        $results[] = $this->__checkIfCanUpdateProjectToCompleteStatus($project);
+        $results[] = $this->__checkIfCanUpdateProjectStatusFromBehindScheduleToOthersStatus($project,
+                                                                                            $oldData);
+        $results[] = $this->__checkIfAnyTasksTimeOverProjectTime($project, $oldData);
+
+        foreach ($results as $result)
         {
-            if (!$this->__checkIfCanUpdateProjectToCompleteStatus($project))
+            [$isValid, $message] = $result;
+            if (!$isValid)
+            {
+                abort(422, $message);
+            }
+        }
+    }
+
+    private function __checkIfCanUpdateProjectToCompleteStatus (Project $project) : array
+    {
+        $dataChanges = $project->getChanges();
+        if (isset($dataChanges['status_id']) && $project->status_id == ProjectStatus::STATUS_COMPLETE)
+        {
+            if ($project->progress != 100)
             {
                 return [false, 'Không thể thực hiện hành động do vẫn còn đầu việc chưa hoàn thành.'];
             }
+
         }
 
-        if (isset($inputs['status_id']) &&
-            $project->status_id == ProjectStatus::STATUS_BEHIND_SCHEDULE &&
-            in_array($inputs['status_id'], [ProjectStatus::STATUS_NOT_START, ProjectStatus::STATUS_IN_PROGRESS]))
+        return [true, 'Ok'];
+    }
+
+    private function __checkIfCanUpdateProjectStatusFromBehindScheduleToOthersStatus (Project $project, array $oldData) : array
+    {
+        $dataChanges = $project->getChanges();
+        if (isset($dataChanges['status_id']) &&
+            $oldData['status_id'] == ProjectStatus::STATUS_BEHIND_SCHEDULE &&
+            in_array($project->status_id, [ProjectStatus::STATUS_NOT_START, ProjectStatus::STATUS_IN_PROGRESS]))
         {
-            if (!$this->__checkIfCanUpdateProjectStatusFromBehindSchedule($project, $inputs))
+            if (isset($dataChanges['ends_at']) &&
+                $project->ends_at->toDateString() < now()->toDateString())
+            {
+                return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
+            }
+
+            if (Carbon::parse($oldData['ends_at'])->toDateString() < now()->toDateString())
             {
                 return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
             }
         }
 
-        if (isset($inputs['starts_at']) && $inputs['ends_at'])
+        return [true, 'Ok'];
+    }
+
+    private function __checkIfAnyTasksTimeOverProjectTime (Project $project, array $oldData) : array
+    {
+        $dataChanges = $project->getChanges();
+        if (isset($dataChanges['starts_at']) || isset($dataChanges['ends_at']))
         {
-            if ($this->__checkIfAnyTasksTimeOverProjectTime($project, $inputs))
+            $isExists = $project->tasks()->where(function (Builder $query) use ($project)
+            {
+                $query->where('tasks.starts_at', '<', $project->starts_at_with_time)
+                      ->orWhere('tasks.ends_at', '>', $project->ends_at_with_time);
+            })->exists();
+
+            if ($isExists)
             {
                 return [false, 'Không thể thực hiện hành động do phạm vi ngày bắt đầu và ngày kết thúc không bao quát hết tất cả đầu việc.'];
             }
         }
 
-        return [true, 'OK'];
-    }
-
-    private function __checkIfCanUpdateProjectToCompleteStatus (Project $project) : bool
-    {
-        return $project->progress == 100;
-    }
-
-    private function __checkIfCanUpdateProjectStatusFromBehindSchedule (Project $project, array $inputs) : bool
-    {
-        return ($project->ends_at->toDateString() > now()->toDateString()) ||
-               (isset($inputs['ends_at']) && Carbon::parse($inputs['ends_at'])->toDateString() > now()->toDateString());
-    }
-
-    private function __checkIfAnyTasksTimeOverProjectTime (Project $project, array $inputs) : bool
-    {
-        $newProject = $project->replicate()->fill(Arr::only($inputs, ['starts_at', 'ends_at']));
-        return $project->tasks()->where(function (Builder $query) use ($newProject)
-        {
-            $query->where('tasks.starts_at', '<', $newProject->starts_at_with_time)
-                  ->orWhere('tasks.ends_at', '>', $newProject->ends_at_with_time);
-        })->exists();
+        return [true, 'Ok'];
     }
 
     public function delete (Project $project) : JsonResponse

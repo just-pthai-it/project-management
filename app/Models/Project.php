@@ -72,6 +72,7 @@ class Project extends Model
             get: function ()
             {
                 $value = $this->starts_at;
+                $value->setTime(00, 00, 00);
                 return $value;
             }
         );
