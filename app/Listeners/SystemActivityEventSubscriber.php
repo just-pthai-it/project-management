@@ -35,7 +35,7 @@ class SystemActivityEventSubscriber implements ShouldQueue
         {
             $descriptionProperties['field'] = __('model_field.status_id');
 
-            $oldObject                          = $event->object->replicate()->fill($event->dataChanges);
+            $oldObject                          = $event->object->replicate()->fill($event->oldData);
             $descriptionProperties['old_value'] = $oldObject->status->name;
             $descriptionProperties['value']     = $event->object->status->name;
 

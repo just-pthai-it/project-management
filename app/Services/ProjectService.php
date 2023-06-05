@@ -179,11 +179,12 @@ class ProjectService implements Contracts\ProjectServiceContract
             return CusResponse::failed([], $message);
         }
 
+        $oldData = $project->getOriginal();
         $project->update($inputs);
         $this->__assignUsers($project, $inputs['user_ids'] ?? []);
         if ($project->wasChanged())
         {
-            event(new SystemObjectEvent($project, auth()->user(), 'updated', $project->getChanges()));
+            event(new SystemObjectEvent($project, auth()->user(), 'updated', $oldData, $project->getChanges()));
         }
 
         return CusResponse::successful();
@@ -377,19 +378,20 @@ class ProjectService implements Contracts\ProjectServiceContract
             return CusResponse::failed([], $message);
         }
 
+        $oldData = $task->getOriginal();
         $task->update($inputs);
         $this->__assignUsers($task, $inputs['user_ids'] ?? []);
 
         if ($task->wasChanged())
         {
-            $this->__updateProjectAccordingToTaskChanges($project, $task);
-            event(new SystemObjectEvent($task, auth()->user(), 'updated', $task->getChanges()));
+            $this->__updateProjectAccordingToTaskChanges($project, $task, $oldData);
+            event(new SystemObjectEvent($task, auth()->user(), 'updated', $oldData, $task->getChanges()));
         }
 
         return CusResponse::successful();
     }
 
-    private function __updateProjectAccordingToTaskChanges (Project $project, Task $task) : void
+    private function __updateProjectAccordingToTaskChanges (Project $project, Task $task, array $oldData) : void
     {
         $dataChanges = $task->getChanges();
         if (isset($dataChanges['starts_at']) || isset($dataChanges['ends_at']))
@@ -397,7 +399,7 @@ class ProjectService implements Contracts\ProjectServiceContract
             $this->__updateProjectTimeAccordingToTask($project, $task);
         }
         if (isset($dataChanges['status_id']) &&
-            in_array(TaskStatus::STATUS_COMPLETE, [$dataChanges['status_id'], $task->status_id]))
+            in_array(TaskStatus::STATUS_COMPLETE, [$oldData['status_id'], $task->status_id]))
         {
             $this->__updateProjectProgress($project);
         }
