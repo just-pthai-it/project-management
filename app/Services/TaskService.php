@@ -82,8 +82,7 @@ class TaskService implements Contracts\TaskServiceContract
     {
         $filesInfo = $this->fileService->putUploadedFilesAndKeepName($attachments, "task_{$task->id}/attach_files");
         $files     = $this->__storeFiles($task, $filesInfo);
-        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'attached', 'files', 'to',
-                                             Notification::USER_ATTACHED_FILES_NOTIFICATION_CONTENT));
+        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'attached_file'));
         return CusResponse::createSuccessful($files);
     }
 
@@ -102,7 +101,7 @@ class TaskService implements Contracts\TaskServiceContract
     {
         $this->fileService->deleteFile($file->file_path, $file->disk);
         $file->delete();
-        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'detached', 'files', 'from'));
+        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'detached_file'));
         return CusResponse::successfulWithNoData();
     }
 
@@ -118,7 +117,7 @@ class TaskService implements Contracts\TaskServiceContract
 
         $uploadFileInfo = $this->fileService->putUploadedFileAndKeepName($uploadedFile, "task_{$task->id}/reports");
         $fileModel      = $taskUserPair->file()->create($uploadFileInfo);
-        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'submitted', 'a report', 'to', Notification::USER_SUBMITTED_REPORT_NOTIFICATION_CONTENT));
+        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'submitted_report'));
 
         return CusResponse::successful($fileModel);
     }
@@ -129,7 +128,7 @@ class TaskService implements Contracts\TaskServiceContract
         $file         = $taskUserPair->file;
         $this->fileService->deleteFile($file->file_path, $file->disk);
         $file->delete();
-        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'removed', 'report', 'from'));
+        event(new ObjectResourceUpdatedEvent($task, auth()->user(), 'deleted_report'));
 
         return CusResponse::successfulWithNoData();
     }

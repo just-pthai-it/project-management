@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -16,15 +17,18 @@ class UserAssignedEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Model $object;
+    public User $causer;
     public array $userIds;
 
     /**
-     * @param Model $notifiable
+     * @param Model $object
+     * @param User  $causer
      * @param array $userIds
      */
-    public function __construct (Model $notifiable, array $userIds)
+    public function __construct (Model $object, User $causer, array $userIds)
     {
-        $this->object  = $notifiable;
+        $this->object  = $object;
+        $this->causer  = $causer;
         $this->userIds = $userIds;
     }
 
@@ -34,7 +38,7 @@ class UserAssignedEvent
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn()
+    public function broadcastOn ()
     {
         return new PrivateChannel('channel-name');
     }

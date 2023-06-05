@@ -18,28 +18,21 @@ class ObjectResourceUpdatedEvent implements ShouldQueue
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Model $object;
-    public User $user;
+    public User $causer;
     public string $action;
     public string $resource;
-    public string $preposition;
     public string $notificationContent;
 
     /**
      * @param Model  $object
-     * @param User   $user
+     * @param User   $causer
      * @param string $action
-     * @param string $resource
-     * @param string $preposition
-     * @param string $notificationContent
      */
-    public function __construct (Model $object, User $user, string $action, string $resource, string $preposition = 'to', string $notificationContent = '')
+    public function __construct (Model $object, User $causer, string $action)
     {
-        $this->object      = $object;
-        $this->user        = $user;
-        $this->action      = $action;
-        $this->resource    = $resource;
-        $this->preposition = $preposition;
-        $this->notificationContent = $notificationContent;
+        $this->object = $object;
+        $this->causer = $causer;
+        $this->action = $action;
     }
 
 

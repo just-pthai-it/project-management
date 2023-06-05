@@ -179,10 +179,12 @@ class ProjectService implements Contracts\ProjectServiceContract
             return CusResponse::failed([], $message);
         }
 
-        $oldData = $project->getOriginal();
         $project->update($inputs);
         $this->__assignUsers($project, $inputs['user_ids'] ?? []);
-        event(new SystemObjectEvent($project, auth()->user(), 'updated', $oldData));
+        if ($project->wasChanged())
+        {
+            event(new SystemObjectEvent($project, auth()->user(), 'updated', $project->getChanges()));
+        }
 
         return CusResponse::successful();
     }
@@ -205,7 +207,7 @@ class ProjectService implements Contracts\ProjectServiceContract
             $this->__unassignUserFromTaskAfterUnassignedFromProject($object, $oldAssigneeIds);
         }
 
-        event(new UserAssignedEvent($object, array_diff($newAssigneeIds, [auth()->id()])));
+        event(new UserAssignedEvent($object, auth()->user(), array_diff($newAssigneeIds, [auth()->id()])));
     }
 
     private function __unassignUserFromTaskAfterUnassignedFromProject (Project $project, array $oldAssigneeIds) : void
@@ -334,25 +336,15 @@ class ProjectService implements Contracts\ProjectServiceContract
         $task = $project->tasks()->create($inputs);
         $this->__assignUsers($task, $inputs['user_ids'] ?? []);
         $this->__updateProjectTimeAccordingToTask($project, $task);
-        $this->__updateProjectProgress($project, $task);
+        $this->__updateProjectProgress($project);
         $project->save();
         event(new SystemObjectEvent($task, auth()->user(), 'created'));
 
         return CusResponse::createSuccessful(['id' => $task->id]);
     }
 
-    private function __updateProjectProgress (Project $project, ?Task $task = null, ?Task $oldTask = null) : void
+    private function __updateProjectProgress (Project $project) : void
     {
-        // update task case
-        if ($task != null && $oldTask != null)
-        {
-            if (($task->status_id == $oldTask->status_id) ||
-                ($task->status_id != TaskStatus::STATUS_COMPLETE && $oldTask->status_id != TaskStatus::STATUS_COMPLETE))
-            {
-                return;
-            }
-        }
-
         $completeTasksCount = $project->tasks()->where('status_id', '=', TaskStatus::STATUS_COMPLETE)->count();
         if ($completeTasksCount == 0)
         {
@@ -382,16 +374,32 @@ class ProjectService implements Contracts\ProjectServiceContract
             return CusResponse::failed([], $message);
         }
 
-        $oldTask = $task->replicate();
         $task->update($inputs);
         $this->__assignUsers($task, $inputs['user_ids'] ?? []);
-        $this->__updateProjectTimeAccordingToTask($project, $task);
-        $this->__updateProjectProgress($project, $task, $oldTask);
-        $project->save();
 
-        event(new SystemObjectEvent($task, auth()->user(), 'updated', $oldTask->getOriginal()));
+        if ($task->wasChanged())
+        {
+            $this->__updateProjectAccordingToTaskChanges($project, $task);
+            event(new SystemObjectEvent($task, auth()->user(), 'updated', $task->getChanges()));
+        }
 
         return CusResponse::successful();
+    }
+
+    private function __updateProjectAccordingToTaskChanges (Project $project, Task $task) : void
+    {
+        $dataChanges = $task->getChanges();
+        if (isset($dataChanges['starts_at']) || isset($dataChanges['ends_at']))
+        {
+            $this->__updateProjectTimeAccordingToTask($project, $task);
+        }
+        if (isset($dataChanges['status_id']) &&
+            in_array(TaskStatus::STATUS_COMPLETE, [$dataChanges['status_id'], $task->status_id]))
+        {
+            $this->__updateProjectProgress($project);
+        }
+
+        $project->save();
     }
 
     private function __checkConditionBeforeUpdateTask (Task $task, array $inputs) : array

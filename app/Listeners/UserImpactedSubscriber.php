@@ -30,19 +30,19 @@ class UserImpactedSubscriber implements ShouldQueue
 
     public function handleObjectResourceUpdatedEvent (ObjectResourceUpdatedEvent $event) : void
     {
-        if (in_array($event->action, ['detached', 'removed']))
+        if (in_array($event->action, ['detached_file', 'deleted_report']))
         {
             return;
         }
 
-        $data[':user_name']   = $event->user->name;
-        $data[':object']      = __(Str::lower(class_basename(get_class($event->object))));
-        $data[':object_name'] = $event->object->name;
+        $content = __("notification.{$event->action}",
+                      ['causer_name' => $event->causer->name,
+                       'object_type'      => __(Str::lower(class_basename(get_class($event->object)))),
+                       'object_name' => $event->object->name]);
 
-        $content = Str::swap($data, $event->notificationContent);
-        if ($event->action == 'attached')
+        if ($event->action == 'attached_file')
         {
-            $receiverIds = array_diff($event->object->users()->pluck('users.id')->all(), [$event->user->id]);
+            $receiverIds = array_diff($event->object->users()->pluck('users.id')->all(), [$event->causer->id]);
         }
         else
         {
@@ -53,35 +53,30 @@ class UserImpactedSubscriber implements ShouldQueue
         $this->__broadcastNotification($notification, $receiverIds);
     }
 
-    public function handleUserCommentedEvent (UserCommentedEvent $event) : void
-    {
-        if ($event->previousComment == null ||
-            $event->comment->user_id == $event->previousComment->user_id)
-        {
-            return;
-        }
-
-        $content = Str::swap([':user_name'   => $event->comment->user->name,
-                              ':object'      => 'task',
-                              ':object_name' => $event->object->name],
-                             Notification::USER_COMMENTED_NOTIFICATION_CONTENT);
-
-        $notification = $this->__storeNotification($event->comment, ['content' => $content],
-                                                   [$event->previousComment->user_id]);
-        $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
-    }
+//    public function handleUserCommentedEvent (UserCommentedEvent $event) : void
+//    {
+//        if ($event->previousComment == null ||
+//            $event->comment->user_id == $event->previousComment->user_id)
+//        {
+//            return;
+//        }
+//
+//        $content = Str::swap([':user_name'   => $event->comment->user->name,
+//                              ':object'      => 'task',
+//                              ':object_name' => $event->object->name],
+//                             Notification::USER_COMMENTED_NOTIFICATION_CONTENT);
+//
+//        $notification = $this->__storeNotification($event->comment, ['content' => $content],
+//                                                   [$event->previousComment->user_id]);
+//        $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
+//    }
 
     public function handleUserAssignedEvent (UserAssignedEvent $event) : void
     {
-        if (empty($event->userIds))
-        {
-            return;
-        }
-
-        $content = Str::swap([':user_name'   => $event->object->user->name,
-                              ':object'      => $event->object instanceof Project ? 'project' : 'task',
-                              ':object_name' => $event->object->name],
-                             Notification::USER_ASSIGNED_NOTIFICATION_CONTENT);
+        $content = __('notification.user_assigned',
+                      ['causer_name' => $event->causer->name,
+                       'object_type'      => __(Str::lower(class_basename(get_class($event->object)))),
+                       'object_name' => $event->object->name]);
 
         $notification = $this->__storeNotification($event->object, ['content' => $content], $event->userIds);
         $this->__broadcastNotification($notification, $event->userIds);

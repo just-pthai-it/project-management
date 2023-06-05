@@ -19,20 +19,20 @@ class SystemObjectEvent
     public Model $object;
     public User $causer;
     public string $action;
-    public array $oldData;
+    public array $dataChanges;
 
     /**
      * @param Model  $object
      * @param User   $causer
      * @param string $action
-     * @param array  $oldData
+     * @param array  $dataChanges
      */
-    public function __construct (Model $object, User $causer, string $action, array $oldData = [])
+    public function __construct (Model $object, User $causer, string $action, array $dataChanges = [])
     {
-        $this->object  = $object;
-        $this->causer  = $causer;
-        $this->action  = $action;
-        $this->oldData = $oldData;
+        $this->object      = $object;
+        $this->causer      = $causer;
+        $this->action      = $action;
+        $this->dataChanges = $dataChanges;
     }
 
 

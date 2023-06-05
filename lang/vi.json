@@ -2,5 +2,8 @@
   "task": "đầu việc",
   "project": "dự án",
   "hour": "giờ",
-  "day": "ngày"
+  "day": "ngày",
+  "created ": "đã tạo",
+  "updated": "đã cập nhật",
+  "deleted": "đã xóa"
 }

@@ -14,10 +14,6 @@ class ActivityLog extends Model
     const OBJECT_CREATE_LOG_TYPE_ID = 1;
     const OBJECT_UPDATE_LOG_TYPE_ID = 2;
 
-    const COMMENT_LOG_DESCRIPTION = ':user_name commented to :commentable :object_name.';
-    const OBJECT_RESOURCE_UPDATE_LOG_DESCRIPTION = ':user_name :action :resource :preposition :commentable :object_name.';
-    const SYSTEM_OBJECT_AFFECTED_LOG_DESCRIPTION = ':user_name :action :extra :object_type :object_name.';
-
     public const UPDATED_AT = null;
 
     protected $fillable = [
