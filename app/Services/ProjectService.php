@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectService implements Contracts\ProjectServiceContract
 {
@@ -173,6 +174,9 @@ class ProjectService implements Contracts\ProjectServiceContract
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function update (Project $project, array $inputs) : JsonResponse
     {
         try
@@ -193,15 +197,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         catch (Exception $exception)
         {
             DB::rollBack();
-            if ($exception->getStatusCode() != Response::HTTP_UNPROCESSABLE_ENTITY)
-            {
-                report($exception);
-                abort(500);
-            }
-            else
-            {
-                abort(422, $exception->getMessage());
-            }
+            throw $exception;
         }
     }
 
