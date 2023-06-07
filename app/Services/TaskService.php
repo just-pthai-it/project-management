@@ -161,7 +161,7 @@ class TaskService implements Contracts\TaskServiceContract
 
     public function listComments (Task $task) : JsonResponse
     {
-        $comments = $task->comments()->with(['users'])->latest()->orderByDesc('id')->get();
+        $comments = $task->comments()->with(['user'])->latest()->orderByDesc('id')->get();
         return CommentResource::collection($comments)->response();
     }
 
