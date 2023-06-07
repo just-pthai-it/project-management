@@ -29,8 +29,7 @@ class CommentService implements Contracts\CommentServiceContract
 
     public function delete (Comment $comment) : JsonResponse
     {
-        $comment->comments()
-                ->update(Arr::only($comment->getOriginal(), ['commentable_type', 'commentable_id', 'deep_level']));
+        $comment->comments()->delete();
         $comment->delete();
         return CusResponse::successfulWithNoData();
     }
