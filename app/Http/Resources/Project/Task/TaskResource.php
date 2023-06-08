@@ -20,21 +20,27 @@ class TaskResource extends JsonResource
     public function toArray ($request) : array|JsonSerializable|Arrayable
     {
         return [
-            'id'             => $this->id,
-            'name'           => $this->name,
-            'project_id'     => $this->project_id,
-            'description'    => $this->description,
-            'starts_at'      => $this->starts_at,
-            'ends_at'        => $this->ends_at,
-            'status'         => $this->status,
-            'pending_reason' => $this->pending_reason,
-            'project'        => $this->whenLoaded('project'),
-            'files'          => FileResource::collection($this->whenLoaded('files')),
-            'reports'        => TaskReportResource::collection($this->whenLoaded('taskUserPairs',
+            'id'                => $this->id,
+            'name'              => $this->name,
+            'project_id'        => $this->project_id,
+            'description'       => $this->description,
+            'starts_at'         => $this->starts_at,
+            'ends_at'           => $this->ends_at,
+            'status'            => $this->status,
+            'pending_reason'    => $this->pending_reason,
+            'project'           => $this->whenLoaded('project'),
+            'files'             => FileResource::collection($this->whenLoaded('files')),
+            'reports'           => TaskReportResource::collection($this->whenLoaded('taskUserPairs',
                 fn () => $this->taskUserPairs->whereNotNull('file'))),
-            'children'       => $this->whenLoaded('children'),
-            'parent'         => $this->whenLoaded('parent'),
-            'users'          => $this->users,
+            'children'          => $this->whenLoaded('children'),
+            'parent'            => $this->whenLoaded('parent'),
+            'users'             => $this->users,
+            'can_update'        => auth()->user()->tokenCan('*') ||
+                                   (auth()->user()->tokenCan('task:update') &&
+                                    ($this->user_id == auth()->id() ||
+                                     $this->users->contains('id', auth()->id()))),
+            'can_submit_report' => auth()->user()->tokenCan('task:report') &&
+                                   $this->users->contains('id', auth()->id()),
         ];
     }
 }
