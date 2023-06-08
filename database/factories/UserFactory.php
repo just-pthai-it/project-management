@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -26,6 +27,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password'          => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'last_login_at'     => now(),
+            'avatar'            => Storage::disk('public')->url('avatars/avatar.png'),
         ];
     }
 

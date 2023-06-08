@@ -109,6 +109,14 @@ class User extends Authenticatable
         );
     }
 
+    protected function password () : Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => bcrypt($value)
+        );
+    }
+
     public function projects () : HasMany
     {
         return $this->hasMany(Project::class);

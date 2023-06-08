@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Storage;
 
 class StoreUserPostRequest extends FormRequest
 {
@@ -38,6 +39,7 @@ class StoreUserPostRequest extends FormRequest
 
     public function validated ($key = null, $default = null)
     {
-        return array_merge(parent::validated($key, $default), ['password' => bcrypt($this->all()['password'])]);
+        return array_merge(parent::validated($key, $default),
+                           ['avatar' => Storage::disk('public')->url('avatars/avatar.png')]);
     }
 }
