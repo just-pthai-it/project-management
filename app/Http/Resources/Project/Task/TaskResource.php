@@ -39,6 +39,8 @@ class TaskResource extends JsonResource
                                    (auth()->user()->tokenCan('task:update') &&
                                     ($this->user_id == auth()->id() ||
                                      $this->users->contains('id', auth()->id()))),
+            'can_delete'        => auth()->user()->tokenCan('*') ||
+                                   (auth()->user()->tokenCan('task:delete') && auth()->id() == $this->user_id),
             'can_submit_report' => auth()->user()->tokenCan('task:report') &&
                                    $this->users->contains('id', auth()->id()),
         ];
