@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Comment\CreateCommentPostRequest;
+use App\Models\Comment;
 use App\Models\Task;
 use App\Services\Contracts\TaskServiceContract;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,6 +20,7 @@ class TaskCommentController extends Controller
     public function __construct (TaskServiceContract $taskService)
     {
         $this->taskService = $taskService;
+        $this->authorizeResource(Comment::class, 'comment');
     }
 
     /**
@@ -39,11 +40,9 @@ class TaskCommentController extends Controller
      * @param CreateCommentPostRequest $request
      * @param Task                     $task
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store (CreateCommentPostRequest $request, Task $task) : JsonResponse
     {
-        $this->authorize('update', $task);
         return $this->taskService->storeComment($task, $request->validated());
     }
 

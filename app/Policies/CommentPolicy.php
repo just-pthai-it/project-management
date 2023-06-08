@@ -17,9 +17,9 @@ class CommentPolicy
      * @param User $user
      * @return Response|bool
      */
-    public function viewAny (User $user)
+    public function viewAny (User $user) : Response|bool
     {
-        //
+        return $user->tokenCan('task:view');
     }
 
     /**
@@ -42,7 +42,7 @@ class CommentPolicy
      */
     public function create (User $user) : Response|bool
     {
-        return true;
+        return $user->tokenCan('task:view');
     }
 
     /**
