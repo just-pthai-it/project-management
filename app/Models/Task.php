@@ -56,7 +56,7 @@ class Task extends Model
     protected function startsAt () : Attribute
     {
         return Attribute::make(
-            set: function ($value)
+            get: function ($value)
             {
                 $value = Carbon::parse($value, '+7');
                 $value->setTimezone('UTC');
@@ -68,7 +68,7 @@ class Task extends Model
     protected function endsAt () : Attribute
     {
         return Attribute::make(
-            set: function ($value)
+            get: function ($value)
             {
                 $value = Carbon::parse($value, '+7');
                 $value->setTimezone('UTC');
