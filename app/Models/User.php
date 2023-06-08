@@ -66,7 +66,7 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'isEditable',
+        'is_editable',
     ];
 
     private array $filterable = [
