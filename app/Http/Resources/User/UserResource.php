@@ -40,6 +40,7 @@ class UserResource extends JsonResource
             'roles'         => $this->whenLoaded('roles'),
             'permissions'   => $this->when($this->isIncludePermissions, fn () => $this->permissions),
             'is_root'       => $this->isRoot(),
+            'is_editable' => $this->is_editable,
             'created_at'    => $this->created_at,
             'updated_at'    => $this->updated_at,
         ];

@@ -65,11 +65,30 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'isEditable',
+    ];
+
     private array $filterable = [
         'id',
         'name',
         'email',
     ];
+
+    protected function isEditable () : Attribute
+    {
+        return Attribute::make(
+            get: function ()
+            {
+                if (!$this->isRoot())
+                {
+                    return true;
+                }
+
+                return auth()->user()->tokenCan('*');
+            }
+        );
+    }
 
     public function filterName (Builder $query, string $name) : void
     {
