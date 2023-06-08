@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Models\Traits\HasFilter;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,6 +52,30 @@ class Task extends Model
         'project_id',
         'status_id',
     ];
+
+    protected function startsAt () : Attribute
+    {
+        return Attribute::make(
+            set: function ($value)
+            {
+                $value = Carbon::parse($value, '+7');
+                $value->setTimezone('UTC');
+                return $value;
+            }
+        );
+    }
+
+    protected function endsAt () : Attribute
+    {
+        return Attribute::make(
+            set: function ($value)
+            {
+                $value = Carbon::parse($value, '+7');
+                $value->setTimezone('UTC');
+                return $value;
+            }
+        );
+    }
 
     public function filterStartAt (Builder $query, ?string $startAt) : void
     {

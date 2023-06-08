@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\HasFilter;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,6 +86,30 @@ class Project extends Model
             {
                 $value = $this->ends_at;
                 $value->setTime(23, 59, 59);
+                return $value;
+            }
+        );
+    }
+
+        protected function startsAt () : Attribute
+    {
+        return Attribute::make(
+            set: function ($value)
+            {
+                $value = Carbon::parse($value, '+7');
+                $value->setTimezone('UTC');
+                return $value;
+            }
+        );
+    }
+
+    protected function endsAt () : Attribute
+    {
+        return Attribute::make(
+            set: function ($value)
+            {
+                $value = Carbon::parse($value, '+7');
+                $value->setTimezone('UTC');
                 return $value;
             }
         );
