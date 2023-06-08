@@ -22,7 +22,7 @@ class RoleResource extends JsonResource
         return [
             'id'          => $this->id,
             'name'        => $this->name,
-            'is_editable' => $this->name != Role::ROLE_ROOT_NAME,
+            'is_editable' => $this->name != Role::ROLE_ROOT_NAME || auth()->user()->tokenCan('*'),
             'permissions' => new PermissionCollection($this->permissions),
         ];
     }
