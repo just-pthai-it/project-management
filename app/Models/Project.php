@@ -98,7 +98,8 @@ class Project extends Model
     protected function canDelete () : Attribute
     {
         return Attribute::make(
-            get: fn () => auth()->user()->tokenCan('project:delete') && $this->user_id == auth()->id()
+            get: fn () => auth()->user()->tokenCan('*') ||
+                          (auth()->user()->tokenCan('project:delete') && $this->user_id == auth()->id())
         );
     }
 
