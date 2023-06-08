@@ -35,14 +35,9 @@ class TaskResource extends JsonResource
             'children'          => $this->whenLoaded('children'),
             'parent'            => $this->whenLoaded('parent'),
             'users'             => $this->users,
-            'can_update'        => auth()->user()->tokenCan('*') ||
-                                   (auth()->user()->tokenCan('task:update') &&
-                                    ($this->user_id == auth()->id() ||
-                                     $this->users->contains('id', auth()->id()))),
-            'can_delete'        => auth()->user()->tokenCan('*') ||
-                                   (auth()->user()->tokenCan('task:delete') && auth()->id() == $this->user_id),
-            'can_submit_report' => auth()->user()->tokenCan('task:report') &&
-                                   $this->users->contains('id', auth()->id()),
+            'can_update'        => $this->can_update,
+            'can_delete'        => $this->can_delete,
+            'can_submit_report' => $this->can_submit_report,
         ];
     }
 }

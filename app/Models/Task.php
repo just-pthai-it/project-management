@@ -46,6 +46,12 @@ class Task extends Model
         'pivot',
     ];
 
+    protected $appends = [
+        'can_update',
+        'can_delete',
+        'can_submit_report',
+    ];
+
     private array $filterable = [
         'id',
         'name',
@@ -74,6 +80,32 @@ class Task extends Model
                 $value->setTimezone('UTC');
                 return $value;
             }
+        );
+    }
+
+    protected function canUpdate () : Attribute
+    {
+        return Attribute::make(
+            get: fn () => auth()->user()->tokenCan('*') ||
+                          (auth()->user()->tokenCan('task:update') &&
+                           ($this->user_id == auth()->id() ||
+                            $this->users->contains('id', auth()->id())))
+        );
+    }
+
+    protected function canDelete () : Attribute
+    {
+        return Attribute::make(
+            get: fn () => auth()->user()->tokenCan('*') ||
+                          (auth()->user()->tokenCan('task:delete') && auth()->id() == $this->user_id)
+        );
+    }
+
+    protected function canSubmitReport () : Attribute
+    {
+        return Attribute::make(
+            get: fn () => auth()->user()->tokenCan('task:report') &&
+                          $this->users->contains('id', auth()->id())
         );
     }
 
