@@ -10,77 +10,79 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function before (User $user, $ability) : ?bool
+    public function before (User $loggedUser, $ability) : ?bool
     {
-        return $user->tokenCan('*') ? true : null;
+        return $loggedUser->tokenCan('*') ? true : null;
     }
 
     /**
      * Determine whether the user can view any models.
      *
-     * @param User $user
+     * @param User $loggedUser
      * @return Response|bool
      */
-    public function viewAny (User $user) : Response|bool
+    public function viewAny (User $loggedUser) : Response|bool
     {
-        return $user->tokenCan('user:view-any');
+        return $loggedUser->tokenCan('user:view-any');
     }
 
     /**
      * Determine whether the user can view the model.
      *
-     * @param User $user
+     * @param User $loggedUser
      * @return Response|bool
      */
-    public function view (User $user) : Response|bool
+    public function view (User $loggedUser) : Response|bool
     {
-        return $user->tokenCan('user:view');
+        return $loggedUser->tokenCan('user:view');
 
     }
 
     /**
      * Determine whether the user can create models.
      *
-     * @param User $user
+     * @param User $loggedUser
      * @return bool
      */
-    public function create (User $user) : bool
+    public function create (User $loggedUser) : bool
     {
-        return $user->tokenCan('user:create');
+        return $loggedUser->tokenCan('user:create');
 
     }
 
     /**
      * Determine whether the user can update the model.
      *
+     * @param User $loggedUser
      * @param User $user
      * @return Response|bool
      */
-    public function update (User $user) : Response|bool
+    public function update (User $loggedUser, User $user) : Response|bool
     {
-        return $user->tokenCan('user:update');
+        return $loggedUser->tokenCan('user:update') && !$user->isRoot();
 
     }
 
     /**
      * Determine whether the user can delete the model.
      *
+     * @param User $loggedUser
      * @param User $user
      * @return bool
      */
-    public function delete (User $user) : bool
+    public function delete (User $loggedUser, User $user) : bool
     {
-        return $user->tokenCan('user:delete');
+        return $loggedUser->tokenCan('user:delete') && !$user->isRoot();
 
     }
 
     /**
      * Determine whether the user can restore the model.
      *
-     * @param User $user
+     * @param User $loggedUser
      * @return void
      */
-    public function restore (User $user)
+    public function restore (User $loggedUser)
     {
         //
     }
@@ -88,11 +90,12 @@ class UserPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
+     * @param User $loggedUser
      * @param User $user
      * @return Response|bool
      */
-    public function forceDelete (User $user) : Response|bool
+    public function forceDelete (User $loggedUser, User $user) : Response|bool
     {
-        return $user->tokenCan('user:delete');
+        return $loggedUser->tokenCan('user:delete') && !$user->isRoot();
     }
 }
