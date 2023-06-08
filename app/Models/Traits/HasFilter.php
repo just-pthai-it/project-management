@@ -13,7 +13,7 @@ trait HasFilter
     {
         foreach ($queryParams as $key => $value)
         {
-            if ($value == 'all' || empty($value))
+            if ($value == 'all' || $value = 'undefined' || empty($value))
             {
                 continue;
             }
