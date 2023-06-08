@@ -33,6 +33,7 @@ class ProjectResource extends JsonResource
             'users'          => $this->whenLoaded('users'),
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
+            'can_delete'     => $this->can_delete,
         ];
 
         $tasks_count = 0;

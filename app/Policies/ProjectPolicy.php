@@ -41,10 +41,10 @@ class ProjectPolicy
      */
     public function view (User $user, Project $project) : Response|bool
     {
-        return $user->tokenCan('project:view') &&
-               ($user->tokenCan('statistical:project') ||
-                $project->user_id == $user->id ||
-                $project->users()->where('users.id', '=', $user->id)->exists());
+        return $user->tokenCan('statistical:project') ||
+               ($user->tokenCan('project:view') &&
+                ($project->user_id == $user->id ||
+                 $project->users()->where('users.id', '=', $user->id)->exists()));
     }
 
     /**
@@ -81,7 +81,7 @@ class ProjectPolicy
      */
     public function delete (User $user, Project $project) : Response|bool
     {
-        return $user->tokenCan('project:delete') &&               $project->user_id == $user->id;
+        return $user->tokenCan('project:delete') && $project->user_id == $user->id;
     }
 
     /**

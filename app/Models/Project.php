@@ -45,6 +45,10 @@ class Project extends Model
         'ends_at'   => 'datetime:Y-m-d',
     ];
 
+    protected $appends = [
+        'can_delete',
+    ];
+
     private array $filterable = [
         'id',
         'name',
@@ -91,27 +95,10 @@ class Project extends Model
         );
     }
 
-        protected function startsAt () : Attribute
+    protected function canDelete () : Attribute
     {
         return Attribute::make(
-            set: function ($value)
-            {
-                $value = Carbon::parse($value, '+7');
-                $value->setTimezone('UTC');
-                return $value;
-            }
-        );
-    }
-
-    protected function endsAt () : Attribute
-    {
-        return Attribute::make(
-            set: function ($value)
-            {
-                $value = Carbon::parse($value, '+7');
-                $value->setTimezone('UTC');
-                return $value;
-            }
+            get: fn () => auth()->user()->tokenCan('project:delete') && $this->user_id == auth()->id()
         );
     }
 
