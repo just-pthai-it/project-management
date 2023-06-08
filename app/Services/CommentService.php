@@ -14,6 +14,7 @@ class CommentService implements Contracts\CommentServiceContract
 
     public function listReplies (Comment $comment) : JsonResponse
     {
+        $comment->load(['comments.user']);
         return CommentResource::collection($comment->comments)->response();
     }
 
