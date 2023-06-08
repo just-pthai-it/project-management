@@ -41,6 +41,8 @@ class RoleSeeder extends Seeder
                  'task:update',
                  'task:delete',
                  'task:report',
+                 'statistical:project',
+                 'statistical:task',
              ]],
             ['name'        => 'Thực tập sinh',
              'permissions' => [
