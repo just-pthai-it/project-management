@@ -22,6 +22,6 @@ class ResourceController extends Controller
     public function upload (UploadPostRequest $request) : JsonResponse
     {
         $fileInfo = $this->fileService->putUploadedFileAndKeepName($request->file('upload_file', (string)time()));
-        return response()->json(['data' => $fileInfo]);
+        return response()->json(['data' => $fileInfo])->header('Access-Control-Allow-Origin', '*');
     }
 }
