@@ -476,8 +476,12 @@ class ProjectService implements Contracts\ProjectServiceContract
 
     private function __checkIfCanUpdateTaskStatusFromBehindSchedule (Task $task, array $inputs) : bool
     {
-        return ($task->ends_at->format('Y-m-d') > now()->format('Y-m-d')) ||
-               (isset($inputs['starts_at']) && $inputs['starts_at'] > now()->format('Y-m-d'));
+        if (isset($inputs['ends_at']))
+        {
+            return Carbon::parse($inputs['ends_at'])->toDateTimeString() > now('+7')->toDateTimeString();
+        }
+
+        return $task->ends_at->toDateTimeString() > now('+7')->toDateTimeString();
     }
 
     public function deleteTask (Project $project, Task $task) : JsonResponse
