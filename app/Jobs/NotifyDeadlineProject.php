@@ -23,14 +23,18 @@ class NotifyDeadlineProject implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private string $scheduleType;
+
     /**
      * Create a new job instance.
      *
+     * @param string $scheduleType
      * @return void
      */
-    public function __construct ()
+    public function __construct (string $scheduleType)
     {
         //
+        $this->scheduleType = $scheduleType;
     }
 
     /**
@@ -43,15 +47,15 @@ class NotifyDeadlineProject implements ShouldQueue
         $tomorrow = Carbon::now('+7')->addDay();
         Project::query()
                ->whereNotIn('status_id', [ProjectStatus::STATUS_BEHIND_SCHEDULE, ProjectStatus::STATUS_COMPLETE])
-               ->where('ends_at', '=', $tomorrow)
+               ->where('ends_at', '=', $tomorrow->toDateString())
                ->chunkById(50, function ($projects)
                {
                    foreach ($projects as $project)
                    {
                        $project->load('users:id,name,email');
-                       $content = $this->__generateContentForNotification($task);
+                       $content = $this->__generateContentForNotification($project);
 
-                       $notification = $this->__storeNotification($projects, ['content' => $content],
+                       $notification = $this->__storeNotification($project, ['content' => $content],
                                                                   [$project->user_id]);
                        $this->__broadcastNotification($notification, [$project->user_id]);
                        $this->__mailToTheProjectOwner($notification, $project->user);
@@ -61,10 +65,10 @@ class NotifyDeadlineProject implements ShouldQueue
 
     private function __generateContentForNotification (Project $project) : string
     {
-        $data[':object']       = Str::ucfirst(__(Str::lower(class_basename(get_class($project)))));
+        $data[':object']      = Str::ucfirst(__(Str::lower(class_basename(get_class($project)))));
         $data[':object_name'] = $project->name;
-        $data[':time']         = $this->scheduleType == 'daily' ? 1 : 12;
-        $data[':time_unit']    = __($this->scheduleType == 'daily' ? 'day' : 'hour');
+        $data[':time']        = $this->scheduleType == 'daily' ? 1 : 12;
+        $data[':time_unit']   = __($this->scheduleType == 'daily' ? 'day' : 'hour');
         return Str::swap($data, Notification::NOTIFY_DEADLINE_NOTIFICATION_CONTENT);
     }
 

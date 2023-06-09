@@ -35,7 +35,7 @@ class UpdateBehindScheduleTaskStatus implements ShouldQueue
     {
         Task::query()
             ->whereNotIn('status_id', [TaskStatus::STATUS_BEHIND_SCHEDULE, TaskStatus::STATUS_COMPLETE])
-            ->where('ends_at', '>', now('+7'))
+            ->where('ends_at', '<', now('+7'))
             ->update(['status_id' => TaskStatus::STATUS_BEHIND_SCHEDULE]);
     }
 }

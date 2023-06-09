@@ -37,4 +37,9 @@ class NotificationCreatedEvent implements ShouldBroadcast
     {
         return $this->userIds;
     }
+
+    public function broadcastAs ()
+    {
+        return 'notification-created';
+    }
 }
