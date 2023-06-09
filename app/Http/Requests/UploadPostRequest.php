@@ -24,7 +24,7 @@ class UploadPostRequest extends FormRequest
     public function rules () : array
     {
         return [
-            'upload_file' => ['required', 'file'],
+            'upload' => ['required', 'file'],
         ];
     }
 }
