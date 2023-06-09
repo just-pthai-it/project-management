@@ -274,12 +274,12 @@ class ProjectService implements Contracts\ProjectServiceContract
             in_array($project->status_id, [ProjectStatus::STATUS_NOT_START, ProjectStatus::STATUS_IN_PROGRESS]))
         {
             if (isset($dataChanges['ends_at']) &&
-                $project->ends_at->toDateString() < now()->toDateString())
+                $project->ends_at->toDateString() > now()->toDateString())
             {
                 return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
             }
 
-            if (Carbon::parse($oldData['ends_at'])->toDateString() < now()->toDateString())
+            if (Carbon::parse($oldData['ends_at'])->toDateString() > now()->toDateString())
             {
                 return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
             }
