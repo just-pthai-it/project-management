@@ -88,6 +88,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     private function __paginateProjectByNonRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
     {
         return auth()->user()->assignedProjects()
+                     ->orWhere('projects.user_id', '=', auth()->id())
                      ->filter($inputs)
                      ->with('status')->withCount($withCountTaskByStatusQuery)
                      ->paginate($inputs['per_page'] ?? 10);

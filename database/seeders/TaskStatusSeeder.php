@@ -23,22 +23,22 @@ class TaskStatusSeeder extends Seeder
             ],
             [
                 'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_IN_PROGRESS],
-                'color'        => '#61C376',
-                'is_permanent' => 1,
-            ],
-            [
-                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_PENDING],
-                'color'        => '#D64041',
-                'is_permanent' => 1,
-            ],
-            [
-                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_BEHIND_SCHEDULE],
                 'color'        => '#FD9308',
                 'is_permanent' => 1,
             ],
             [
-                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_COMPLETE],
+                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_PENDING],
                 'color'        => '#C8C003',
+                'is_permanent' => 1,
+            ],
+            [
+                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_BEHIND_SCHEDULE],
+                'color'        => '#D64041',
+                'is_permanent' => 1,
+            ],
+            [
+                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_COMPLETE],
+                'color'        => '#61C376',
                 'is_permanent' => 1,
             ],
         ];

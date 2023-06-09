@@ -23,23 +23,23 @@ class ProjectStatusSeeder extends Seeder
             ],
             [
                 'name'         => ProjectStatus::STATUSES[ProjectStatus::STATUS_IN_PROGRESS],
-                'color'        => '#61C376',
+                'color'        => '#FD9308',
                 'is_permanent' => 1,
 
             ],
             [
                 'name'         => ProjectStatus::STATUSES[ProjectStatus::STATUS_PENDING],
-                'color'        => '#D64041',
+                'color'        => '#C8C003',
                 'is_permanent' => 1,
             ],
             [
                 'name'         => ProjectStatus::STATUSES[ProjectStatus::STATUS_BEHIND_SCHEDULE],
-                'color'        => '#FD9308',
+                'color'        => '#D64041',
                 'is_permanent' => 1,
             ],
             [
                 'name'         => ProjectStatus::STATUSES[ProjectStatus::STATUS_COMPLETE],
-                'color'        => '#C8C003',
+                'color'        => '#61C376',
                 'is_permanent' => 1,
             ],
         ];

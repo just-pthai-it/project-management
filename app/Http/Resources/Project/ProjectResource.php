@@ -37,10 +37,10 @@ class ProjectResource extends JsonResource
         ];
 
         $tasks_count = 0;
-
+        $projectStatuses = ProjectStatus::all();
         foreach (ProjectStatus::STATUSES as $id => $name)
         {
-            $projectStatus = ProjectStatus::query()->find($id);
+            $projectStatus = $projectStatuses->firstWhere('id', $id);
             $tasks_count   += $this->{"{$id}_tasks"};
 
             $data['tasks_count_by_status'][] = [
