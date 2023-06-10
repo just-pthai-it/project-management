@@ -148,7 +148,7 @@ class TaskService implements Contracts\TaskServiceContract
                 $comment->save();
             }
 
-//            event(new UserCommentedEvent($task, $comment, $previousComment));
+            event(new UserCommentedEvent($task, $comment, $previousComment));
 
         }
         else

@@ -14,7 +14,7 @@ class Notification extends Model
 {
     use HasFactory, SoftDeletes;
 
-    const USER_COMMENTED_NOTIFICATION_CONTENT = ':user_name replied your comment in :object :object_name.';
+    const USER_COMMENTED_NOTIFICATION_CONTENT = ':user_name đã trả lời bình luận của bạn trong :object_type :object_name.';
     const NOTIFY_DEADLINE_NOTIFICATION_CONTENT = ':object :object_name chỉ còn :time :time_unit nữa là sẽ đến hạn.';
 
     public const UPDATED_AT = null;

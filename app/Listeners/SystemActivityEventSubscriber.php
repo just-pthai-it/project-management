@@ -104,7 +104,7 @@ class SystemActivityEventSubscriber implements ShouldQueue
     public function subscribe ($events) : array
     {
         return [
-            UserCommentedEvent::class         => 'handleUserCommented',
+//            UserCommentedEvent::class         => 'handleUserCommented',
             ObjectResourceUpdatedEvent::class => 'handleObjectResourceUpdated',
             SystemObjectEvent::class          => 'handleSystemObjectEvent',
         ];

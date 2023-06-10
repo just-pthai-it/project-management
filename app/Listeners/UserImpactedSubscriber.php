@@ -37,7 +37,7 @@ class UserImpactedSubscriber implements ShouldQueue
 
         $content = __("notification.{$event->action}",
                       ['causer_name' => $event->causer->name,
-                       'object_type'      => __(Str::lower(class_basename(get_class($event->object)))),
+                       'object_type' => __(Str::lower(class_basename(get_class($event->object)))),
                        'object_name' => $event->object->name]);
 
         if ($event->action == 'attached_file')
@@ -53,29 +53,29 @@ class UserImpactedSubscriber implements ShouldQueue
         $this->__broadcastNotification($notification, $receiverIds);
     }
 
-//    public function handleUserCommentedEvent (UserCommentedEvent $event) : void
-//    {
-//        if ($event->previousComment == null ||
-//            $event->comment->user_id == $event->previousComment->user_id)
-//        {
-//            return;
-//        }
-//
-//        $content = Str::swap([':user_name'   => $event->comment->user->name,
-//                              ':object'      => 'task',
-//                              ':object_name' => $event->object->name],
-//                             Notification::USER_COMMENTED_NOTIFICATION_CONTENT);
-//
-//        $notification = $this->__storeNotification($event->comment, ['content' => $content],
-//                                                   [$event->previousComment->user_id]);
-//        $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
-//    }
+    public function handleUserCommentedEvent (UserCommentedEvent $event) : void
+    {
+        if ($event->previousComment == null ||
+            $event->comment->user_id == $event->previousComment->user_id)
+        {
+            return;
+        }
+
+        $content = Str::swap([':user_name'   => $event->comment->user->name,
+                              ':object_type' => __(Str::lower(class_basename(get_class($event->object)))),
+                              ':object_name' => $event->object->name],
+                             Notification::USER_COMMENTED_NOTIFICATION_CONTENT);
+
+        $notification = $this->__storeNotification($event->comment, ['content' => $content],
+                                                   [$event->previousComment->user_id]);
+        $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
+    }
 
     public function handleUserAssignedEvent (UserAssignedEvent $event) : void
     {
         $content = __('notification.user_assigned',
                       ['causer_name' => $event->causer->name,
-                       'object_type'      => __(Str::lower(class_basename(get_class($event->object)))),
+                       'object_type' => __(Str::lower(class_basename(get_class($event->object)))),
                        'object_name' => $event->object->name]);
 
         $notification = $this->__storeNotification($event->object, ['content' => $content], $event->userIds);
