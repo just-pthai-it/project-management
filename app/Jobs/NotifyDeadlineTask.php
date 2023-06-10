@@ -47,12 +47,12 @@ class NotifyDeadlineTask implements ShouldQueue
     public function handle () : void
     {
         $tomorrow          = Carbon::now('+7')->addDay();
-        $nexTwelveHours    = Carbon::now('+7')->addHours(12);
+        $nextTwelveHours   = Carbon::now('+7')->addHours(11);
         $nextThirteenHours = Carbon::now('+7')->addHours(13);
         Task::query()
             ->whereNotIn('status_id', [TaskStatus::STATUS_BEHIND_SCHEDULE, ProjectStatus::STATUS_COMPLETE])
             ->when($this->scheduleType == 'hourly',
-                fn (Builder $query) => $query->whereBetween('ends_at', [$nexTwelveHours, $nextThirteenHours]))
+                fn (Builder $query) => $query->whereBetween('ends_at', [$nextTwelveHours, $nextThirteenHours]))
             ->when($this->scheduleType == 'daily',
                 fn (Builder $query) => $query->where('ends_at', '=', $tomorrow->toDateString()))
             ->chunkById(50, function ($tasks)
