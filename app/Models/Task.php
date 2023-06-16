@@ -86,26 +86,29 @@ class Task extends Model
     protected function canUpdate () : Attribute
     {
         return Attribute::make(
-            get: fn () => auth()->user()->tokenCan('*') ||
-                          (auth()->user()->tokenCan('task:update') &&
-                           ($this->user_id == auth()->id() ||
-                            $this->users->contains('id', auth()->id())))
+            get: fn () => auth()->user() != null &&
+                          (auth()->user()->tokenCan('*') ||
+                           (auth()->user()->tokenCan('task:update') &&
+                            ($this->user_id == auth()->id() ||
+                             $this->users->contains('id', auth()->id()))))
         );
     }
 
     protected function canDelete () : Attribute
     {
         return Attribute::make(
-            get: fn () => auth()->user()->tokenCan('*') ||
-                          (auth()->user()->tokenCan('task:delete') && auth()->id() == $this->user_id)
+            get: fn () => auth()->user() != null &&
+                          (auth()->user()->tokenCan('*') ||
+                           (auth()->user()->tokenCan('task:delete') && auth()->id() == $this->user_id))
         );
     }
 
     protected function canSubmitReport () : Attribute
     {
         return Attribute::make(
-            get: fn () => auth()->user()->tokenCan('task:report') &&
-                          $this->users->contains('id', auth()->id())
+            get: fn () => auth()->user() != null &&
+                          (auth()->user()->tokenCan('task:report') &&
+                           $this->users->contains('id', auth()->id()))
         );
     }
 
