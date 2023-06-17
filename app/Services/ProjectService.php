@@ -452,7 +452,7 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             if ($task->status_id != TaskStatus::STATUS_REVIEW)
             {
-                return [false, 'Đầu việc cần phải được duyệt qua trước khi cập nhật trạng thái Hoàn thành.'];
+                return [false, 'Đầu việc cần phải được phê duyệt qua trước khi cập nhật trạng thái Hoàn thành.'];
             }
 
             if (!$this->__checkIfCanUpdateTaskToCompleteStatus($task))

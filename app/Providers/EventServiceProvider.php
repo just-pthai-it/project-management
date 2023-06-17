@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\TaskStatusUpdatedToReviewOrCompleteEvent;
 use App\Listeners\SystemActivityEventSubscriber;
+use App\Listeners\TaskStatusUpdatedToReviewOrCompleteListener;
 use App\Listeners\UserImpactedSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -17,8 +19,11 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
+        Registered::class                               => [
             SendEmailVerificationNotification::class,
+        ],
+        TaskStatusUpdatedToReviewOrCompleteEvent::class => [
+            TaskStatusUpdatedToReviewOrCompleteListener::class,
         ],
     ];
 

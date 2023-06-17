@@ -5,9 +5,11 @@ namespace App\Listeners;
 use App\Events\ActivityLogCreatedEvent;
 use App\Events\ObjectResourceUpdatedEvent;
 use App\Events\SystemObjectEvent;
+use App\Events\TaskStatusUpdatedToReviewOrCompleteEvent;
 use App\Events\UserCommentedEvent;
 use App\Models\ActivityLog;
 use App\Models\Task;
+use App\Models\TaskStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\InteractsWithQueue;
@@ -40,6 +42,12 @@ class SystemActivityEventSubscriber implements ShouldQueue
             $descriptionProperties['value']     = $event->object->status->name;
 
             $data['description'] = __("activity_log.updated_with_field", $descriptionProperties);
+
+            if ($event->object instanceof Task &&
+                in_array($event->object->status_id, [TaskStatus::STATUS_REVIEW, TaskStatus::STATUS_COMPLETE]))
+            {
+                event(new TaskStatusUpdatedToReviewOrCompleteEvent($event->object));
+            }
         }
         else
         {
@@ -105,8 +113,8 @@ class SystemActivityEventSubscriber implements ShouldQueue
     {
         return [
 //            UserCommentedEvent::class         => 'handleUserCommented',
-            ObjectResourceUpdatedEvent::class => 'handleObjectResourceUpdated',
-            SystemObjectEvent::class          => 'handleSystemObjectEvent',
+ObjectResourceUpdatedEvent::class => 'handleObjectResourceUpdated',
+SystemObjectEvent::class          => 'handleSystemObjectEvent',
         ];
     }
 }
