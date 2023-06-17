@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Project;
 
 use App\Models\ProjectStatus;
+use App\Models\TaskStatus;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -36,17 +37,17 @@ class ProjectResource extends JsonResource
             'can_delete'     => $this->can_delete,
         ];
 
-        $tasks_count = 0;
-        $projectStatuses = ProjectStatus::all();
-        foreach (ProjectStatus::STATUSES as $id => $name)
+        $tasks_count  = 0;
+        $taskStatuses = TaskStatus::all();
+        foreach (TaskStatus::STATUSES as $id => $name)
         {
-            $projectStatus = $projectStatuses->firstWhere('id', $id);
-            $tasks_count   += $this->{"{$id}_tasks"};
+            $taskStatus  = $taskStatuses->firstWhere('id', $id);
+            $tasks_count += $this->{"{$id}_tasks"};
 
             $data['tasks_count_by_status'][] = [
                 'id'          => $id,
                 'name'        => $name,
-                'color'       => $projectStatus->color,
+                'color'       => $taskStatus->color,
                 'tasks_count' => $this->{"{$id}_tasks"},
             ];
         }

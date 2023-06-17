@@ -105,7 +105,7 @@ class ProjectService implements Contracts\ProjectServiceContract
     private function __generateQueryWithCountTasksByStatus () : array
     {
         $withCountArr = [];
-        foreach (ProjectStatus::STATUSES as $id => $name)
+        foreach (TaskStatus::STATUSES as $id => $name)
         {
             $withCountArr["tasks as {$id}_tasks"] = function (Builder $query) use ($id)
             {
@@ -450,6 +450,11 @@ class ProjectService implements Contracts\ProjectServiceContract
     {
         if (isset($inputs['status_id']) && $inputs['status_id'] == TaskStatus::STATUS_COMPLETE)
         {
+            if ($task->status_id != TaskStatus::STATUS_REVIEW)
+            {
+                return [false, 'Đầu việc cần phải được duyệt qua trước khi cập nhật trạng thái Hoàn thành.'];
+            }
+
             if (!$this->__checkIfCanUpdateTaskToCompleteStatus($task))
             {
                 return [false, 'Không thể thực hiện được hành động do chưa hoàn thành hết các đầu việc con.'];

@@ -13,13 +13,15 @@ class TaskStatus extends Model
     const STATUS_IN_PROGRESS = 2;
     const STATUS_PENDING = 3;
     const STATUS_BEHIND_SCHEDULE = 4;
-    const STATUS_COMPLETE = 5;
+    const STATUS_REVIEW = 5;
+    const STATUS_COMPLETE = 6;
 
     const STATUSES = [
         self::STATUS_NOT_START       => 'Not Started',
         self::STATUS_IN_PROGRESS     => 'In progress',
         self::STATUS_PENDING         => 'Pending',
         self::STATUS_BEHIND_SCHEDULE => 'Behind schedule',
+        self::STATUS_REVIEW          => 'Review',
         self::STATUS_COMPLETE        => 'Complete',
     ];
 }
