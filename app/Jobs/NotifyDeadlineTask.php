@@ -5,8 +5,6 @@ namespace App\Jobs;
 use App\Events\NotificationCreatedEvent;
 use App\Mail\CloseToTheDeadline;
 use App\Models\Notification;
-use App\Models\Project;
-use App\Models\ProjectStatus;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
@@ -50,7 +48,8 @@ class NotifyDeadlineTask implements ShouldQueue
         $nextTwelveHours   = Carbon::now('+7')->addHours(11);
         $nextThirteenHours = Carbon::now('+7')->addHours(13);
         Task::query()
-            ->whereNotIn('status_id', [TaskStatus::STATUS_BEHIND_SCHEDULE, ProjectStatus::STATUS_COMPLETE])
+            ->whereNotIn('status_id',
+                         [TaskStatus::STATUS_BEHIND_SCHEDULE, TaskStatus::STATUS_REVIEW, TaskStatus::STATUS_COMPLETE])
             ->when($this->scheduleType == 'hourly',
                 fn (Builder $query) => $query->whereBetween('ends_at', [$nextTwelveHours, $nextThirteenHours]))
             ->when($this->scheduleType == 'daily',
@@ -66,23 +65,23 @@ class NotifyDeadlineTask implements ShouldQueue
                                                                      [$task->user_id]);
                     $broadcastReceivers = array_merge($task->users()->pluck('users.id')->all(), [$task->user_id]);
                     $this->__broadcastNotification($notification, $broadcastReceivers);
-                    $this->__mailToTheProjectOwner($notification, $task->user);
+                    $this->__mailToTheTaskOwner($notification, $task->user);
                 }
             });
     }
 
     private function __generateContentForNotification (Task $task) : string
     {
-        $data[':object']       = Str::ucfirst(__(Str::lower(class_basename(get_class($task)))));
+        $data[':object']      = Str::ucfirst(__(Str::lower(class_basename(get_class($task)))));
         $data[':object_name'] = $task->name;
-        $data[':time']         = $this->scheduleType == 'daily' ? 1 : 12;
-        $data[':time_unit']    = __($this->scheduleType == 'daily' ? 'day' : 'hour');
+        $data[':time']        = $this->scheduleType == 'daily' ? 1 : 12;
+        $data[':time_unit']   = __($this->scheduleType == 'daily' ? 'day' : 'hour');
         return Str::swap($data, Notification::NOTIFY_DEADLINE_NOTIFICATION_CONTENT);
     }
 
-    private function __storeNotification (Task $project, array $data, array $userIds) : Notification
+    private function __storeNotification (Task $task, array $data, array $userIds) : Notification
     {
-        $notification = $project->notification()->create($data);
+        $notification = $task->notification()->create($data);
         $notification->users()->attach($userIds);
         return $notification;
     }
@@ -92,7 +91,7 @@ class NotifyDeadlineTask implements ShouldQueue
         event(new NotificationCreatedEvent($notification, $userIds));
     }
 
-    private function __mailToTheProjectOwner (Notification $notification, User $owner) : void
+    private function __mailToTheTaskOwner (Notification $notification, User $owner) : void
     {
         Mail::to($owner)->send(new CloseToTheDeadline($notification));
     }

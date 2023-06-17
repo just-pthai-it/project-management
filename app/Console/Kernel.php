@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Jobs\NotifyBehindScheduleProject;
+use App\Jobs\NotifyBehindScheduleTask;
 use App\Jobs\NotifyDeadlineProject;
 use App\Jobs\NotifyDeadlineTask;
 use App\Jobs\Test;
@@ -25,6 +27,8 @@ class Kernel extends ConsoleKernel
         $schedule->job(new NotifyDeadlineProject('daily'))->timezone('Asia/Ho_Chi_Minh')->dailyAt('07:00');
         $schedule->job(new NotifyDeadlineTask('hourly'))->hourly();
         $schedule->job(new NotifyDeadlineTask('daily'))->timezone('Asia/Ho_Chi_Minh')->dailyAt('07:00');
+        $schedule->job(new NotifyBehindScheduleTask())->timezone('Asia/Ho_Chi_Minh')->dailyAt('07:00');
+        $schedule->job(new NotifyBehindScheduleProject())->timezone('Asia/Ho_Chi_Minh')->dailyAt('07:00');
     }
 
     /**
