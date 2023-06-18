@@ -32,14 +32,15 @@ class NotifyBehindScheduleTask implements ShouldQueue
             {
                 foreach ($tasks as $task)
                 {
-                    $diffForHumans       = now('+7')->diffForHumans($task->created_at);
-                    $notificationContent = __('notification.behind_schedule',
-                                              ['object_type' => 'đầu việc',
-                                               'object_name' => $task->name,
-                                               'diff'        => $diffForHumans]);
-                    $notificationContent = str_replace(' sau', '', $notificationContent);
+                    $diffForHumans           = now('+7')->diffForHumans($task->created_at);
+                    $notificationContent     = __('notification.behind_schedule',
+                                                  ['object_type' => 'đầu việc',
+                                                   'object_name' => $task->name,
+                                                   'diff'        => $diffForHumans]);
+                    $notificationContent     = str_replace(' sau', '', $notificationContent);
                     $NotificationReceiverIds = array_merge($task->users()->pluck('users.id')->all(), [$task->user_id]);;
-                    $notification = $this->__storeNotification($task, ['content' => $notificationContent],
+                    $notification = $this->__storeNotification($task, ['content' => $notificationContent,
+                                                                       'action'  => "/project/{$task->project_id}/tasks/{$task->id}"],
                                                                array_unique($NotificationReceiverIds));
                     $this->__broadcastNotification($notification, array_unique($NotificationReceiverIds));
                     $this->__mailToTheProjectOwner($notification, $task->user);

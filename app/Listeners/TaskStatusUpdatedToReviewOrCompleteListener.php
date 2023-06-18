@@ -45,7 +45,8 @@ class TaskStatusUpdatedToReviewOrCompleteListener implements ShouldQueue
         $notificationReceiverIds = [$task->user_id];
         $notificationContent     = __('notification.task_status_updated_to_review',
                                       ['task_name' => $task->name]);
-        $notification            = $this->__storeNotification($task, ['content' => $notificationContent],
+        $notification            = $this->__storeNotification($task, ['content' => $notificationContent,
+                                                                      'action'  => "/project/{$task->project_id}/tasks/{$task->id}"],
                                                               array_unique($notificationReceiverIds));
         $this->__broadcastNotification($notification, array_unique($notificationReceiverIds));
     }
@@ -58,7 +59,8 @@ class TaskStatusUpdatedToReviewOrCompleteListener implements ShouldQueue
                                                    [$task->parent->user_id]);
             $notificationContent     = __('notification.task_status_updated_to_complete',
                                           ['task_name' => $task->name]);
-            $notification            = $this->__storeNotification($task, ['content' => $notificationContent],
+            $notification            = $this->__storeNotification($task, ['content' => $notificationContent,
+                                                                          'action'  => "/project/{$task->project_id}/tasks/{$task->id}"],
                                                                   array_unique($notificationReceiverIds));
             $this->__broadcastNotification($notification, array_unique($notificationReceiverIds));
         }

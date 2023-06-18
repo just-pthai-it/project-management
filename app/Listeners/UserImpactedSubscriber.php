@@ -49,7 +49,9 @@ class UserImpactedSubscriber implements ShouldQueue
             $receiverIds = [$event->object->user->id];
         }
 
-        $notification = $this->__storeNotification($event->object, ['content' => $content], $receiverIds);
+        $notification = $this->__storeNotification($event->object, ['content' => $content,
+                                                                    'action'  => "/project/{$event->object->project_id}/tasks/{$event->object->id}"],
+                                                   $receiverIds);
         $this->__broadcastNotification($notification, $receiverIds);
     }
 
@@ -66,7 +68,8 @@ class UserImpactedSubscriber implements ShouldQueue
                               ':object_name' => $event->object->name],
                              Notification::USER_COMMENTED_NOTIFICATION_CONTENT);
 
-        $notification = $this->__storeNotification($event->comment, ['content' => $content],
+        $notification = $this->__storeNotification($event->comment, ['content' => $content,
+                                                                     'action'  => "/project/{$event->object->project_id}/tasks/{$event->object->id}"],
                                                    [$event->previousComment->user_id]);
         $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
     }
@@ -78,7 +81,17 @@ class UserImpactedSubscriber implements ShouldQueue
                        'object_type' => __(Str::lower(class_basename(get_class($event->object)))),
                        'object_name' => $event->object->name]);
 
-        $notification = $this->__storeNotification($event->object, ['content' => $content], $event->userIds);
+        if ($event->object instanceof Project)
+        {
+            $action = "/project/{$event->object->id}";
+        }
+        else
+        {
+            $action = "/project/{$event->object->project_id}/tasks/{$event->object->id}";
+        }
+
+        $notification = $this->__storeNotification($event->object, ['content' => $content, 'action' => $action],
+                                                   $event->userIds);
         $this->__broadcastNotification($notification, $event->userIds);
         $this->__mailToAssignee($notification, $event->userIds);
     }

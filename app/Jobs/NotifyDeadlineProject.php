@@ -55,7 +55,8 @@ class NotifyDeadlineProject implements ShouldQueue
                        $project->load('users:id,name,email');
                        $content = $this->__generateContentForNotification($project);
 
-                       $notification = $this->__storeNotification($project, ['content' => $content],
+                       $notification = $this->__storeNotification($project, ['content' => $content,
+                                                                             'action'  => "/project/{$project->id}"],
                                                                   [$project->user_id]);
                        $this->__broadcastNotification($notification, [$project->user_id]);
                        $this->__mailToTheProjectOwner($notification, $project->user);

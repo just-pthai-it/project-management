@@ -50,7 +50,8 @@ class NotifyBehindScheduleProject implements ShouldQueue
                        $notificationContent     = str_replace(' sau', '', $notificationContent);
                        $NotificationReceiverIds = [$project->user_id];
                        $notification            = $this->__storeNotification($project,
-                                                                             ['content' => $notificationContent],
+                                                                             ['content' => $notificationContent,
+                                                                              'action'  => "/project/{$project->id}"],
                                                                              $NotificationReceiverIds);
                        $this->__broadcastNotification($notification, $NotificationReceiverIds);
                        $this->__mailToTheProjectOwner($notification, $project->user);

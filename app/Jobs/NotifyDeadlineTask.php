@@ -61,7 +61,8 @@ class NotifyDeadlineTask implements ShouldQueue
                     $task->load('users:id,name,email');
 
                     $content            = $this->__generateContentForNotification($task);
-                    $notification       = $this->__storeNotification($task, ['content' => $content],
+                    $notification       = $this->__storeNotification($task, ['content' => $content,
+                                                                             'action'  => "/project/{$task->project_id}/tasks/{$task->id}"],
                                                                      [$task->user_id]);
                     $broadcastReceivers = array_merge($task->users()->pluck('users.id')->all(), [$task->user_id]);
                     $this->__broadcastNotification($notification, $broadcastReceivers);
