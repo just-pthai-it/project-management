@@ -196,6 +196,7 @@ return [
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         \App\Providers\AppRepositoryProvider::class,
+        \App\Providers\CommandBusProvider::class,
     ],
 
     /*
