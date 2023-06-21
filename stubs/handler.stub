@@ -2,10 +2,15 @@
 
 namespace {{ namespace }};
 
+use {{ command_namespace }}{{ command_class }};
 use App\CommandBus\Handler\Handler;
 
 class {{ class }} implements Handler
 {
+    /**
+     * @param {{ command_class }} $command
+     * @return
+     */
     public function handle ($command)
     {
 

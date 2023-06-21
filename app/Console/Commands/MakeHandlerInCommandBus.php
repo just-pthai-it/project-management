@@ -31,12 +31,24 @@ class MakeHandlerInCommandBus extends GeneratorCommand
 
     protected function getDefaultNamespace ($rootNamespace) : string
     {
-        $extraNamespace = Str::beforeLast($this->argument('name'), '\\');
-        if ($extraNamespace == $this->argument('name'))
+        $dir = Str::beforeLast($this->argument('name'), '\\');
+        if ($dir == $this->argument('name'))
         {
             return "{$rootNamespace}\CommandBus\Handlers";
         }
 
-        return "{$rootNamespace}\CommandBus\Handlers\\{$extraNamespace}";
+        return "{$rootNamespace}\CommandBus\Handlers\\{$dir}";
+    }
+
+    protected function replaceClass ($stub, $name) : array|string
+    {
+        $stub = parent::replaceClass($stub, $name);
+
+        $namespace = $this->getNamespace($name);
+        $commandNamespace = str_replace('Handlers', 'Commands', $namespace) . '\\';
+        $class        = str_replace($this->getNamespace($name) . '\\', '', $name);
+        $commandClass = str_replace('Handler', 'Command', $class);
+
+        return str_replace(['{{ command_namespace }}', '{{ command_class }}'], [$commandNamespace, $commandClass], $stub);
     }
 }
