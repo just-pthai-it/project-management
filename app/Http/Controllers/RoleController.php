@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\CommandBus\Commands\Role\CreateRoleCommand;
+use App\CommandBus\Commands\Role\DeleteRoleCommand;
+use App\CommandBus\Commands\Role\GetListRolesCommand;
+use App\CommandBus\Commands\Role\GetRoleCommand;
+use App\CommandBus\Commands\Role\UpdateRoleCommand;
 use App\Http\Requests\Role\StoreRolePostRequest;
 use App\Http\Requests\Role\UpdateRolePostRequest;
+use App\Http\Resources\Role\RoleResource;
 use App\Models\Role;
-use App\Services\Contracts\RoleServiceContract;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
-class RoleController extends Controller
+class RoleController extends BaseController
 {
-    private RoleServiceContract $roleService;
-
-    /**
-     * @param RoleServiceContract $roleService
-     */
-    public function __construct (RoleServiceContract $roleService)
+    public function __construct ()
     {
-        $this->roleService = $roleService;
         $this->authorizeResource(Role::class, 'role');
     }
 
@@ -29,13 +28,18 @@ class RoleController extends Controller
      */
     public function index() : JsonResponse
     {
-        return $this->roleService->list();
+        $getListRolesCommand = new GetListRolesCommand();
+        $roles = $this->dispatchCommand($getListRolesCommand);
+        return RoleResource::collection($roles)->response();
     }
 
     public function show (Role $role) : JsonResponse
     {
-        return $this->roleService->get($role);
+        $getRoleCommand = new GetRoleCommand($role);
+        $role = $this->dispatchCommand($getRoleCommand);
+        return (new RoleResource($role))->response();
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -44,7 +48,9 @@ class RoleController extends Controller
      */
     public function store(StoreRolePostRequest $request) : JsonResponse
     {
-        return $this->roleService->store($request->validated());
+        $createRoleCommand = new CreateRoleCommand($request->name, $request->permission_ids);
+        $role = $this->dispatchCommand($createRoleCommand);
+        return response()->jsonWrap($role, Response::HTTP_CREATED);
     }
 
     /**
@@ -56,7 +62,9 @@ class RoleController extends Controller
      */
     public function update(UpdateRolePostRequest $request, Role $role) : JsonResponse
     {
-        return $this->roleService->update($role, $request->validated());
+        $updateRoleCommand = new UpdateRoleCommand($role, $request->validated());
+        $this->dispatchCommand($updateRoleCommand);
+        return response()->jsonWrap();
     }
 
     /**
@@ -67,6 +75,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role) : JsonResponse
     {
-        return $this->roleService->delete($role);
+        $deleteRoleCommand = new DeleteRoleCommand($role);
+        $this->dispatchCommand($deleteRoleCommand);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

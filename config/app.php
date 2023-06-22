@@ -197,6 +197,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         \App\Providers\AppRepositoryProvider::class,
         \App\Providers\CommandBusProvider::class,
+        \App\Providers\MacroServiceProvider::class,
     ],
 
     /*
