@@ -48,7 +48,7 @@ class RoleController extends BaseController
      */
     public function store(StoreRolePostRequest $request) : JsonResponse
     {
-        $createRoleCommand = new CreateRoleCommand($request->name, $request->permission_ids);
+        $createRoleCommand = new CreateRoleCommand($request->validated());
         $role = $this->dispatchCommand($createRoleCommand);
         return response()->jsonWrap($role, Response::HTTP_CREATED);
     }

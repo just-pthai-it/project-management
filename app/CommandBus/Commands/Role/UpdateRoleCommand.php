@@ -7,7 +7,8 @@ use App\Models\Role;
 class UpdateRoleCommand
 {
     private Role $role;
-    private array $input;
+    private string|null $name;
+    private array|null $permissionIds;
 
     /**
      * @param Role  $role
@@ -15,8 +16,9 @@ class UpdateRoleCommand
      */
     public function __construct (Role $role, array $input)
     {
-        $this->role  = $role;
-        $this->input = $input;
+        $this->role          = $role;
+        $this->name          = $input['name'] ?? null;
+        $this->permissionIds = $input['permission_ids'] ?? null;
     }
 
     /**
@@ -28,11 +30,18 @@ class UpdateRoleCommand
     }
 
     /**
-     * @return array
+     * @return string|null
      */
-    public function getInput () : array
+    public function getName () : ?string
     {
-        return $this->input;
+        return $this->name;
     }
 
+    /**
+     * @return array|null
+     */
+    public function getPermissionIds () : ?array
+    {
+        return $this->permissionIds;
+    }
 }

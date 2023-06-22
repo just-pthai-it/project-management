@@ -8,13 +8,12 @@ class CreateRoleCommand
     private array $permissionIds;
 
     /**
-     * @param string $name
-     * @param array  $permissionIds
+     * @param array $input
      */
-    public function __construct (string $name, array $permissionIds)
+    public function __construct (array $input)
     {
-        $this->name = $name;
-        $this->permissionIds = $permissionIds;
+        $this->name          = $input['name'];
+        $this->permissionIds = $input['permission_ids'];
     }
 
     /**
