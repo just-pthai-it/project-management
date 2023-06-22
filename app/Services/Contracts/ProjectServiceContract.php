@@ -17,8 +17,6 @@ interface ProjectServiceContract
 
     public function get (Project $project, array $inputs = []);
 
-    public function store (array $inputs);
-
     public function update (Project $project, array $inputs);
 
     public function delete (Project $project);

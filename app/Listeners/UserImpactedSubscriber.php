@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\NotificationCreatedEvent;
 use App\Events\ObjectResourceUpdatedEvent;
-use App\Events\UserAssignedEvent;
+use App\Events\UsersAssignedEvent;
 use App\Events\UserCommentedEvent;
 use App\Mail\UserAssigned;
 use App\Models\Notification;
@@ -74,7 +74,7 @@ class UserImpactedSubscriber implements ShouldQueue
         $this->__broadcastNotification($notification, [$event->previousComment->user_id]);
     }
 
-    public function handleUserAssignedEvent (UserAssignedEvent $event) : void
+    public function handleUsersAssignedEvent (UsersAssignedEvent $event) : void
     {
         $content = __('notification.user_assigned',
                       ['causer_name' => $event->causer->name,
@@ -118,7 +118,7 @@ class UserImpactedSubscriber implements ShouldQueue
     {
         return [
             UserCommentedEvent::class         => 'handleUserCommentedEvent',
-            UserAssignedEvent::class          => 'handleUserAssignedEvent',
+            UsersAssignedEvent::class         => 'handleUsersAssignedEvent',
             ObjectResourceUpdatedEvent::class => 'handleObjectResourceUpdatedEvent',
         ];
     }

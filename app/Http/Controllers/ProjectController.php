@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\CommandBus\Commands\Project\CreateProjectCommand;
+use App\CommandBus\Middlewares\TransactionMiddleware;
 use App\Http\Requests\Project\CreateProjectPostRequest;
 use App\Http\Requests\Project\UpdateProjectPatchRequest;
 use App\Models\Project;
 use App\Services\Contracts\ProjectServiceContract;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
-class ProjectController extends Controller
+class ProjectController extends BaseController
 {
     private ProjectServiceContract $projectService;
 
@@ -50,6 +52,7 @@ class ProjectController extends Controller
     {
         return $this->projectService->statistics($request->all());
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -58,7 +61,10 @@ class ProjectController extends Controller
      */
     public function store (CreateProjectPostRequest $request) : JsonResponse
     {
-        return $this->projectService->store($request->validated());
+        $createProjectCommand = new CreateProjectCommand($request->validated());
+        $transactionMiddleware = new TransactionMiddleware();
+        $project = $this->dispatchCommand($createProjectCommand, [$transactionMiddleware]);
+        return response()->jsonWrap($project, Response::HTTP_CREATED);
     }
 
     /**

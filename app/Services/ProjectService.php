@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Events\SystemObjectEvent;
-use App\Events\UserAssignedEvent;
+use App\Events\UsersAssignedEvent;
 use App\Helpers\Constants;
 use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
@@ -21,7 +21,6 @@ use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Task;
 use App\Models\TaskStatus;
-use App\Models\User;
 use App\Repositories\Contracts\ProjectRepositoryContract;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,9 +31,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectService implements Contracts\ProjectServiceContract
 {
@@ -165,19 +161,6 @@ class ProjectService implements Contracts\ProjectServiceContract
     /**
      * @throws Exception
      */
-    public function store (array $inputs) : JsonResponse
-    {
-        $project = auth()->user()->projects()->create($inputs);
-        $this->__assignUsers($project, $inputs['user_ids'] ?? []);
-        event(new SystemObjectEvent($project, auth()->user(), 'created'));
-
-        return CusResponse::createSuccessful(['id' => $project->id]);
-    }
-
-
-    /**
-     * @throws Exception
-     */
     public function update (Project $project, array $inputs) : JsonResponse
     {
         try
@@ -222,7 +205,7 @@ class ProjectService implements Contracts\ProjectServiceContract
 
         if (!empty($newAssigneeIds))
         {
-            event(new UserAssignedEvent($object, auth()->user(), array_diff($newAssigneeIds, [auth()->id()])));
+            event(new UsersAssignedEvent($object, auth()->user(), array_diff($newAssigneeIds, [auth()->id()])));
         }
     }
 
