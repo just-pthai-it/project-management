@@ -34,7 +34,7 @@ class CreateProjectPostRequest extends FormRequest
             'duration'       => ['required', 'integer'],
             'status_id'      => ['required', 'integer'],
             'pending_reason' => ['required_if:status_id,' . ProjectStatus::STATUS_PENDING, 'string'],
-            'user_ids'       => ['sometimes', 'required', 'array'],
+            'user_ids'       => ['required', 'array'],
         ];
     }
 }

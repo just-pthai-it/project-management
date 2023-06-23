@@ -29,7 +29,7 @@ class SystemActivityEventSubscriber implements ShouldQueue
 
     public function handleSystemObjectEvent (SystemObjectEvent $event) : void
     {
-        $descriptionProperties['causer_name'] = $event->causer->name;
+        $descriptionProperties['causer_name'] = $event->currentUser->name;
         $descriptionProperties['object_name'] = $event->object->name;
         $descriptionProperties['object_type'] = __(Str::lower(class_basename(get_class($event->object))));
 
@@ -54,7 +54,7 @@ class SystemActivityEventSubscriber implements ShouldQueue
             $data['description'] = __("activity_log.{$event->action}", $descriptionProperties);
         }
 
-        $data['user_id'] = $event->causer->id;
+        $data['user_id'] = $event->currentUser->id;
         $data['name']    = $event->action;
         $data['type_id'] = ActivityLog::OBJECT_CREATE_LOG_TYPE_ID;
         $this->__updateActivityLog($event->object, $data);

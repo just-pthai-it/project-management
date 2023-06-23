@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CommandBus\Commands\Project\CreateProjectCommand;
+use App\CommandBus\Commands\Project\UpdateProjectCommand;
 use App\CommandBus\Middlewares\TransactionMiddleware;
 use App\Http\Requests\Project\CreateProjectPostRequest;
 use App\Http\Requests\Project\UpdateProjectPatchRequest;
@@ -61,9 +62,9 @@ class ProjectController extends BaseController
      */
     public function store (CreateProjectPostRequest $request) : JsonResponse
     {
-        $createProjectCommand = new CreateProjectCommand($request->validated());
+        $createProjectCommand  = new CreateProjectCommand($request->validated());
         $transactionMiddleware = new TransactionMiddleware();
-        $project = $this->dispatchCommand($createProjectCommand, [$transactionMiddleware]);
+        $project               = $this->dispatchCommand($createProjectCommand, [$transactionMiddleware]);
         return response()->jsonWrap($project, Response::HTTP_CREATED);
     }
 
@@ -87,7 +88,10 @@ class ProjectController extends BaseController
      */
     public function update (UpdateProjectPatchRequest $request, Project $project) : JsonResponse
     {
-        return $this->projectService->update($project, $request->validated());
+        $updateProjectCommand  = new UpdateProjectCommand($project, $request->validated());
+        $transactionMiddleware = new TransactionMiddleware();
+        $project               = $this->dispatchCommand($updateProjectCommand, [$transactionMiddleware]);
+        return response()->jsonWrap($project);
     }
 
     /**

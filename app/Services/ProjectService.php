@@ -158,33 +158,6 @@ class ProjectService implements Contracts\ProjectServiceContract
         return (new ProjectResource($project))->response();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function update (Project $project, array $inputs) : JsonResponse
-    {
-        try
-        {
-            DB::beginTransaction();
-            $oldData = $project->getOriginal();
-            $project->update($inputs);
-            if ($project->wasChanged())
-            {
-                $this->__checkIfUpdateActionIsValid($project, $oldData);
-                event(new SystemObjectEvent($project, auth()->user(), 'updated', $oldData, $project->getChanges()));
-            }
-            $this->__assignUsers($project, $inputs['user_ids'] ?? []);
-
-            DB::commit();
-            return CusResponse::successful();
-        }
-        catch (Exception $exception)
-        {
-            DB::rollBack();
-            throw $exception;
-        }
-    }
-
     private function __assignUsers (Model $object, array $userIds) : void
     {
         if (empty($userIds))
@@ -215,82 +188,6 @@ class ProjectService implements Contracts\ProjectServiceContract
         {
             $task->users()->detach($oldAssigneeIds);
         }
-    }
-
-    private function __checkIfUpdateActionIsValid (Project $project, array $oldData) : void
-    {
-        $results   = [];
-        $results[] = $this->__checkIfCanUpdateProjectToCompleteStatus($project);
-        $results[] = $this->__checkIfCanUpdateProjectStatusFromBehindScheduleToOthersStatus($project,
-                                                                                            $oldData);
-        $results[] = $this->__checkIfAnyTasksTimeOverProjectTime($project, $oldData);
-
-        foreach ($results as $result)
-        {
-            [$isValid, $message] = $result;
-            if (!$isValid)
-            {
-                abort(422, $message);
-            }
-        }
-    }
-
-    private function __checkIfCanUpdateProjectToCompleteStatus (Project $project) : array
-    {
-        $dataChanges = $project->getChanges();
-        if (isset($dataChanges['status_id']) && $project->status_id == ProjectStatus::STATUS_COMPLETE)
-        {
-            if ($project->progress != 100)
-            {
-                return [false, 'Không thể thực hiện hành động do vẫn còn đầu việc chưa hoàn thành.'];
-            }
-
-        }
-
-        return [true, 'Ok'];
-    }
-
-    private function __checkIfCanUpdateProjectStatusFromBehindScheduleToOthersStatus (Project $project, array $oldData) : array
-    {
-        $dataChanges = $project->getChanges();
-        if (isset($dataChanges['status_id']) &&
-            $oldData['status_id'] == ProjectStatus::STATUS_BEHIND_SCHEDULE &&
-            in_array($project->status_id, [ProjectStatus::STATUS_NOT_START, ProjectStatus::STATUS_IN_PROGRESS]))
-        {
-            if (isset($dataChanges['ends_at']))
-            {
-                if ($project->ends_at->toDateString() < now('+7')->toDateString())
-                {
-                    return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
-                }
-            }
-            else if (Carbon::parse($oldData['ends_at'])->toDateString() < now('+7')->toDateString())
-            {
-                return [false, 'Không thể thực hiện hành động do ngày hiện tại đã vượt quá ngày kết thúc của dự án.'];
-            }
-        }
-
-        return [true, 'Ok'];
-    }
-
-    private function __checkIfAnyTasksTimeOverProjectTime (Project $project, array $oldData) : array
-    {
-        $dataChanges = $project->getChanges();
-        if (isset($dataChanges['starts_at']) || isset($dataChanges['ends_at']))
-        {
-            $isExists = $project->tasks()->where(function (Builder $query) use ($project)
-            {
-                $query->where('tasks.starts_at', '<', $project->starts_at_with_time)
-                      ->orWhere('tasks.ends_at', '>', $project->ends_at_with_time);
-            })->exists();
-
-            if ($isExists)
-            {
-                return [false, 'Không thể thực hiện hành động do phạm vi ngày bắt đầu và ngày kết thúc không bao quát hết tất cả đầu việc.'];
-            }
-        }
-
-        return [true, 'Ok'];
     }
 
     public function delete (Project $project) : JsonResponse

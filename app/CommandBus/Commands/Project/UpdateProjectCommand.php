@@ -2,8 +2,11 @@
 
 namespace App\CommandBus\Commands\Project;
 
-class CreateProjectCommand
+use App\Models\Project;
+
+class UpdateProjectCommand
 {
+    private Project $project;
     private string $name;
     private string $customerName;
     private string $code;
@@ -16,10 +19,12 @@ class CreateProjectCommand
     private array $userIds;
 
     /**
-     * @param array $input
+     * @param array   $input
+     * @param Project $project
      */
-    public function __construct (array $input)
+    public function __construct (Project $project, array $input)
     {
+        $this->project       = $project;
         $this->name          = $input['name'];
         $this->customerName  = $input['customer_name'];
         $this->code          = $input['code'];
@@ -30,6 +35,14 @@ class CreateProjectCommand
         $this->statusId      = $input['status_id'];
         $this->pendingReason = $input['pending_reason'] ?? null;
         $this->userIds       = $input['user_ids'];
+    }
+
+    /**
+     * @return Project
+     */
+    public function getProject () : Project
+    {
+        return $this->project;
     }
 
     /**
@@ -111,5 +124,4 @@ class CreateProjectCommand
     {
         return $this->userIds;
     }
-
 }
