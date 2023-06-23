@@ -7,7 +7,6 @@ use App\Events\UsersAssignedEvent;
 use App\Helpers\Constants;
 use App\Helpers\CusResponse;
 use App\Http\Resources\ActivityLog\ActivityLogResource;
-use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectGanttChartResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Project\ProjectSearchCollection;
@@ -18,16 +17,13 @@ use App\Http\Resources\Project\Task\TaskResource;
 use App\Http\Resources\Project\User\UserCollection;
 use App\Http\Resources\Task\TaskSearchCollection;
 use App\Models\Project;
-use App\Models\ProjectStatus;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Repositories\Contracts\ProjectRepositoryContract;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -63,39 +59,6 @@ class ProjectService implements Contracts\ProjectServiceContract
     private function __listByNonRootUser (array $inputs) : Collection
     {
         return auth()->user()->assignedProjects()->filter($inputs)->get(['projects.id', 'projects.name']);
-    }
-
-    public function list (array $inputs = []) : JsonResponse
-    {
-        $withCountTaskByStatusQuery = $this->__generateQueryWithCountTasksByStatus();;
-
-        if (auth()->user()->tokenCan('*') || auth()->user()->tokenCan('statistical:project'))
-        {
-            $projects = $this->__paginateProjectByRootUser($inputs, $withCountTaskByStatusQuery);
-        }
-        else
-        {
-            $projects = $this->__paginateProjectByNonRootUser($inputs, $withCountTaskByStatusQuery);
-        }
-
-        return (new ProjectCollection($projects))->response();
-    }
-
-    private function __paginateProjectByNonRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
-    {
-        return auth()->user()->assignedProjects()
-                     ->orWhere('projects.user_id', '=', auth()->id())
-                     ->filter($inputs)
-                     ->with('status')->withCount($withCountTaskByStatusQuery)
-                     ->paginate($inputs['per_page'] ?? 10);
-
-    }
-
-    private function __paginateProjectByRootUser (array $inputs, array $withCountTaskByStatusQuery) : LengthAwarePaginator
-    {
-        return $this->projectRepository->paginate($inputs['per_page'] ?? 10, ['*'], [], [],
-                                                  [['with', ['status']], ['filter', $inputs],
-                                                   ['withCount', $withCountTaskByStatusQuery]]);
     }
 
     private function __generateQueryWithCountTasksByStatus () : array

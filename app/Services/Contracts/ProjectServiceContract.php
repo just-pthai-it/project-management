@@ -9,8 +9,6 @@ interface ProjectServiceContract
 {
     public function search (array $inputs = []);
 
-    public function list (array $inputs = []);
-
     public function listGanttChart (array $inputs = []);
 
     public function statistics (array $inputs);

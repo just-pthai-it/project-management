@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\CommandBus\Commands\Project\CreateProjectCommand;
+use App\CommandBus\Commands\Project\PaginateProjectsListCommand;
 use App\CommandBus\Commands\Project\UpdateProjectCommand;
 use App\CommandBus\Middlewares\TransactionMiddleware;
 use App\Http\Requests\Project\CreateProjectPostRequest;
 use App\Http\Requests\Project\UpdateProjectPatchRequest;
+use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Project;
 use App\Services\Contracts\ProjectServiceContract;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -41,7 +43,9 @@ class ProjectController extends BaseController
      */
     public function index (Request $request) : JsonResponse
     {
-        return $this->projectService->list($request->all());
+        $paginateProjectsListCommand = new PaginateProjectsListCommand($request->all());
+        $projects = $this->dispatchCommand($paginateProjectsListCommand);
+        return (new ProjectCollection($projects))->response();
     }
 
     public function indexGanttChart (Request $request) : JsonResponse
