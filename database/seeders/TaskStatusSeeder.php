@@ -37,6 +37,11 @@ class TaskStatusSeeder extends Seeder
                 'is_permanent' => 1,
             ],
             [
+                'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_REVIEW],
+                'color'        => '#3866D1',
+                'is_permanent' => 1,
+            ],
+            [
                 'name'         => TaskStatus::STATUSES[TaskStatus::STATUS_COMPLETE],
                 'color'        => '#61C376',
                 'is_permanent' => 1,
