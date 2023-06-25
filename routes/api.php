@@ -100,6 +100,9 @@ Route::group(['middleware' => ['auth:sanctum']], function ()
 
     Route::apiResource('permissions', PermissionController::class)->only(['index']);
 
+    Route::post('broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
+    Route::get('broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
+
 });
 
 Route::post('upload-file', [ResourceController::class, 'upload']);
